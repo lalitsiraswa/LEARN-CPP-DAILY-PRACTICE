@@ -22,9 +22,22 @@
 		FB8151902F6BCEDA007ED97F /* Keep-Revising-Practice */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Keep-Revising-Practice"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FBCADA072F71A88E00F69E5A /* Exceptions for "Keep-Revising-Practice" folder in "Keep-Revising-Practice" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AdityaVermaRecursionPractice.cpp,
+			);
+			target = FB81518F2F6BCEDA007ED97F /* Keep-Revising-Practice */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FB8151922F6BCEDA007ED97F /* Keep-Revising-Practice */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FBCADA072F71A88E00F69E5A /* Exceptions for "Keep-Revising-Practice" folder in "Keep-Revising-Practice" target */,
+			);
 			path = "Keep-Revising-Practice";
 			sourceTree = "<group>";
 		};
