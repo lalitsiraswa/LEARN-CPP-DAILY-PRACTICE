@@ -1,39 +1,21 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- Reverse Stack Using Recusrion --------------------------------------------------
-void insertAtBottom(stack<int> &st, int element){
-    if(st.size() == 0){
-        st.push(element);
-        return;
+// -------------------------------------------------- 779. K-th Symbol in Grammar --------------------------------------------------
+int kthGrammar(int n, int k) {
+    if(n == 1 && k == 1){
+        return 0;
     }
-    int topElement = st.top();
-    st.pop();
-    insertAtBottom(st, element);
-    st.push(topElement);
-}
-
-void reverseStack(stack<int> &st){
-    if(st.size() == 1){
-        return;
+    int length = pow(2, n - 1);
+    int mid = length / 2;
+    if(k <= mid){
+        return kthGrammar(n - 1, k);
     }
-    int topElement = st.top();
-    st.pop();
-    reverseStack(st);
-    insertAtBottom(st, topElement);
+    // else if (k > mid)
+    return !(kthGrammar(n - 1, k - mid));
 }
 
 int main(){
-    stack<int> st;
-    st.push(5);
-    st.push(4);
-    st.push(3);
-    st.push(2);
-    st.push(1);
-    reverseStack(st);
-    while(!st.empty()){
-        cout << st.top() << endl;
-        st.pop();
-    }
+    cout << kthGrammar(4, 3) << endl;
     return 0;
 }
