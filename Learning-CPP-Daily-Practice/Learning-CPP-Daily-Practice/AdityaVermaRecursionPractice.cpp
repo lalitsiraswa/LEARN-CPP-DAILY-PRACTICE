@@ -1,21 +1,22 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- 779. K-th Symbol in Grammar --------------------------------------------------
-int kthGrammar(int n, int k) {
-    if(n == 1 && k == 1){
-        return 0;
+// -------------------------------------------------- Tower of Hanoi --------------------------------------------------
+void towerOfHanoi(int source, int destination, int helper, int plateNumber) {
+    if(plateNumber == 1){
+        cout << "Moving plate " << plateNumber << " from " << source << " to " << destination << endl;
+        return;
     }
-    int length = pow(2, n - 1);
-    int mid = length / 2;
-    if(k <= mid){
-        return kthGrammar(n - 1, k);
-    }
-    // else if (k > mid)
-    return !(kthGrammar(n - 1, k - mid));
+    towerOfHanoi(source, helper, destination, plateNumber - 1);
+    cout << "Moving plate " << plateNumber << " from " << source << " to " << destination << endl;
+    towerOfHanoi(helper, destination, source, plateNumber - 1);
 }
 
 int main(){
-    cout << kthGrammar(4, 3) << endl;
+    int plateNumber = 4;
+    int source = 1;
+    int destination = 2;
+    int helper = 3;
+    towerOfHanoi(source, destination, helper, plateNumber);
     return 0;
 }
