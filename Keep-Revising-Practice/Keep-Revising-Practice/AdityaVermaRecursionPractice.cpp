@@ -125,11 +125,24 @@ void towerOfHanoi(int source, int destination, int helper, int plateNumber) {
     towerOfHanoi(helper, destination, source, plateNumber - 1);
 }
 
+// -------------------------------------------------- String Subsets --------------------------------------------------
+void subSets(string ip, string op) {
+    if(ip.empty()){
+        cout << op << endl;
+        return;
+    }
+    string op1 = op;
+    string op2 = op;
+    op2.push_back(ip[0]);
+    ip.erase(ip.begin());
+    subSets(ip, op1);
+    subSets(ip, op2);
+    return;
+}
+
 int main(){
-    int plateNumber = 4;
-    int source = 1;
-    int destination = 2;
-    int helper = 3;
-    towerOfHanoi(source, destination, helper, plateNumber);
+    string ip = "abc";
+    string op = "";
+    subSets(ip, op);
     return 0;
 }

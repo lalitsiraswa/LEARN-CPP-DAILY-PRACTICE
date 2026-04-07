@@ -1,22 +1,24 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- Tower of Hanoi --------------------------------------------------
-void towerOfHanoi(int source, int destination, int helper, int plateNumber) {
-    if(plateNumber == 1){
-        cout << "Moving plate " << plateNumber << " from " << source << " to " << destination << endl;
+// -------------------------------------------------- String Subsets --------------------------------------------------
+void subSets(string ip, string op) {
+    if(ip.empty()){
+        cout << op << endl;
         return;
     }
-    towerOfHanoi(source, helper, destination, plateNumber - 1);
-    cout << "Moving plate " << plateNumber << " from " << source << " to " << destination << endl;
-    towerOfHanoi(helper, destination, source, plateNumber - 1);
+    string op1 = op;
+    string op2 = op;
+    op2.push_back(ip[0]);
+    ip.erase(ip.begin());
+    subSets(ip, op1);
+    subSets(ip, op2);
+    return;
 }
 
 int main(){
-    int plateNumber = 4;
-    int source = 1;
-    int destination = 2;
-    int helper = 3;
-    towerOfHanoi(source, destination, helper, plateNumber);
+    string ip = "abc";
+    string op = "";
+    subSets(ip, op);
     return 0;
 }
