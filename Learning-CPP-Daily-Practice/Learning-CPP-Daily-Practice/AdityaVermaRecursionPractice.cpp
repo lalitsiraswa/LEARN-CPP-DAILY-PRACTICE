@@ -1,38 +1,43 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- 78. Subsets --------------------------------------------------
-void subsets(vector<vector<int>> &result, vector<int> &subset, int index, vector<int> &nums) {
-    if(index == nums.size()){
-        result.push_back(subset);
+// -------------------------------------------------- String - Print unique subsets --------------------------------------------------
+void subsets(string input, string output, vector<string> &allSubSets) {
+    if(input.empty()){
+        allSubSets.push_back(output);
         return;
     }
     // Not Pick
-    subsets(result, subset, index+1, nums);
+    string op1 = output;
+    string op2 = output;
     // Pick
-    subset.push_back(nums[index]);
-    subsets(result, subset, index+1, nums);
-    subset.pop_back();
+    op2.push_back(input[0]);
+    input.erase(input.begin());
+    subsets(input, op1, allSubSets);
+    subsets(input, op2, allSubSets);
+    return;
 }
 
-vector<vector<int>> subsets(vector<int>& nums) {
-    vector<vector<int>> result;
-    vector<int> subset;
-    subsets(result, subset, 0, nums);
-    return result;
+vector<string> findSubSets(string &input) {
+    vector<string> allSubSets;
+    string output = "";
+    subsets(input, output, allSubSets);
+    unordered_map<string, int> mp;
+    vector<string> uniqueSubSets;
+    for(auto set : allSubSets){
+        if(mp.find(set) == mp.end()){
+            mp.insert({set, 1});
+            uniqueSubSets.push_back(set);
+        }
+    }
+    for(auto set : uniqueSubSets){
+        cout << set << endl;
+    }
+    return uniqueSubSets;
 }
 
 int main(){
-    vector<int> nums = {1, 2, 3};
-    vector<vector<int>> result = subsets(nums);
-    for (auto it = result.begin(); it != result.end(); ++it) {
-        cout << "{";
-        for (auto jt = it->begin(); jt != it->end(); ++jt) {
-            cout << *jt;
-            if (next(jt) != it->end())
-                cout << ", ";
-        }
-        cout << "}" << endl;
-    }
+    string input = "aab";
+    vector<string> subsets = findSubSets(input);
     return 0;
 }
