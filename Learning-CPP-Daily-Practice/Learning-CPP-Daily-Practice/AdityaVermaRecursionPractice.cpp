@@ -1,43 +1,35 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- String - Print unique subsets --------------------------------------------------
-void subsets(string input, string output, vector<string> &allSubSets) {
+// -------------------------------------------------- String permutation with spaces --------------------------------------------------
+void stringPermutationWithSpaces(string input, string output) {
     if(input.empty()){
-        allSubSets.push_back(output);
+        cout << output << endl;
         return;
     }
-    // Not Pick
-    string op1 = output;
-    string op2 = output;
-    // Pick
-    op2.push_back(input[0]);
-    input.erase(input.begin());
-    subsets(input, op1, allSubSets);
-    subsets(input, op2, allSubSets);
-    return;
-}
-
-vector<string> findSubSets(string &input) {
-    vector<string> allSubSets;
-    string output = "";
-    subsets(input, output, allSubSets);
-    unordered_map<string, int> mp;
-    vector<string> uniqueSubSets;
-    for(auto set : allSubSets){
-        if(mp.find(set) == mp.end()){
-            mp.insert({set, 1});
-            uniqueSubSets.push_back(set);
-        }
+    // First character should always without space
+    if(output.empty()){
+        output = input[0];
+        input.erase(input.begin());
+        stringPermutationWithSpaces(input, output);
     }
-    for(auto set : uniqueSubSets){
-        cout << set << endl;
+    else{
+        // Without Space
+        string op1 = output;
+        op1.push_back(input[0]);
+        // With Space
+        string op2 = output;
+        op2.push_back('_');
+        op2.push_back(input[0]);
+        input.erase(input.begin());
+        stringPermutationWithSpaces(input, op1);
+        stringPermutationWithSpaces(input, op2);
     }
-    return uniqueSubSets;
 }
 
 int main(){
-    string input = "aab";
-    vector<string> subsets = findSubSets(input);
+    string input = "ABC";
+    string output = "";
+    stringPermutationWithSpaces(input, output);
     return 0;
 }
