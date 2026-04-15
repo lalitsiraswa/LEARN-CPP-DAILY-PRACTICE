@@ -1,35 +1,83 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- String permutation with spaces --------------------------------------------------
-void stringPermutationWithSpaces(string input, string output) {
+// -------------------------------------------------- 784. Letter Case Permutation --------------------------------------------------
+void stringPermutationWithCaseChange01(string input, string output, vector<string> &result) {
     if(input.empty()){
-        cout << output << endl;
+        result.push_back(output);
         return;
     }
-    // First character should always without space
-    if(output.empty()){
-        output = input[0];
+    char ip = input[0];
+    string op1 = output;
+    string op2 = output;
+    // Capital Character
+    if(ip >= 65 && ip <= 90){
+        // No case change
+        op1.push_back(ip);
+        // Change case
+        op2.push_back(ip + 32);
         input.erase(input.begin());
-        stringPermutationWithSpaces(input, output);
+        stringPermutationWithCaseChange01(input, op1, result);
+        stringPermutationWithCaseChange01(input, op2, result);
     }
-    else{
-        // Without Space
-        string op1 = output;
-        op1.push_back(input[0]);
-        // With Space
-        string op2 = output;
-        op2.push_back('_');
-        op2.push_back(input[0]);
+    // Small Character
+    else if(ip >= 97 &&ip <= 122){
+        // No case change
+        op1.push_back(ip);
+        // Change case
+        op2.push_back(ip - 32);
         input.erase(input.begin());
-        stringPermutationWithSpaces(input, op1);
-        stringPermutationWithSpaces(input, op2);
+        stringPermutationWithCaseChange01(input, op1, result);
+        stringPermutationWithCaseChange01(input, op2, result);
+    }
+    // Numerical
+    else{
+        // No case change
+        op1.push_back(ip);
+        input.erase(input.begin());
+        stringPermutationWithCaseChange01(input, op1, result);
     }
 }
 
-int main(){
-    string input = "ABC";
+void stringPermutationWithCaseChange02(string input, string output, vector<string> &result) {
+    if(input.empty()){
+        result.push_back(output);
+        return;
+    }
+    char ip = input[0];
+    string op1 = output;
+    string op2 = output;
+    // Check Digit
+    if(ip >= 48 && ip <= 57){
+        // No case change
+        op1.push_back(ip);
+        input.erase(input.begin());
+        stringPermutationWithCaseChange02(input, op1, result);
+    }
+    else {
+        // Lowercase Scenario
+        op1.push_back(tolower(ip));
+        // Uppercase Scenario
+        op2.push_back(toupper(ip));
+        input.erase(input.begin());
+        stringPermutationWithCaseChange02(input, op1, result);
+        stringPermutationWithCaseChange02(input, op2, result);
+    }
+}
+
+vector<string> letterCasePermutation(string s) {
+    vector<string> result;
     string output = "";
-    stringPermutationWithSpaces(input, output);
+    // stringPermutationWithCaseChange01(s, output, result);
+    stringPermutationWithCaseChange02(s, output, result);
+    return result;
+}
+
+int main(){
+    string s = "aBc";
+    vector<string> result = letterCasePermutation(s);
+    for(auto item : result){
+        cout << item << endl;
+    }
     return 0;
 }
