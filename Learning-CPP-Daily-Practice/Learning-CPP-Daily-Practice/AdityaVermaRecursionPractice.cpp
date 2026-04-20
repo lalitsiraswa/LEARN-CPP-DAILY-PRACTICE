@@ -1,35 +1,36 @@
 #include <iostream>
 using namespace std;
 
-// -------------------------------------------------- 22. Generate Parentheses --------------------------------------------------
-void generateParenthesis(int openParenthesisCount, int closeParenthesisCount, string &temp, vector<string> &result) {
-    if(openParenthesisCount == 0 && closeParenthesisCount == 0){
-        result.push_back(temp);
+// -------------------------------------------------- Print N-bit binary numbers having more 1’s than or equal to 0’s for any prefix --------------------------------------------------
+
+void NBitBinary(int n, int onesCount, int zerosCount, string &bitBinary, vector<string> &bitBinaries) {
+    if(n == 0){
+        bitBinaries.push_back(bitBinary);
         return;
     }
-    if(openParenthesisCount != 0){
-        temp.push_back('(');
-        generateParenthesis(openParenthesisCount - 1, closeParenthesisCount, temp, result);
-        temp.pop_back();
-    }
-    if(openParenthesisCount < closeParenthesisCount){
-        temp.push_back(')');
-        generateParenthesis(openParenthesisCount, closeParenthesisCount - 1, temp, result);
-        temp.pop_back();
+    bitBinary.push_back('1');
+    NBitBinary(n - 1, onesCount + 1, zerosCount, bitBinary, bitBinaries);
+    bitBinary.pop_back();
+    if(onesCount > zerosCount){
+        bitBinary.push_back('0');
+        NBitBinary(n - 1, onesCount, zerosCount + 1, bitBinary, bitBinaries);
+        bitBinary.pop_back();
     }
 }
 
-vector<string> generateParenthesis(int n) {
-    vector<string> result;
-    string temp;
-    generateParenthesis(n, n, temp, result);
-    for(auto item : result){
+vector<string> NBitBinary(int n) {
+    vector<string> bitBinaries;
+    string bitBinary;
+    int onesCount = 0;
+    int zerosCount = 0;
+    NBitBinary(n, onesCount, zerosCount, bitBinary, bitBinaries);
+    for(auto item : bitBinaries){
         cout << item << endl;
     }
-    return result;
+    return bitBinaries;
 }
 
 int main(){
-    generateParenthesis(2);
+    NBitBinary(3);
     return 0;
 }
