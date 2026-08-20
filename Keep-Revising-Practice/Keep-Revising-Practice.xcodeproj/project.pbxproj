@@ -26,6 +26,7 @@
 		FBCADA072F71A88E00F69E5A /* Exceptions for "Keep-Revising-Practice" folder in "Keep-Revising-Practice" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"AdityaVermaRecursionPractice 2.cpp",
 				AdityaVermaRecursionPractice.cpp,
 			);
 			target = FB81518F2F6BCEDA007ED97F /* Keep-Revising-Practice */;
