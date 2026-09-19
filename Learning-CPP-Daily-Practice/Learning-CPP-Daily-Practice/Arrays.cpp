@@ -109,3 +109,81 @@ void setZeroes(vector<vector<int>>& matrix) {
 //    }
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+
+// 118. Pascal's Triangle
+vector<vector<int>> generate(int numRows) {
+    vector<vector<int>> pascalTriangle;
+    for(int row = 0; row < numRows; row++){
+        vector<int> singleRow;
+        for(int column = 0; column <= row; column++){
+            if(column == 0 || column == row){
+                singleRow.push_back(1);
+            }
+            else{
+                singleRow.push_back(pascalTriangle[row-1][column-1] + pascalTriangle[row-1][column]);
+            }
+        }
+        pascalTriangle.push_back(singleRow);
+    }
+    return pascalTriangle;
+}
+
+//int main(){
+//    int numRows = 6;
+//    vector<vector<int>> pascalTriangle = generate(numRows);
+//    for(vector row : pascalTriangle){
+//        for(int num : row){
+//            cout << num << " ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------
+long long nCr(int n, int r){
+    long long result = 1;
+    for(int i = 0; i < r; i++){
+        result = result * (n - i);
+        result = result / (i + 1);
+    }
+    return result;
+}
+
+vector<int> generateRow(int row){
+    vector<int> resultRow;
+    long long result = 1;
+    resultRow.push_back(result);
+    for(int column = 0; column < row; column++){
+        result = result * (row - column);
+        result = result / (column + 1);
+        resultRow.push_back(result);
+    }
+    return resultRow;
+}
+
+vector<vector<int>> generatePascalTriangle(int numRows) {
+    vector<vector<int>> pascalTriangle;
+    for(int row = 0; row < numRows; row++){
+        pascalTriangle.push_back(generateRow(row));
+    }
+    return pascalTriangle;
+}
+int main(){
+//    vector<int> resultRow = generateRow(3);
+//    for(int item : resultRow){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+    
+    vector<vector<int>> pascalTriangle = generatePascalTriangle(6);
+    for(vector<int> row : pascalTriangle){
+        for(int item : row){
+            cout << item << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
