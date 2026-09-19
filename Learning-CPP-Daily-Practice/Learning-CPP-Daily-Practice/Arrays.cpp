@@ -171,19 +171,21 @@ vector<vector<int>> generatePascalTriangle(int numRows) {
     }
     return pascalTriangle;
 }
-int main(){
-//    vector<int> resultRow = generateRow(3);
-//    for(int item : resultRow){
-//        cout << item << " ";
+//int main(){
+////    vector<int> resultRow = generateRow(3);
+////    for(int item : resultRow){
+////        cout << item << " ";
+////    }
+////    cout << endl;
+//    
+//    vector<vector<int>> pascalTriangle = generatePascalTriangle(6);
+//    for(vector<int> row : pascalTriangle){
+//        for(int item : row){
+//            cout << item << " ";
+//        }
+//        cout << endl;
 //    }
-//    cout << endl;
-    
-    vector<vector<int>> pascalTriangle = generatePascalTriangle(6);
-    for(vector<int> row : pascalTriangle){
-        for(int item : row){
-            cout << item << " ";
-        }
-        cout << endl;
-    }
-    return 0;
-}
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
