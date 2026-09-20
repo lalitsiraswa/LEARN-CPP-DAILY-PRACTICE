@@ -399,3 +399,58 @@ void printMaxSubArrayTuf(vector<int>& nums) {
 //    printMaxSubArrayTuf(nums);
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+// 121. Best Time to Buy and Sell Stock
+// Time Limit Exceeded
+int maxProfit(vector<int>& prices) {
+    int maxProfit = INT_MIN;
+    int n = prices.size();
+    for(int i = 0; i < n; i++){
+        int currProfit = INT_MIN;
+        for(int j = i + 1; j < n; j++){
+            if(prices[j] > prices[i]){
+                currProfit = prices[j] - prices[i];
+                maxProfit = max(currProfit, maxProfit);
+            }
+        }
+    }
+    return maxProfit == INT_MIN ? 0 : maxProfit;
+}
+
+int maxProfitOptimize(vector<int>& prices) {
+    int maxProfit = 0;
+    int n = prices.size();
+    int buyingPrice = prices[0];
+    int sellingPrice = prices[0];
+    for(int i = 1; i < n; i++){
+        if(prices[i] < buyingPrice){
+            buyingPrice = prices[i];
+            sellingPrice = prices[i];
+        }
+        if(prices[i] > sellingPrice){
+            sellingPrice = prices[i];
+        }
+        maxProfit = max(maxProfit, sellingPrice - buyingPrice);
+    }
+    return maxProfit;
+}
+
+int maxProfitTuf(vector<int>& prices) {
+    int maxProfit = 0;
+    int minPrice = prices[0];
+    for (int i = 1; i < prices.size(); i++)
+    {
+        int currProfit = prices[i] - minPrice;
+        maxProfit = max(maxProfit, currProfit);
+        minPrice = min(minPrice, prices[i]);
+    }
+    return maxProfit;
+}
+
+//int main(){
+//    vector<int> prices = {7, 1, 5, 3, 6, 4};
+//    cout << maxProfit(prices) << endl;
+//    cout << maxProfitOptimize(prices) << endl;
+//    return 0;
+//}
