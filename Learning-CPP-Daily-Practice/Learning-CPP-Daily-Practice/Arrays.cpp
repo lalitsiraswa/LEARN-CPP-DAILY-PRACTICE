@@ -189,3 +189,105 @@ vector<vector<int>> generatePascalTriangle(int numRows) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 31. Next Permutation
+void nextPermutation(vector<int>& nums) {
+    int n = nums.size();
+
+    // Step 1:
+    // Start from the second-last element and move from RIGHT to LEFT.
+    // We are looking for the first position where:
+    //
+    //      nums[i] < nums[i + 1]
+    //
+    // This position is called the "pivot".
+    int pivotIndex = n - 2;
+
+    while (pivotIndex >= 0 &&
+           nums[pivotIndex] >= nums[pivotIndex + 1]) {
+
+        pivotIndex--;
+    }
+
+    // Step 2:
+    // If we could not find a pivot, the entire array is in descending order.
+    //
+    // Example:
+    //      [3, 2, 1]
+    //
+    // This is already the LARGEST permutation.
+    // Therefore, the next permutation is the SMALLEST permutation.
+    //
+    // So simply reverse the entire array:
+    //      [3, 2, 1] -> [1, 2, 3]
+    if (pivotIndex == -1) {
+        reverse(nums.begin(), nums.end());
+        return;
+    }
+
+    // Step 3:
+    // We found the pivot.
+    //
+    // Now we need to find the smallest number that is GREATER
+    // than the pivot.
+    //
+    // Start from the RIGHT because the elements after the pivot
+    // are in descending order.
+    //
+    // Example:
+    //      [1, 3, 5, 4, 2]
+    //          ^
+    //        pivot = 3
+    //
+    // Elements after pivot: [5, 4, 2]
+    //
+    // Starting from the right:
+    //      2 > 3 ? No
+    //      4 > 3 ? Yes -> choose 4
+    int targetIndex = n - 1;
+
+    while (nums[targetIndex] <= nums[pivotIndex]) {
+        targetIndex--;
+    }
+
+    // Step 4:
+    // Swap the pivot with the next larger element.
+    //
+    // Example:
+    //      [1, 3, 5, 4, 2]
+    //          ^     ^
+    //          3 <-> 4
+    //
+    // Result:
+    //      [1, 4, 5, 3, 2]
+    swap(nums[pivotIndex], nums[targetIndex]);
+
+    // Step 5:
+    // Everything after the pivot is currently in DESCENDING order.
+    //
+    // We need the SMALLEST possible arrangement after the pivot
+    // to make this the immediate next permutation.
+    //
+    // Therefore, reverse the suffix.
+    //
+    // Example:
+    //      [1, 4, 5, 3, 2]
+    //             -------
+    //             suffix
+    //
+    //      [5, 3, 2] -> [2, 3, 5]
+    //
+    // Final:
+    //      [1, 4, 2, 3, 5]
+    reverse(nums.begin() + pivotIndex + 1, nums.end());
+}
+
+//int main(){
+////    vector<int> nums = {3, 2, 1};
+//    vector<int> nums = {1, 5, 1};
+//    nextPermutation(nums);
+//    for(int item : nums){
+//        cout << item;
+//    }
+//    cout << endl;
+//    return 0;
+//}
