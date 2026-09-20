@@ -291,3 +291,111 @@ void nextPermutation(vector<int>& nums) {
 //    cout << endl;
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+// 53. Maximum Subarray
+// Time Limit Exceeded
+int maxSubArrayBruteForce(vector<int>& nums) {
+    int maxSum = INT_MIN;
+    int n = nums.size();
+    for(int i = 0; i < n; i++){
+        int totalSum = 0;
+        for(int j = i; j < n; j++){
+            totalSum += nums[j];
+            maxSum = max(totalSum, maxSum);
+        }
+    }
+    return maxSum;
+}
+
+int maxSubArray(vector<int>& nums) {
+    int maxSum = INT_MIN;
+    int totalSum = 0;
+    int n = nums.size();
+    for(int i = 0; i < n; i++){
+        totalSum += nums[i];
+        if(nums[i] > totalSum){
+            totalSum = nums[i];
+        }
+        maxSum = max(maxSum, totalSum);
+    }
+    return maxSum;
+}
+
+int maxSubArrayTuf(vector<int>& nums) {
+    int maxSum = INT_MIN;
+    int totalSum = 0;
+    int n = nums.size();
+    for(int i = 0; i < n; i++){
+        totalSum += nums[i];
+        if(totalSum > maxSum){
+            maxSum = totalSum;
+        }
+        if(totalSum < 0){
+            totalSum = 0;
+        }
+    }
+    return maxSum;
+}
+
+// Print subarray with maximum subarray sum (extended version of above problem)
+void printMaxSubArray(vector<int>& nums) {
+    int startIndex = 0;
+    int endIndex = 0;
+    int maxSum = INT_MIN;
+    int totalSum = 0;
+    int start = 0;
+    for (int i = 0; i < nums.size(); i++) {
+        totalSum += nums[i];
+        if (nums[i] > totalSum) {
+            totalSum = nums[i];
+            start = i;
+        }
+        if (totalSum > maxSum) {
+            maxSum = totalSum;
+            startIndex = start;
+            endIndex = i;
+        }
+    }
+    for (int i = startIndex; i <= endIndex; i++) {
+        cout << nums[i] << " ";
+    }
+    cout << endl;
+}
+
+void printMaxSubArrayTuf(vector<int>& nums) {
+    int startIndex = 0;
+    int endIndex = 0;
+    int maxSum = INT_MIN;
+    int totalSum = 0;
+    int n = nums.size();
+    int start = 0;
+    for(int i = 0; i < n; i++){
+        if(totalSum == 0){
+            start = i;
+        }
+        totalSum += nums[i];
+        if(totalSum > maxSum){
+            maxSum = totalSum;
+            startIndex = start;
+            endIndex = i;
+        }
+        if(totalSum <= 0){
+            totalSum = 0;
+        }
+    }
+    for (int i = startIndex; i <= endIndex; i++) {
+        cout << nums[i] << " ";
+    }
+    cout << endl;
+}
+//int main(){
+////    vector<int> nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+//    vector<int> nums = {5, -5, 4, -1, 3, -7, 2, 1};
+//    cout << maxSubArrayBruteForce(nums) << endl;
+//    cout << maxSubArray(nums) << endl;
+//    cout << maxSubArrayTuf(nums) << endl;
+//    printMaxSubArray(nums);
+//    printMaxSubArrayTuf(nums);
+//    return 0;
+//}
