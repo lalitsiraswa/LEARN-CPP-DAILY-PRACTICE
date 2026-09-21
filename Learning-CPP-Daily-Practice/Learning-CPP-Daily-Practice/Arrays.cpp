@@ -454,3 +454,51 @@ int maxProfitTuf(vector<int>& prices) {
 //    cout << maxProfitOptimize(prices) << endl;
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+// 169. Majority Element
+int majorityElement(vector<int>& nums) {
+    int n = nums.size();
+    int result = 0;
+    unordered_map<int, int> frequency;
+    for(int item : nums){
+        frequency[item]++;
+    }
+    for(auto it = frequency.begin(); it != frequency.end(); it++){
+        if(it->second > n/2){
+            result = it->first;
+            break;
+        }
+    }
+    return result;
+}
+
+int majorityElement2(vector<int>& nums) {
+    int candidate;
+    int votes = 0;
+    for(int i = 0; i < nums.size(); i++){
+        if(votes == 0){
+            candidate = nums[i];
+        }
+        if(nums[i] == candidate){
+            votes++;
+        }
+        else{
+            votes--;
+        }
+    }
+    int count = 0;
+    for(auto item : nums){
+        if(candidate == item){
+            count++;
+        }
+    }
+    return count > nums.size()/2 ? candidate : -1;
+}
+
+//int main(){
+//    vector<int> nums = {3, 2, 3};
+//    cout << majorityElement(nums) << endl;
+//    cout << majorityElement2(nums) << endl;
+//    return 0;
+//}
