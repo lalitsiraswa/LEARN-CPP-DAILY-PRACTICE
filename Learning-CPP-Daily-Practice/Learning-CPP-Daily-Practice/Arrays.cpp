@@ -502,3 +502,75 @@ int majorityElement2(vector<int>& nums) {
 //    cout << majorityElement2(nums) << endl;
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+// 229. Majority Element II
+vector<int> majorityElement11(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> result;
+    unordered_map<int, int> frequencies;
+    for(auto item : nums){
+        frequencies[item]++;
+    }
+    for(auto it = frequencies.begin(); it != frequencies.end(); it++){
+        if(it->second > n/3){
+            result.push_back(it->first);
+        }
+    }
+    return result;
+}
+
+vector<int> majorityElement112(vector<int>& nums) {
+    int candidate1;
+    int candidate2;
+    int vote1 = 0;
+    int vote2 = 0;
+    for(int i = 0; i < nums.size(); i++){
+        if(vote1 == 0 && nums[i] != candidate2){
+            candidate1 = nums[i];
+        }
+        if(vote2 == 0 && nums[i] != candidate1){
+            candidate2 = nums[i];
+        }
+        if(nums[i] == candidate1){
+            vote1++;
+        }
+        else if(nums[i] == candidate2){
+            vote2++;
+        }
+        else{
+            vote1--;
+            vote2--;
+        }
+    }
+    vector<int> result;
+    int n = nums.size();
+    int count1 = 0;
+    int count2 = 0;
+    for(int i = 0; i < n; i++){
+        if(candidate1 == nums[i]){
+            count1++;
+        }
+        if(candidate2 == nums[i]){
+            count2++;
+        }
+    }
+    if(count1 > n/3){
+        result.push_back(candidate1);
+    }
+    if(count2 > n/3 && candidate1 != candidate2){
+        result.push_back(candidate2);
+    }
+    return result;
+}
+
+//int main(){
+//    vector<int> nums = {0, 0, 0};
+////    vector<int> nums = {2, 2, 1, 2, 1, 1, 3, 3};
+//    vector<int> result = majorityElement112(nums);
+//    for(auto item : result){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    return 0;
+//}
