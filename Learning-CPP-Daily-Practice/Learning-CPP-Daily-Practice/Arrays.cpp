@@ -654,3 +654,38 @@ int maxProduct3(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 75. Sort Colors
+void sortColors(vector<int>& nums) {
+    int n = nums.size();
+    int left = 0;
+    int right = n - 1;
+    int index = 0;
+    while(index <= right){
+        if(nums[index] == 0){
+            swap(nums[index], nums[left]);
+            left++;
+            index++;
+        }
+        else if(nums[index] == 2){
+            swap(nums[index], nums[right]);
+            right--;
+        }
+        else if(nums[index] == 1){
+            index++;
+        }
+    }
+}
+
+//int main(){
+//    vector<int> nums = {2, 0, 2, 1, 1, 0};
+//    sortColors(nums);
+//    for(auto item : nums){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+
