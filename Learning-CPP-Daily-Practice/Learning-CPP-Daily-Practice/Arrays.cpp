@@ -688,4 +688,30 @@ void sortColors(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 1. Two Sum
+vector<int> twoSum(vector<int>& nums, int target) {
+    unordered_map<int, int> ump;
+    unordered_map<int, int>::iterator itr;
+    int n = nums.size();
+    for(int i = 0; i < n; i++){
+        itr = ump.find(target - nums[i]);
+        if(itr != ump.end()){
+            nums.clear();
+            nums.push_back(itr->second);
+            nums.push_back(i);
+            break;
+        }
+        else
+            ump[nums[i]] = i;
+    }
+    return nums;
+}
 
+//int main(){
+//    vector<int> nums = {3,3};
+//    vector<int> result = twoSum(nums, 6);
+//    cout << result[0] << ", " << result[1] << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
