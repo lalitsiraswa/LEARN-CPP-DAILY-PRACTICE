@@ -574,3 +574,83 @@ vector<int> majorityElement112(vector<int>& nums) {
 //    cout << endl;
 //    return 0;
 //}
+
+//-------------------------------------------//-------------------------------------------//
+// 152. Maximum Product Subarray
+int maxProduct(vector<int>& nums) {
+    int maximumProduct = INT_MIN;
+    int currentProduct = 1;
+    int n = nums.size();
+    vector<int> prefixProduct(n);
+    vector<int> suffixProduct(n);
+    for(int i = 0; i < n; i++){
+        currentProduct *= nums[i];
+        prefixProduct[i] = currentProduct;
+        if(currentProduct == 0){
+            currentProduct = 1;
+        }
+    }
+    currentProduct = 1;
+    for(int i = n - 1; i >= 0; i--){
+        currentProduct *= nums[i];
+        suffixProduct[i] = currentProduct;
+        if(currentProduct == 0){
+            currentProduct = 1;
+        }
+    }
+    for(int i = 0; i < n; i++){
+        maximumProduct = max(maximumProduct, max(prefixProduct[i], suffixProduct[i]));
+    }
+    return maximumProduct;
+}
+
+int maxProduct2(vector<int>& nums) {
+    int maximumProduct = INT_MIN;
+    int currentProduct = 1;
+    int n = nums.size();
+    vector<int> helper(n);
+    for(int i = n - 1; i >= 0; i--){
+        currentProduct *= nums[i];
+        helper[i] = currentProduct;
+        if(currentProduct == 0){
+            currentProduct = 1;
+        }
+    }
+    currentProduct = 1;
+    for(int i = 0; i < n; i++){
+        currentProduct *= nums[i];
+        maximumProduct = max(max(currentProduct, helper[i]), maximumProduct);
+        if(currentProduct == 0){
+            currentProduct = 1;
+        }
+    }
+    return maximumProduct;
+}
+
+int maxProduct3(vector<int>& nums) {
+    int maximumProduct = INT_MIN;
+    int prefixMaxProduct = 1;
+    int suffixMaxProduct = 1;
+    int n = nums.size();
+    for(int i = 0; i < n; i++){
+        prefixMaxProduct *= nums[i];
+        suffixMaxProduct *= nums[n - i - 1];
+        maximumProduct = max(maximumProduct, max(prefixMaxProduct, suffixMaxProduct));
+        if(prefixMaxProduct == 0){
+            prefixMaxProduct = 1;
+        }
+        if(suffixMaxProduct == 0){
+            suffixMaxProduct = 1;
+        }
+    }
+    return maximumProduct;
+}
+
+//int main(){
+////    vector<int> nums = {2, 3, 0, 4};
+//    vector<int> nums = {-3, 0, 1, -2};
+//    cout << maxProduct3(nums) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
