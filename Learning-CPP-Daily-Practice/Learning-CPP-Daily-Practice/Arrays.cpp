@@ -844,3 +844,86 @@ vector<vector<int>> threeSum4(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 88. Merge Sorted Array
+void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+    vector<int> ans;
+    int mIndex = 0;
+    int nIndex = 0;
+    // Merge while both arrays have elements
+    while (mIndex < m && nIndex < n) {
+        if (nums1[mIndex] <= nums2[nIndex]) {
+            ans.push_back(nums1[mIndex]);
+            mIndex++;
+        }
+        else {
+            ans.push_back(nums2[nIndex]);
+            nIndex++;
+        }
+    }
+    // Remaining elements from nums1
+    while (mIndex < m) {
+        ans.push_back(nums1[mIndex]);
+        mIndex++;
+    }
+    // Remaining elements from nums2
+    while (nIndex < n) {
+        ans.push_back(nums2[nIndex]);
+        nIndex++;
+    }
+    nums1 = ans;
+}
+
+void merge2(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+    // index -> position where we will place the next largest element
+    // nums1 has total size m + n
+    int index = (m + n) - 1;
+    // mIndex -> last valid element of nums1
+    // We ignore the extra 0s at the end of nums1
+    int mIndex = m - 1;
+    // nIndex -> last element of nums2
+    int nIndex = n - 1;
+    // Compare elements from the end of both arrays.
+    // We start from the back so that we don't overwrite
+    // the valid elements already present in nums1.
+    while (mIndex >= 0 && nIndex >= 0) {
+        // If the current element of nums1 is larger,
+        // put it at the current 'index' position.
+        if (nums1[mIndex] >= nums2[nIndex]) {
+            nums1[index] = nums1[mIndex];
+            // Move to the previous element in nums1
+            mIndex--;
+        }
+        else {
+            // nums2 element is larger,
+            // so put it at the current 'index' position.
+            nums1[index] = nums2[nIndex];
+            // Move to the previous element in nums2
+            nIndex--;
+        }
+        // Move to the previous empty position in nums1
+        index--;
+    }
+    // If some elements of nums2 are still remaining,
+    // copy them into nums1.
+    //
+    // We don't need to copy remaining nums1 elements
+    // because they are already in their correct positions.
+    while (nIndex >= 0) {
+        nums1[index] = nums2[nIndex];
+        nIndex--;
+        index--;
+    }
+}
+
+//int main(){
+//    vector<int> nums1 = {1, 2, 3, 0, 0, 0};
+//    vector<int> nums2 = {2, 5, 6};
+//    merge2(nums1, 3, nums2, 3);
+//    for(auto item : nums1){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
