@@ -833,12 +833,14 @@ vector<vector<int>> threeSum4(vector<int>& nums) {
     return answer;      //Return the answer vector.
 }
 
-int main(){
-//    vector<int> nums = {-1, 0, 1, 2, -1, -4};
-    vector<int> nums = {-2, -2, -2, -1, -1, -1, 0, 0, 0, 2, 2, 2, 2};
-    vector<vector<int>> result = threeSum4(nums);
-    for(vector<int> item : result){
-        cout << item[0] << ", " << item[1] << ", " << item[2] << endl;
-    }
-    return 0;
-}
+//int main(){
+////    vector<int> nums = {-1, 0, 1, 2, -1, -4};
+//    vector<int> nums = {-2, -2, -2, -1, -1, -1, 0, 0, 0, 2, 2, 2, 2};
+//    vector<vector<int>> result = threeSum4(nums);
+//    for(vector<int> item : result){
+//        cout << item[0] << ", " << item[1] << ", " << item[2] << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
