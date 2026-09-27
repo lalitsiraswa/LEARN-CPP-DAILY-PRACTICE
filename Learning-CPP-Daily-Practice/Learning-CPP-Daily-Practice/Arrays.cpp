@@ -927,3 +927,223 @@ void merge2(vector<int>& nums1, int m, vector<int>& nums2, int n) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 42. Trapping Rain Water
+int trap(vector<int>& height) {
+    // Number of bars
+    int n = height.size();
+    // prefixMaxCapacity[i] stores the maximum height
+    // of a bar from index 0 to i.
+    //
+    // Example:
+    // height = [4, 2, 0, 3]
+    // prefix = [4, 4, 4, 4]
+    vector<int> prefixMaxCapacity(n);
+    // suffixMaxCapacity[i] stores the maximum height
+    // of a bar from index i to n - 1.
+    //
+    // Example:
+    // height = [4, 2, 0, 3]
+    // suffix = [4, 3, 3, 3]
+    vector<int> suffixMaxCapacity(n);
+    // For the first element, there is no bar on its left.
+    // So the maximum height from the left up to index 0
+    // is simply height[0].
+    prefixMaxCapacity[0] = height[0];
+    // Similarly, for the last element, there is no bar
+    // on its right.
+    suffixMaxCapacity[n - 1] = height[n - 1];
+    // Build prefix maximum and suffix maximum arrays.
+    //
+    // prefixMaxCapacity:
+    // Find the tallest bar from the LEFT up to current index.
+    //
+    // suffixMaxCapacity:
+    // Find the tallest bar from the RIGHT starting from
+    // the current index.
+    for (int index = 1; index < n; index++) {
+        // Maximum height on the left side including
+        // the current index.
+        prefixMaxCapacity[index] = max(height[index], prefixMaxCapacity[index - 1]);
+        // Maximum height on the right side including
+        // the current index.
+        //
+        // n - index - 1 moves from right to left.
+        suffixMaxCapacity[n - index - 1] =
+            max(
+                height[n - index - 1],
+                suffixMaxCapacity[n - index]
+            );
+    }
+    // Stores the total amount of water trapped.
+    int maxWaterTrap = 0;
+    // Calculate the water trapped at every index.
+    for (int i = 0; i < n; i++) {
+        // The amount of water that can be stored at index i
+        // depends on the shorter of:
+        //
+        // 1. Tallest bar on the left
+        // 2. Tallest bar on the right
+        //
+        // Water level = min(leftMax, rightMax)
+        //
+        // Water trapped = water level - current bar height
+        maxWaterTrap += min(prefixMaxCapacity[i], suffixMaxCapacity[i]) - height[i];
+    }
+    // Return the total amount of trapped water.
+    return maxWaterTrap;
+}
+
+int trap2(vector<int>& height) {
+    // Number of bars
+    int n = height.size();
+    // suffixMaxCapacity[i] stores the maximum height
+    // from index i to the end of the array.
+    //
+    // Example:
+    // height = [4, 2, 0, 3]
+    //
+    // suffixMaxCapacity = [4, 3, 3, 3]
+    vector<int> suffixMaxCapacity(n);
+    // For the last element, the maximum height
+    // from itself to the end is simply height[n - 1].
+    suffixMaxCapacity[n - 1] = height[n - 1];
+    // Build the suffix maximum array from RIGHT to LEFT.
+    //
+    // At every index i:
+    // suffixMaxCapacity[i] =
+    // max(current height, maximum height on the right)
+    for (int i = n - 2; i >= 0; i--) {
+        suffixMaxCapacity[i] = max(height[i], suffixMaxCapacity[i + 1]);
+    }
+    // Stores the total amount of trapped water.
+    int maxWaterTrap = 0;
+    // Instead of creating a prefix maximum array,
+    // we maintain the maximum height seen so far
+    // using a single variable.
+    int prefixMaxCapacity = 0;
+    // Traverse the array from LEFT to RIGHT.
+    for (int i = 0; i < n; i++) {
+        // Update the maximum height seen from the LEFT.
+        //
+        // prefixMaxCapacity represents:
+        // tallest bar from index 0 to i.
+        prefixMaxCapacity = max(prefixMaxCapacity, height[i]);
+        // Water level at index i is determined by
+        // the shorter of the tallest bar on the left
+        // and the tallest bar on the right.
+        //
+        // Water trapped =
+        // min(leftMax, rightMax) - currentHeight
+        maxWaterTrap += min(prefixMaxCapacity, suffixMaxCapacity[i]) - height[i];
+    }
+    // Return the total amount of trapped water.
+    return maxWaterTrap;
+}
+
+int trap3(vector<int>& height) {
+    // Number of bars.
+    int n = height.size();
+    // Stores the total amount of trapped water.
+    int waterTrapped = 0;
+    // Two pointers:
+    // leftPointer starts from the LEFT side.
+    // rightPointer starts from the RIGHT side.
+    int leftPointer = 0, rightPointer = n - 1;
+    // leftMax stores the tallest bar seen so far
+    // from the LEFT side.
+    //
+    // rightMax stores the tallest bar seen so far
+    // from the RIGHT side.
+    int leftMax = 0, rightMax = 0;
+    // Process the array from BOTH ends.
+    //
+    // We continue until the two pointers meet.
+    while (leftPointer <= rightPointer)
+    {
+        // If the current LEFT bar is smaller than
+        // or equal to the current RIGHT bar,
+        // process the LEFT side.
+        //
+        // Why?
+        // Because the LEFT side is the limiting side here.
+        //
+        // The water level at leftPointer is guaranteed
+        // to be determined by leftMax.
+        if (height[leftPointer] <= height[rightPointer])
+        {
+            // If the current bar is taller than or equal
+            // to all bars seen so far from the LEFT,
+            // it becomes the new leftMax.
+            //
+            // Example:
+            // leftMax = 4
+            // height[leftPointer] = 6
+            //
+            // New leftMax = 6
+            if (leftMax <= height[leftPointer]){
+                leftMax = height[leftPointer];
+            }
+            // Otherwise, leftMax is taller than the
+            // current bar.
+            //
+            // Therefore, water can be trapped above
+            // the current bar.
+            //
+            // Water trapped =
+            // leftMax - currentHeight
+            else{
+                waterTrapped += leftMax - height[leftPointer];
+            }
+            // Move the LEFT pointer towards the center.
+            leftPointer++;
+        }
+        else
+        {
+            // Otherwise, the current RIGHT bar is smaller
+            // than the current LEFT bar.
+            //
+            // So we process the RIGHT side.
+            //
+            // The RIGHT side is the limiting side here.
+            // The water level can safely be determined
+            // using rightMax.
+            
+            // If the current bar is taller than or equal
+            // to all bars seen so far from the RIGHT,
+            // it becomes the new rightMax.
+            //
+            // Example:
+            // rightMax = 3
+            // height[rightPointer] = 5
+            //
+            // New rightMax = 5
+            if (rightMax <= height[rightPointer]){
+                rightMax = height[rightPointer];
+            }
+            // Otherwise, rightMax is taller than the
+            // current bar.
+            //
+            // Therefore, water can be trapped above
+            // the current bar.
+            //
+            // Water trapped =
+            // rightMax - currentHeight
+            else{
+                waterTrapped += rightMax - height[rightPointer];
+            }
+            // Move the RIGHT pointer towards the center.
+            rightPointer--;
+        }
+    }
+    // Return the total amount of trapped water.
+    return waterTrapped;
+}
+
+//int main(){
+////    vector<int> height = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
+//    vector<int> height = {4, 2, 0, 3, 2, 5};
+//    cout << trap3(height) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
