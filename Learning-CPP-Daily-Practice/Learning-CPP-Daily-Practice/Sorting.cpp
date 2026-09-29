@@ -19,10 +19,16 @@ void selectionSort(vector<int>& nums) {
 void bubbleSort(vector<int>& nums) {
     int n = nums.size();
     for(int i = 0; i < n - 1; i++){
+        int isAlreadySorted = 1;
         for(int j = 0; j < (n - 1) - i; j++){
             if(nums[j] > nums[j + 1]){
                 swap(nums[j], nums[j + 1]);
+                isAlreadySorted = 0;
             }
+        }
+        cout << "RUNNER : " << i + 1 << endl;
+        if(isAlreadySorted){
+            break;
         }
     }
 }
