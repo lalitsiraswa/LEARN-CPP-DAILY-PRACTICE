@@ -34,10 +34,31 @@ void bubbleSort(vector<int>& nums) {
 }
 
 //----------------------------------------------//----------------------------------------------//
+// Takes an element and place it in its right order.
+void insertionSort(vector<int>& nums) {
+    int n = nums.size();
+    int isAlreadySorted = 1;
+    for(int i = 1; i < n; i++){
+        int j = i;
+        while(j > 0 && nums[j] <= nums[j - 1]){
+            swap(nums[j], nums[j - 1]);
+            j--;
+            isAlreadySorted = 0;
+        }
+        cout << "RUNNER : " << i << endl;
+        if(isAlreadySorted){
+            break;
+        }
+    }
+}
+
+//----------------------------------------------//----------------------------------------------//
+
 int main(){
     vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 //    selectionSort(nums);
-    bubbleSort(nums);
+//    bubbleSort(nums);
+    insertionSort(nums);
     for(auto item : nums){
         cout << item << " ";
     }
