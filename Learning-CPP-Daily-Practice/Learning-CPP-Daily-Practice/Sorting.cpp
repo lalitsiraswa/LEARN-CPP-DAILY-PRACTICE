@@ -16,10 +16,22 @@ void selectionSort(vector<int>& nums) {
 }
 
 //----------------------------------------------//----------------------------------------------//
+void bubbleSort(vector<int>& nums) {
+    int n = nums.size();
+    for(int i = 0; i < n - 1; i++){
+        for(int j = 0; j < (n - 1) - i; j++){
+            if(nums[j] > nums[j + 1]){
+                swap(nums[j], nums[j + 1]);
+            }
+        }
+    }
+}
 
+//----------------------------------------------//----------------------------------------------//
 int main(){
     vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    selectionSort(nums);
+//    selectionSort(nums);
+    bubbleSort(nums);
     for(auto item : nums){
         cout << item << " ";
     }
