@@ -81,12 +81,105 @@ void insertionSort(vector<int>& nums) {
 }
 
 //----------------------------------------------//----------------------------------------------//
+// Merge two already sorted halves:
+//
+// Left half  = [low ... mid]
+// Right half = [mid+1 ... high]
+//
+// Example:
+// [2, 5, 8] + [1, 3, 7]
+//          ↓
+// [1, 2, 3, 5, 7, 8]
+void merge(vector<int>& arr, int low, int mid, int high) {
+    // Temporary array where we will build
+    // the sorted result of both halves.
+    vector<int> temp;
+    // Pointer for the left half.
+    int left = low;
+    // Pointer for the right half.
+    int right = mid + 1;
+    // Compare elements from both halves.
+    // Pick the smaller element and put it into temp.
+    while (left <= mid && right <= high) {
+        if (arr[left] <= arr[right]) {
+            // Left element is smaller,
+            // so add it to the sorted result.
+            temp.push_back(arr[left]);
+            // Move to the next element in the left half.
+            left++;
+        }
+        else {
+            // Right element is smaller,
+            // so add it to the sorted result.
+            temp.push_back(arr[right]);
+            // Move to the next element in the right half.
+            right++;
+        }
+    }
+    // If some elements are still left in the left half,
+    // add them to temp.
+    //
+    // We don't need to compare them because the remaining
+    // elements are already sorted.
+    while (left <= mid) {
+        temp.push_back(arr[left]);
+        left++;
+    }
+    // If some elements are still left in the right half,
+    // add them to temp.
+    while (right <= high) {
+        temp.push_back(arr[right]);
+        right++;
+    }
+    // Copy the sorted elements from temp back into
+    // the original array.
+    //
+    // temp starts at index 0, but arr starts at index 'low',
+    // therefore we use (i - low).
+    for (int i = low; i <= high; i++) {
+        arr[i] = temp[i - low];
+    }
+}
+
+// Merge Sort works in 3 steps:
+// 1. Divide the array into two halves.
+// 2. Recursively sort both halves.
+// 3. Merge the two sorted halves.
+void mergeSortHelper(vector<int>& arr, int low, int high) {
+    // Base case:
+    // If there is only one element (or no element),
+    // it is already sorted.
+    if (low >= high) {
+        return;
+    }
+    // Find the middle index so that we can divide
+    // the array into two halves.
+    int mid = (low + high) / 2;
+    // Sort the left half.
+    mergeSortHelper(arr, low, mid);
+    // Sort the right half.
+    mergeSortHelper(arr, mid + 1, high);
+    // Both halves are now sorted.
+    // Merge them into one sorted section.
+    merge(arr, low, mid, high);
+}
+
+// Main function to perform Merge Sort.
+void mergeSort(vector<int>& nums) {
+    // Find the size of the array.
+    int n = nums.size();
+    // Start Merge Sort on the entire array.
+    // low  = 0
+    // high = n - 1
+    mergeSortHelper(nums, 0, n - 1);
+}
 
 int main(){
     vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 //    selectionSort(nums);
 //    bubbleSort(nums);
-    insertionSort(nums);
+//    insertionSor t(nums);
+    mergeSort(nums);
     for(auto item : nums){
         cout << item << " ";
     }
