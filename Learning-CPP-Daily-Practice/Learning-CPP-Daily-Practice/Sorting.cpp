@@ -59,42 +59,24 @@ void bubbleSort(vector<int>& nums) {
 }
 
 //----------------------------------------------//----------------------------------------------//
-// Takes an element and place it in its right order.
+// Takes an element and places it in its correct position.
 void insertionSort(vector<int>& nums) {
     int n = nums.size();
     // Start from the 2nd element because the 1st element
     // is considered already sorted.
     for (int i = 1; i < n; i++) {
-        // Assume the array is already sorted.
-        // If we perform a swap, we know it wasn't sorted.
-        int isAlreadySorted = 1;
         // Start from the current element and move it
         // towards the left until it reaches its correct position.
         int j = i;
-        // Compare the current element with the element
-        // immediately before it.
-        //
-        // If the current element is smaller, swap them.
-        // Keep moving left until the correct position is found.
-        while (j > 0 && nums[j] <= nums[j - 1]) {
-            // Swap the elements because they are
-            // in the wrong order.
+        // Compare the current element with the element before it.
+        // If the current element is smaller, move it one position left.
+        while (j > 0 && nums[j] < nums[j - 1]) {
+            // Swap the elements because they are in the wrong order.
             swap(nums[j], nums[j - 1]);
-            // Move one position to the left and continue
-            // checking for the correct position.
+            // Move one position to the left.
             j--;
-            // A swap happened, so the array was not
-            // already sorted.
-            isAlreadySorted = 0;
         }
-
-        // Print the number of elements processed so far.
         cout << "RUNNER : " << i << endl;
-        // If no swap happened, the array is already sorted.
-        // No need to continue.
-        if (isAlreadySorted) {
-            break;
-        }
     }
 }
 
@@ -104,7 +86,7 @@ int main(){
     vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 //    selectionSort(nums);
 //    bubbleSort(nums);
-//    insertionSort(nums);
+    insertionSort(nums);
     for(auto item : nums){
         cout << item << " ";
     }
