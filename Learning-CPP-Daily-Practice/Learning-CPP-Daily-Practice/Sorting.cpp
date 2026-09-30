@@ -175,13 +175,110 @@ void mergeSort(vector<int>& nums) {
 }
 
 //----------------------------------------------//----------------------------------------------//
+// Partition the array around a pivot.
+//
+// After partitioning:
+// - All elements smaller than or equal to the pivot
+//   will be on the left side.
+// - All elements greater than the pivot
+//   will be on the right side.
+// - The pivot will be placed at its correct position.
+int partition(vector<int>& arr, int low, int high) {
+    // Choose a random index between low and high.
+    // Random pivot helps avoid consistently bad partitions
+    // for certain types of input.
+    int randomIndex = low + rand() % (high - low + 1);
+    // Move the randomly selected element to the beginning.
+    // We will use arr[low] as our pivot.
+    swap(arr[low], arr[randomIndex]);
+    // Select the first element as the pivot.
+    int pivot = arr[low];
+    // i moves from left to right looking for an element
+    // that is greater than the pivot.
+    int i = low;
+    // j moves from right to left looking for an element
+    // that is smaller than or equal to the pivot.
+    int j = high;
+    // Continue until the two pointers cross.
+    while (i < j) {
+        // Move i to the right while elements are
+        // already on the correct side of the pivot.
+        //
+        // Stop when:
+        // 1. We find an element greater than the pivot, or
+        // 2. i reaches the end of the current range.
+        while (arr[i] <= pivot && i <= high - 1) {
+            i++;
+        }
+        // Move j to the left while elements are
+        // already on the correct side of the pivot.
+        //
+        // Stop when:
+        // 1. We find an element smaller than or equal to the pivot, or
+        // 2. j reaches the beginning of the current range.
+        while (arr[j] > pivot && j >= low + 1) {
+            j--;
+        }
+        // At this point:
+        // arr[i] is greater than the pivot
+        // arr[j] is smaller than or equal to the pivot
+        //
+        // These two elements are on the wrong sides,
+        // so swap them.
+        if (i < j) {
+            swap(arr[i], arr[j]);
+        }
+    }
+    // i and j have crossed.
+    // j is now the correct position for the pivot.
+    //
+    // Move the pivot from arr[low] to arr[j].
+    swap(arr[low], arr[j]);
+
+    // Return the pivot's final position.
+    return j;
+}
+
+
+// Helper function to recursively perform Quick Sort.
+void quickSortHelper(vector<int>& arr, int low, int high) {
+    // If low >= high, there is only one element
+    // or no elements in this range.
+    // Such a range is already sorted.
+    if (low < high) {
+        // Partition the array and get the pivot's
+        // final/correct position.
+        int pIndex = partition(arr, low, high);
+        // Recursively sort the elements to the
+        // left of the pivot.
+        quickSortHelper(arr, low, pIndex - 1);
+        // Recursively sort the elements to the
+        // right of the pivot.
+        quickSortHelper(arr, pIndex + 1, high);
+    }
+}
+
+
+// Main function to perform Quick Sort.
+vector<int> quickSort(vector<int>& nums) {
+    // Get the size of the array.
+    int n = nums.size();
+    // Start Quick Sort on the entire array.
+    // low  = first index
+    // high = last index
+    quickSortHelper(nums, 0, n - 1);
+    // Return the sorted array.
+    return nums;
+}
 
 int main(){
-    vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+//    vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
 //    selectionSort(nums);
 //    bubbleSort(nums);
 //    insertionSor t(nums);
-    mergeSort(nums);
+//    mergeSort(nums);
+    quickSort(nums);
     for(auto item : nums){
         cout << item << " ";
     }
