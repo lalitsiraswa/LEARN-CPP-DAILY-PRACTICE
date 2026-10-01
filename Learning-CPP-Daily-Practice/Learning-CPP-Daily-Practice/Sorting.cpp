@@ -271,14 +271,98 @@ vector<int> quickSort(vector<int>& nums) {
     return nums;
 }
 
+// Partition the array around the pivot.
+//
+// After partitioning:
+// - Elements <= pivot are placed on the left side.
+// - Elements > pivot are placed on the right side.
+// - The pivot is placed at its correct position.
+//
+// Example:
+// [4, 2, 7, 1, 5]
+//  ↑
+// pivot = 4
+//
+// After partition:
+// [1, 2, 4, 7, 5]
+//        ↑
+//      pivot
+int partition01(vector<int>& nums, int low, int high) {
+    // Choose the first element as the pivot.
+    int pivot = nums[low];
+    // 'left' represents the position where the next
+    // element <= pivot should be placed.
+    int left = low;
+    // 'right' is used to scan every element
+    // from low to high.
+    int right = low;
+    // Scan the entire partition.
+    while (right <= high) {
+        // If the current element is smaller than
+        // or equal to the pivot, it belongs on the left side.
+        if (nums[right] <= pivot) {
+            // Move this element to the next available
+            // position on the left side.
+            swap(nums[left], nums[right]);
+            // Move left forward because we have now
+            // placed one element in the <= pivot section.
+            left++;
+        }
+        // Move to the next element to examine.
+        right++;
+    }
+    // 'left' points to the position just after
+    // the last element <= pivot.
+    //
+    // Therefore, the pivot's final position is left - 1.
+    int pIndex = left - 1;
+    // The pivot is currently at nums[low].
+    // Move it to its correct position.
+    swap(nums[low], nums[pIndex]);
+    // Return the pivot's final position.
+    return pIndex;
+}
+
+
+// Helper function to recursively perform Quick Sort.
+void quickSortHelper01(vector<int>& nums, int low, int high) {
+    // Base case:
+    // If there is only one element or no element
+    // in this range, it is already sorted.
+    if (low >= high) {
+        return;
+    }
+    // Partition the array and get the pivot's
+    // final/correct position.
+    int pIndex = partition01(nums, low, high);
+    // Recursively sort the elements to the left
+    // of the pivot.
+    quickSortHelper01(nums, low, pIndex - 1);
+    // Recursively sort the elements to the right
+    // of the pivot.
+    quickSortHelper01(nums, pIndex + 1, high);
+}
+
+
+// Main function to perform Quick Sort.
+void quickSort01(vector<int>& nums) {
+    // Get the size of the array.
+    int n = nums.size();
+    // Start Quick Sort on the entire array.
+    // low  = first index
+    // high = last index
+    quickSortHelper01(nums, 0, n - 1);
+}
+
 int main(){
 //    vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
+//    vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
+    vector<int> nums = {7, 4, 1, 5, 3};
 //    selectionSort(nums);
 //    bubbleSort(nums);
 //    insertionSor t(nums);
 //    mergeSort(nums);
-    quickSort(nums);
+    quickSort01(nums);
     for(auto item : nums){
         cout << item << " ";
     }
