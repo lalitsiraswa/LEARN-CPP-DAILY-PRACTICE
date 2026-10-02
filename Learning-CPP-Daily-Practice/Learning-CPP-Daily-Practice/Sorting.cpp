@@ -355,15 +355,53 @@ void quickSort01(vector<int>& nums) {
     quickSortHelper01(nums, 0, n - 1);
 }
 
+//----------------------------------------------//----------------------------------------------//
+// Recursive helper function for Bubble Sort.
+//
+// 'index' represents the number of passes already completed.
+// After every pass, the largest unsorted element
+// gets placed at the end of the unsorted portion.
+void bubbleSortRecursionHelper(vector<int>& nums, int n, int index) {
+    // Base case:
+    // If we have completed n - 1 passes,
+    // the entire array is sorted.
+    if (index >= n - 1) {
+        return;
+    }
+    // Perform one complete Bubble Sort pass.
+    //
+    // After this pass, the largest element in the
+    // unsorted portion will move to its correct position.
+    for (int j = 0; j < (n - 1) - index; j++) {
+        // Compare adjacent elements.
+        // If they are in the wrong order, swap them.
+        if (nums[j] > nums[j + 1]) {
+            swap(nums[j], nums[j + 1]);
+        }
+    }
+    // Move to the next pass recursively.
+    bubbleSortRecursionHelper(nums, n, index + 1);
+}
+
+
+// Main function to perform Bubble Sort using recursion.
+void bubbleSortRecursion(vector<int>& nums) {
+    // Get the size of the array.
+    int n = nums.size();
+    // Start Bubble Sort from the first pass.
+    bubbleSortRecursionHelper(nums, n, 0);
+}
+
 int main(){
 //    vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-//    vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
-    vector<int> nums = {7, 4, 1, 5, 3};
+    vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
+//    vector<int> nums = {7, 4, 1, 5, 3};
 //    selectionSort(nums);
 //    bubbleSort(nums);
 //    insertionSor t(nums);
 //    mergeSort(nums);
-    quickSort01(nums);
+//    quickSort01(nums);
+    bubbleSortRecursion(nums);
     for(auto item : nums){
         cout << item << " ";
     }
