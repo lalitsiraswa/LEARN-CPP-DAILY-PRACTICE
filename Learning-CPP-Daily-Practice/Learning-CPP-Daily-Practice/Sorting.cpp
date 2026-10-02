@@ -392,6 +392,47 @@ void bubbleSortRecursion(vector<int>& nums) {
     bubbleSortRecursionHelper(nums, n, 0);
 }
 
+//----------------------------------------------//----------------------------------------------//
+// Recursive helper function for Insertion Sort.
+//
+// 'index' represents the element we are currently trying
+// to insert into the already sorted left portion.
+void insertionSortRecursionHelper(vector<int>& nums, int n, int index) {
+    // Base case:
+    // If index reaches the size of the array,
+    // all elements have been inserted into their
+    // correct positions.
+    if (index >= n) {
+        return;
+    }
+    // Start with the current element.
+    int j = index;
+    // Move the current element towards the left
+    // until it reaches its correct position.
+    //
+    // The elements before 'index' are already sorted.
+    while (j > 0 && nums[j] < nums[j - 1]) {
+        // If the current element is smaller than the
+        // previous element, they are in the wrong order.
+        swap(nums[j], nums[j - 1]);
+        // Move one position to the left and
+        // continue checking.
+        j--;
+    }
+    // Recursively process the next element.
+    insertionSortRecursionHelper(nums, n, index + 1);
+}
+
+
+// Main function to perform Insertion Sort using recursion.
+void insertionSortRecursion(vector<int>& nums) {
+    // Get the size of the array.
+    int n = nums.size();
+    // Start from index 1 because the element at index 0
+    // is considered already sorted.
+    insertionSortRecursionHelper(nums, n, 1);
+}
+
 int main(){
 //    vector<int> nums = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     vector<int> nums = {4, 6, 2, 5, 7, 9, 1, 3};
@@ -401,7 +442,7 @@ int main(){
 //    insertionSor t(nums);
 //    mergeSort(nums);
 //    quickSort01(nums);
-    bubbleSortRecursion(nums);
+    insertionSortRecursion(nums);
     for(auto item : nums){
         cout << item << " ";
     }
