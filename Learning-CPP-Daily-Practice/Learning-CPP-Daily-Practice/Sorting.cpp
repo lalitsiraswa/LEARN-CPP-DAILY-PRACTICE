@@ -193,50 +193,50 @@ int partition(vector<int>& nums, int low, int high) {
 //    swap(nums[low], nums[randomIndex]);
     // Select the first element as the pivot.
     int pivot = nums[low];
-    // i moves from left to right looking for an element
+    // left moves from left to right looking for an element
     // that is greater than the pivot.
-    int i = low;
-    // j moves from right to left looking for an element
+    int left = low;
+    // right moves from right to left looking for an element
     // that is smaller than or equal to the pivot.
-    int j = high;
+    int right = high;
     // Continue until the two pointers cross.
-    while (i < j) {
-        // Move i to the right while elements are
+    while (left < right) {
+        // Move left to the right while elements are
         // already on the correct side of the pivot.
         //
         // Stop when:
         // 1. We find an element greater than the pivot, or
-        // 2. i reaches the end of the current range.
-        while (nums[i] <= pivot && i <= high - 1) {
-            i++;
+        // 2. left reaches the end of the current range.
+        while (nums[left] <= pivot && left < high) {
+            left++;
         }
-        // Move j to the left while elements are
+        // Move right to the left while elements are
         // already on the correct side of the pivot.
         //
         // Stop when:
         // 1. We find an element smaller than or equal to the pivot, or
-        // 2. j reaches the beginning of the current range.
-        while (nums[j] > pivot && j >= low + 1) {
-            j--;
+        // 2. right reaches the beginning of the current range.
+        while (nums[right] > pivot && right > low) {
+            right--;
         }
         // At this point:
-        // arr[i] is greater than the pivot
-        // arr[j] is smaller than or equal to the pivot
+        // arr[left] is greater than the pivot
+        // arr[right] is smaller than or equal to the pivot
         //
         // These two elements are on the wrong sides,
         // so swap them.
-        if (i < j) {
-            swap(nums[i], nums[j]);
+        if (left < right) {
+            swap(nums[left], nums[right]);
         }
     }
-    // i and j have crossed.
-    // j is now the correct position for the pivot.
+    // left and right have crossed.
+    // right is now the correct position for the pivot.
     //
     // Move the pivot from arr[low] to arr[j].
-    swap(nums[low], nums[j]);
+    swap(nums[low], nums[right]);
 
     // Return the pivot's final position.
-    return j;
+    return right;
 }
 
 
@@ -271,6 +271,7 @@ vector<int> quickSort(vector<int>& nums) {
     return nums;
 }
 
+//-------------//-------------//
 // Partition the array around the pivot.
 //
 // After partitioning:
