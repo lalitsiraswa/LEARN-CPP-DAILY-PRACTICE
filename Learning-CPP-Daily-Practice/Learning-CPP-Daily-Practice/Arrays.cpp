@@ -1147,3 +1147,153 @@ int trap3(vector<int>& height) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+int inversionCountTLE(vector<int> &arr) {
+    int n = arr.size();
+    int count = 0;
+    for(int i = 0; i < n; i++){
+        for(int j = i + 1; j < n; j++){
+            if(arr[i] > arr[j]){
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+// Merge two sorted halves and count the inversions between them.
+//
+// Left half  = [low ... mid]
+// Right half = [mid+1 ... high]
+//
+// Both halves are already sorted because of Merge Sort.
+int inversionCountMergeHelper(vector<int> &arr, int low, int mid, int high) {
+    // Pointer for the left sorted half
+    int left = low;
+    // Pointer for the right sorted half
+    int right = mid + 1;
+    // Stores the number of inversions found
+    // between the left and right halves.
+    int count = 0;
+    // Temporary array used to store the merged sorted elements
+    vector<int> temp;
+    // Compare elements from both sorted halves
+    while (left <= mid && right <= high) {
+        // If left element is smaller or equal,
+        // there is no inversion.
+        //
+        // Example:
+        // left = 2, right = 5
+        // 2 <= 5 → no inversion
+        if (arr[left] <= arr[right]) {
+            temp.push_back(arr[left]);
+            left++;
+        }
+        else {
+            // arr[left] > arr[right]
+            //
+            // Since the LEFT half is already sorted,
+            // every element from 'left' to 'mid'
+            // will also be greater than arr[right].
+            //
+            // Example:
+            //
+            // Left:  [2, 5, 8]
+            //          ↑
+            //        left
+            //
+            // Right: [3]
+            //
+            // 5 > 3
+            // 8 > 3
+            //
+            // So there are 2 inversions.
+            //
+            // Number of elements from left to mid:
+            // mid - left + 1
+            count += (mid - left) + 1;
+            // Put the smaller right-side element
+            // into the temporary array.
+            temp.push_back(arr[right]);
+            right++;
+        }
+    }
+    // If some elements are still left in the left half,
+    // add them to temp.
+    //
+    // They are already sorted, so no more comparisons
+    // or inversions need to be counted here.
+    while (left <= mid) {
+        temp.push_back(arr[left]);
+        left++;
+    }
+    // If some elements are still left in the right half,
+    // add them to temp.
+    while (right <= high) {
+        temp.push_back(arr[right]);
+        right++;
+    }
+    // Copy the sorted elements from temp
+    // back into the original array.
+    //
+    // temp[0] belongs to arr[low]
+    // temp[1] belongs to arr[low + 1]
+    // ...
+    for (int i = low; i <= high; i++) {
+        arr[i] = temp[i - low];
+    }
+    // Return the number of inversions found
+    // between these two halves.
+    return count;
+}
+
+
+// Recursively divide the array and count inversions.
+int inversionCountMergeSortHelper(vector<int> &arr, int low, int high) {
+    // If there is only one element (or no element),
+    // it is already sorted and cannot contain an inversion.
+    if (low >= high) {
+        return 0;
+    }
+    // Find the middle point.
+    int mid = (low + high) / 2;
+    // Stores the total number of inversions
+    // found in this portion of the array.
+    int count = 0;
+    // Count inversions inside the LEFT half.
+    count += inversionCountMergeSortHelper(arr, low, mid);
+    // Count inversions inside the RIGHT half.
+    count += inversionCountMergeSortHelper(arr, mid + 1, high);
+    // Merge both sorted halves and count
+    // inversions that exist BETWEEN the two halves.
+    count += inversionCountMergeHelper(arr, low, mid, high);
+    // Return total inversions for this portion.
+    return count;
+}
+
+
+// Main function to count inversions in the array.
+int inversionCount(vector<int> &arr) {
+    int n = arr.size();
+    // Start Merge Sort from the entire array.
+    //
+    // The recursive function will:
+    // 1. Divide the array
+    // 2. Count inversions in the left half
+    // 3. Count inversions in the right half
+    // 4. Count inversions while merging
+    int count = inversionCountMergeSortHelper(arr, 0, n - 1);
+    return count;
+}
+
+//int main(){
+//    vector<int> arr = {5, 3, 2, 4, 1};
+//    cout << inversionCount(arr) << endl << endl;
+//    for(auto item : arr){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+
