@@ -1522,8 +1522,8 @@ int reversePairsMergeSortHelper(vector<int> &nums, int low, int high) {
     // Now both halves are sorted.
     //
     // Count reverse pairs where:
-    // i is in the left half
-    // j is in the right half
+    // left is in the left half
+    // right is in the right half
     count += countPairs(nums, low, mid, high);
     // Finally merge the two sorted halves.
     reversePairsMergeHelper(nums, low, mid, high);
