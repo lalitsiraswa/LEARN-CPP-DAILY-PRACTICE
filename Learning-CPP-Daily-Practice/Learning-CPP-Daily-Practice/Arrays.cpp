@@ -1296,4 +1296,269 @@ int inversionCount(vector<int> &arr) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 493. Reverse Pairs
+// Time Limit Exceeded
+int reversePairs(vector<int>& nums) {
+    int n = nums.size();
+    int count = 0;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            // Use 2LL so multiplication happens
+            // using long long instead of int.
+            if ((long long)nums[i] > 2LL * nums[j]) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
+//-------------------------------------------//
+// Merge two already sorted halves.
+//
+// Left half  = [low ... mid]
+// Right half = [mid+1 ... high]
+//
+// This function only does the normal Merge Sort merge.
+// Reverse pairs are counted separately in countPairs().
+void reversePairsMergeHelper(vector<int> &nums, int low, int mid, int high) {
+    // Pointer for the left sorted half
+    int left = low;
+    // Pointer for the right sorted half
+    int right = mid + 1;
+    // Temporary array to store the merged sorted result
+    vector<int> temp;
+    // Compare elements from both halves
+    while (left <= mid && right <= high) {
+        // If the left element is smaller or equal,
+        // put it into temp first.
+        if (nums[left] <= nums[right]) {
+            temp.push_back(nums[left]);
+            left++;
+        }
+        else {
+            // Otherwise, the right element is smaller,
+            // so put it into temp.
+            temp.push_back(nums[right]);
+            right++;
+        }
+    }
+    // If elements are still remaining in the left half,
+    // add them to temp.
+    while (left <= mid) {
+        temp.push_back(nums[left]);
+        left++;
+    }
+    // If elements are still remaining in the right half,
+    // add them to temp.
+    while (right <= high) {
+        temp.push_back(nums[right]);
+        right++;
+    }
+    // Copy the sorted elements from temp
+    // back into the original array.
+    //
+    // temp[0] -> nums[low]
+    // temp[1] -> nums[low + 1]
+    // ...
+    for (int i = low; i <= high; i++) {
+        nums[i] = temp[i - low];
+    }
+}
+
+
+// Count reverse pairs between two sorted halves.
+//
+// A reverse pair is:
+//
+//      nums[i] > 2 * nums[j]
+//
+// where:
+//      i < j
+//
+// Left half  = [low ... mid]
+// Right half = [mid+1 ... high]
+//
+// Both halves are already sorted at this point.
+int countPairs(vector<int>& nums, int low, int mid, int high) {
+    // Pointer for the left half
+    int left = low;
+    // Pointer for the right half
+    int right = mid + 1;
+    // Number of reverse pairs found
+    int count = 0;
+    // Compare elements from both sorted halves
+    while (left <= mid && right <= high) {
+        // Check whether nums[left] and nums[right]
+        // form a reverse pair.
+        //
+        // Use 2LL to make sure multiplication happens
+        // using long long and does not overflow int.
+        if (nums[left] > 2LL * nums[right]) {
+            // nums[left] > 2 * nums[right]
+            //
+            // So nums[left] forms a reverse pair
+            // with nums[right].
+            //
+            // Since the right half is sorted, we move
+            // right forward to check if there are more
+            // elements that also satisfy the condition.
+            right++;
+        }
+        else {
+            // nums[left] is NOT greater than
+            // 2 * nums[right].
+            //
+            // Since the right half is sorted, all elements
+            // before 'right' have already satisfied:
+            //
+            // nums[left] > 2 * nums[element]
+            //
+            // Therefore, the number of valid elements is:
+            //
+            // right - (mid + 1)
+            //
+            // Example:
+            //
+            // Right half = [2, 3, 5]
+            //                     ^
+            //                   right
+            //
+            // If right = mid + 3,
+            // then 3 elements before right formed pairs.
+            count += (right - (mid + 1));
+            // Move to the next element in the left half.
+            left++;
+        }
+    }
+    // If some elements are still remaining
+    // in the left half, count the valid right-side
+    // elements for each of them.
+    //
+    // At this point, right cannot move anymore because
+    // it has reached the end of the right half.
+    while (left <= mid) {
+        count += (right - (mid + 1));
+        left++;
+    }
+    return count;
+}
+
+int countPairs01(vector<int>& nums, int low, int mid, int high) {
+    // The right half starts from mid + 1.
+    //
+    // Example:
+    // low = 0, mid = 2, high = 5
+    //
+    // Left half  = [0, 1, 2]
+    // Right half = [3, 4, 5]
+    int right = mid + 1;
+    // Stores the total number of reverse pairs
+    // found between the left and right halves.
+    int cnt = 0;
+    // Check every element in the LEFT half.
+    for (int i = low; i <= mid; i++) {
+        // Move 'right' forward while the reverse-pair
+        // condition is satisfied:
+        //
+        // nums[i] > 2 * nums[right]
+        //
+        // Use 2LL to make the multiplication happen
+        // using long long and avoid integer overflow.
+        while (right <= high && (long long)nums[i] > 2LL * nums[right]) {
+            right++;
+        }
+        // All elements before 'right' in the right half
+        // satisfy:
+        //
+        // nums[i] > 2 * nums[j]
+        //
+        // The right half starts at mid + 1.
+        //
+        // Therefore:
+        //
+        // Number of valid elements
+        // = right - (mid + 1)
+        //
+        // Example:
+        //
+        // mid = 2
+        // right = 5
+        //
+        // Right half starts at index 3.
+        //
+        // Valid indices = 3, 4
+        // Number = 5 - 3 = 2
+        cnt += (right - (mid + 1));
+    }
+    // Return the number of reverse pairs
+    // between the two halves.
+    return cnt;
+}
+
+// Recursive Merge Sort function.
+//
+// It does three things:
+//
+// 1. Divide the array into two halves
+// 2. Count reverse pairs
+// 3. Merge the two sorted halves
+int reversePairsMergeSortHelper(vector<int> &nums, int low, int high) {
+    // Base case:
+    // One element (or zero elements) cannot have
+    // a reverse pair.
+    if (low >= high) {
+        return 0;
+    }
+    // Find the middle of the current range.
+    int mid = (low + high) / 2;
+    // Stores the total reverse-pair count
+    // for this portion of the array.
+    int count = 0;
+    // Recursively process the LEFT half.
+    count += reversePairsMergeSortHelper(nums, low, mid);
+    // Recursively process the RIGHT half.
+    count += reversePairsMergeSortHelper(nums, mid + 1, high);
+    // Now both halves are sorted.
+    //
+    // Count reverse pairs where:
+    // i is in the left half
+    // j is in the right half
+    count += countPairs(nums, low, mid, high);
+    // Finally merge the two sorted halves.
+    reversePairsMergeHelper(nums, low, mid, high);
+    return count;
+}
+
+
+// Main function
+int reversePairs01(vector<int>& nums) {
+    int n = nums.size();
+    // Start Merge Sort on the entire array.
+    //
+    // The recursive function will:
+    //
+    // Divide
+    //   ↓
+    // Sort left
+    //   ↓
+    // Sort right
+    //   ↓
+    // Count cross reverse pairs
+    //   ↓
+    // Merge
+    //
+    return reversePairsMergeSortHelper(nums, 0, n - 1);
+}
+
+//int main(){
+////    vector<int> nums = {2, 4, 3, 5, 1};
+//    vector<int> nums = {40, 25, 19, 12, 9, 6, 2};
+//    cout << reversePairs01(nums) << endl << endl;
+//    for(auto item : nums){
+//        cout << item << " ";
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
