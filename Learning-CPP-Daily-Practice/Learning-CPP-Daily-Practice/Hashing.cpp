@@ -1,4 +1,5 @@
 #include<iostream>
+#include<unordered_set>
 using namespace std;
 
 //-------------------------------------------//-------------------------------------------//
@@ -207,11 +208,72 @@ int longestConsecutive02(vector<int>& nums) {
     return longestConsecutiveSequenceCount;
 }
 
+//-------------------------------------------//
+// Time Limit Exceeded
+int longestConsecutiveBrute(vector<int> &nums){
+    int n = nums.size();
+    int longestConsecutiveSequenceCount = 0;
+    for(int i = 0; i < n; i++){
+        int currentConsecutiveSequenceCount = 0;
+        int target = nums[i];
+        int j = 0;
+        while(j < n){
+            if(nums[j] == target){
+                currentConsecutiveSequenceCount++;
+                target++;
+                j = 0;
+            }
+            else{
+                j++;
+            }
+        }
+        longestConsecutiveSequenceCount = max(longestConsecutiveSequenceCount, currentConsecutiveSequenceCount);
+    }
+    return longestConsecutiveSequenceCount;
+}
+//-------------------------------------------//
+int longestConsecutiveUsingSet(vector<int> &nums) {
+    // Store every number in a set.
+    // unordered_set automatically removes duplicates.
+    unordered_set<int> unorderedSet;
+    for (auto item : nums) {
+        unorderedSet.insert(item);
+    }
+    int longestConsecutiveSequenceCount = 0;
+    // Iterate through every unique number.
+    for (auto item : unorderedSet) {
+        int target = item;
+        int currentConsecutiveSequenceCount = 0;
+        // Start counting only if this is the FIRST number
+        // of a consecutive sequence.
+        //
+        // Example:
+        // For [1, 2, 3, 4]
+        //
+        // 1 -> 0 does not exist -> START
+        // 2 -> 1 exists       -> SKIP
+        // 3 -> 2 exists       -> SKIP
+        // 4 -> 3 exists       -> SKIP
+        if (unorderedSet.find(target - 1) == unorderedSet.end()) {
+            // We found the beginning of a sequence.
+            // Keep moving forward while the next number exists.
+            while (unorderedSet.find(target) != unorderedSet.end()) {
+                currentConsecutiveSequenceCount++;
+                target++;
+            }
+            // Keep track of the longest sequence found so far.
+            longestConsecutiveSequenceCount = max(longestConsecutiveSequenceCount, currentConsecutiveSequenceCount);
+        }
+    }
+    return longestConsecutiveSequenceCount;
+}
+
 //int main(){
 ////    vector<int> nums = {100, 4, 200, 1, 3, 2};
 //    vector<int> nums = {0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
+////    vector<int> nums = {0, -1};
 ////    cout << longestConsecutive(nums) << endl;
-//    cout << longestConsecutive02(nums) << endl;
+//    cout << longestConsecutiveUsingSet(nums) << endl;
 //    for(auto item : nums){
 //        cout << item << " ";
 //    }
