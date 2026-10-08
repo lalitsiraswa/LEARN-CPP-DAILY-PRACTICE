@@ -282,4 +282,185 @@ int longestConsecutiveUsingSet(vector<int> &nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Longest Subarray with Sum K - GFG
+int longestSubarray(vector<int>& arr, int k) {
+    int n = arr.size();
+    int longestSubarrayLength = 0;
+    for(int i = 0; i < n; i++){
+        int currentSubarrayLength = 0;
+        int total = 0;
+        for(int j = i; j < n; j++){
+            total += arr[j];
+            currentSubarrayLength++;
+            if(total == k){
+                longestSubarrayLength = max(longestSubarrayLength, currentSubarrayLength);
+            }
+        }
+    }
+    return longestSubarrayLength;
+}
 
+//-------------------------------------------//
+// Longest Subarray with Sum K - [Containing +VE And -VE Integers]
+// Longest Subarray with Sum K
+// Works when array contains +ve, -ve, and 0
+int longestSubarray01(vector<int>& arr, int k) {
+    int n = arr.size();
+    // Stores:
+    // prefix sum -> first index where this prefix sum occurred
+    //
+    // We store the FIRST occurrence because an earlier index
+    // gives us the longest possible subarray.
+    unordered_map<int, int> prefixSumMap;
+    int longestSubarrayLength = 0;
+    // Sum of elements from index 0 to current index
+    int prefixSum = 0;
+    for (int i = 0; i < n; i++) {
+        // Add current element to prefix sum
+        prefixSum += arr[i];
+        // --------------------------------------------------
+        // Case 1:
+        // Subarray starts from index 0
+        // --------------------------------------------------
+        //
+        // If prefixSum == k:
+        //
+        // arr[0] + arr[1] + ... + arr[i] = k
+        //
+        // Therefore, subarray [0 ... i] has sum k.
+        //
+        // Its length is i + 1.
+        if (prefixSum == k) {
+            longestSubarrayLength = i + 1;
+        }
+        else {
+            // --------------------------------------------------
+            // Case 2:
+            // Subarray starts somewhere after index 0
+            // --------------------------------------------------
+            //
+            // Suppose:
+            //
+            // prefixSum = sum[0 ... i]
+            //
+            // We want some earlier prefix sum such that:
+            //
+            // prefixSum - earlierPrefixSum = k
+            //
+            // Therefore:
+            //
+            // earlierPrefixSum = prefixSum - k
+            int remaining = prefixSum - k;
+            // Check whether this required prefix sum
+            // appeared earlier.
+            if (prefixSumMap.find(remaining) != prefixSumMap.end()) {
+                // Suppose the required prefix sum occurred earlier at index j.
+                //
+                // prefixSum = sum[0 ... i]
+                // remaining/earlierPrefixSum = sum[0 ... j]
+                //
+                // Therefore:
+                // sum[0 ... i] - sum[0 ... j] = k
+                //
+                // The common part sum[0 ... j] cancels out,
+                // leaving:
+                //
+                // sum[j+1 ... i] = k
+                //
+                // So the subarray is from j+1 to i.
+                // Length = i - j
+                int length = i - prefixSumMap[remaining];
+                longestSubarrayLength = max(longestSubarrayLength, length);
+            }
+        }
+        // --------------------------------------------------
+        // Store the FIRST occurrence of prefixSum
+        // --------------------------------------------------
+        //
+        // Why only the first occurrence?
+        //
+        // Example:
+        //
+        // prefixSum = 5 occurs at index 2
+        // prefixSum = 5 occurs again at index 5
+        //
+        // If we need this prefix sum later at index 10:
+        //
+        // Using index 2 -> length = 10 - 2 = 8
+        // Using index 5 -> length = 10 - 5 = 5
+        //
+        // Earlier index gives longer subarray.
+        //
+        // Therefore, never overwrite the first occurrence.
+        if (prefixSumMap.find(prefixSum) == prefixSumMap.end()) {
+            prefixSumMap[prefixSum] = i;
+        }
+    }
+    return longestSubarrayLength;
+}
+
+//-------------------------------------------//
+// Longest Subarray with Sum K - [Containing Only +VE Integers]
+int longestSubarray02(vector<int>& arr, int k) {
+    int n = arr.size();
+    // 'left' and 'right' represent the current window.
+    //
+    // Example:
+    // left              right
+    //   ↓                  ↓
+    // [  2   1   3   2   1 ]
+    //   └──── window ─────┘
+    int left = 0;
+    int right = 0;
+    // Stores the maximum length of a subarray
+    // whose sum is exactly equal to k.
+    int longestSubarrayLength = 0;
+    // Stores the sum of elements inside
+    // the current window [left ... right].
+    int totalSum = 0;
+    while (right < n) {
+        // Expand the window by adding the element
+        // at the 'right' pointer.
+        totalSum += arr[right];
+        // If the sum becomes greater than k,
+        // the current window is too large.
+        //
+        // Since all elements are POSITIVE,
+        // removing an element from the left will
+        // definitely decrease the sum.
+        while (totalSum > k) {
+            // Remove the leftmost element
+            // from the current window.
+            totalSum -= arr[left];
+            // Move left forward to shrink the window.
+            left++;
+        }
+        // At this point:
+        //
+        // totalSum <= k
+        //
+        // If totalSum == k, then the current window
+        // [left ... right] is a valid subarray.
+        if (totalSum == k) {
+            // Length of subarray [left ... right]:
+            //
+            // right - left + 1
+            int currentLength = (right - left) + 1;
+            // Keep the longest valid subarray found so far.
+            longestSubarrayLength = max(longestSubarrayLength, currentLength);
+        }
+        // Move right forward to expand the window
+        // in the next iteration.
+        right++;
+    }
+    return longestSubarrayLength;
+}
+
+//int main(){
+//    vector<int> arr = {10, 5, 2, 7, 1, -10};
+////    vector<int> arr = {1, 2, 3, 1, 1, 1, 1, 4, 2, 3};
+//    cout << longestSubarray02(arr, 15) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
