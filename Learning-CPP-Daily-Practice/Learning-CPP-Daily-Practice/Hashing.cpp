@@ -560,3 +560,76 @@ int subarraySumTuf(vector<int>& nums, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Count Subarrays with given XOR - GFG
+// Time Limit Exceeded
+long subarrayXor(vector<int> &arr, int k) {
+    int n = arr.size();
+    int subarrayCount = 0;
+    for(int i = 0; i < n; i++){
+        int XOR = 0;
+        for(int j = i; j < n; j++){
+            XOR ^= arr[j];
+            if(XOR == k){
+                subarrayCount++;
+            }
+        }
+    }
+    return subarrayCount;
+}
+
+//-------------------------------------------//
+// Count the number of subarrays whose XOR is equal to K.
+long subarrayXor01(vector<int> &arr, int k) {
+    int n = arr.size();
+    // Stores:
+    // prefix XOR -> frequency of that prefix XOR
+    //
+    // We need the frequency because the same prefix XOR
+    // can appear multiple times.
+    unordered_map<int, int> prefixXORMap;
+    int subarrayCount = 0;
+    // XOR of elements from index 0 to the current index.
+    int prefixXOR = 0;
+    for (int i = 0; i < n; i++) {
+        // Include the current element in the running prefix XOR.
+        prefixXOR ^= arr[i];
+        // Check whether the subarray [0 ... i] has XOR equal to K.
+        //
+        // If prefixXOR == k, the subarray starting at index 0
+        // and ending at index i is a valid subarray.
+        if (prefixXOR == k) {
+            subarrayCount++;
+        }
+        // Find the previous prefix XOR needed to form
+        // another subarray with XOR equal to K.
+        //
+        // XOR of the desired subarray:
+        // prefixXOR ^ previousPrefixXOR = k
+        //
+        // Therefore:
+        // previousPrefixXOR = prefixXOR ^ k
+        int remaining = prefixXOR ^ k;
+        // Add the number of times this required prefix XOR
+        // appeared earlier.
+        //
+        // Each occurrence represents one valid subarray
+        // ending at the current index.
+        //
+        // This is a separate check from prefixXOR == k.
+        // Both checks can contribute to the answer in the
+        // same iteration, so we must not use an else here.
+        subarrayCount += prefixXORMap[remaining];
+        // Record the current prefix XOR for future iterations.
+        // Increase its frequency by 1.
+        prefixXORMap[prefixXOR]++;
+    }
+    return subarrayCount;
+}
+
+//int main(){
+//    vector<int> arr = {4, 2, 2, 6, 4};
+//    cout << subarrayXor01(arr, 6) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
