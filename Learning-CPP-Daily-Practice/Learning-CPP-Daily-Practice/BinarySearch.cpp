@@ -111,3 +111,74 @@ int findPeakElementBinarySearch(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 153. Find Minimum in Rotated Sorted Array
+int findMin(vector<int>& nums) {
+    int n = nums.size();
+    // search space is already sorted
+    // then arr[0] will always be
+    // the minimum in that search space:
+    if(nums[0] < nums[n - 1]){
+        return nums[0];
+    }
+    int minimum = INT_MAX;
+    int low = 0, high = n - 1;
+    while(low <= high){
+        int mid = low + (high - low) / 2;
+        minimum = min(minimum, nums[mid]);
+        // Minimum is in the right half.
+        // if left part is sorted:
+        if(nums[mid] >= nums[0]){
+            // Eliminate left half:
+            low = mid + 1;
+        }
+        // Minimum may be in the left half.
+        // if right part is sorted:
+        else{
+            // Eliminate right half:
+            high = mid - 1;
+        }
+    }
+    return minimum;
+}
+
+//-------------------------------------------//
+int findMin01(vector<int>& nums) {
+    int low = 0, high = nums.size() - 1;
+    int minimum = INT_MAX;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        // search space is already sorted
+        // then arr[low] will always be
+        // the minimum in that search space:
+        if (nums[low] <= nums[high])
+        {
+            minimum = min(minimum, nums[low]);
+            break;
+        }
+        // if left part is sorted:
+        if (nums[low] <= nums[mid])
+        {
+            // keep the minimum:
+            minimum = min(minimum, nums[low]);
+            // Eliminate left half:
+            low = mid + 1;
+        }
+        else
+        { // if right part is sorted:
+            // keep the minimum:
+            minimum = min(minimum, nums[mid]);
+            // Eliminate right half:
+            high = mid - 1;
+        }
+    }
+    return minimum;
+}
+
+//int main(){
+//    vector<int> nums = {4,5,6,7,0,1,2};
+//    cout << findMin01(nums) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
