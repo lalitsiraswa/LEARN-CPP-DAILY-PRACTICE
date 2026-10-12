@@ -127,7 +127,7 @@ int findMin(vector<int>& nums) {
         minimum = min(minimum, nums[mid]);
         // Minimum is in the right half.
         // if left part is sorted:
-        if(nums[mid] >= nums[0]){
+        if(nums[0] <= nums[mid]){
             // Eliminate left half:
             low = mid + 1;
         }
@@ -215,6 +215,106 @@ int search(vector<int>& nums, int target) {
 //int main(){
 //    vector<int> nums = {7, 8, 9, 1, 2, 3, 4, 5, 6};
 //    cout << search(nums, 1) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+// 81. Search in Rotated Sorted Array II
+// Dry Run
+// [3, 1, 2, 3, 3, 3, 3] target = 2
+// [1, 0, 1, 1, 1] target = 0
+bool search2(vector<int>& nums, int target) {
+    int low = 0, high = nums.size() - 1;
+    while(low <= high){
+        // Skip duplicates at both ends to identify the sorted half.
+        while(low < high && nums[low] == nums[low + 1]){
+            low += 1;
+        }
+        while(low < high && nums[high] == nums[high - 1]){
+            high -= 1;
+        }
+        int mid = low + (high - low) / 2;
+
+        if(nums[mid] == target){
+            return true;
+        }
+        // Check if the left half is sorted.
+        if(nums[low] <= nums[mid]){
+            if(nums[low] <= target && target <= nums[mid]){
+                high = mid - 1;
+            }
+            else{
+                low = mid + 1;
+            }
+        }
+        // Otherwise, check the sorted right half.
+        else if(nums[mid] <= nums[high]){
+            if(nums[mid] <= target && target <= nums[high]){
+                low = mid + 1;
+            }
+            else{
+                high = mid - 1;
+            }
+        }
+    }
+    return false;
+}
+
+//-------------------------------------------//
+bool search2Tuf(vector<int>& nums, int target) {
+    int n = nums.size(); // size of the array.
+    int low = 0, high = n - 1;
+    while (low <= high)
+    {
+        int middle = low + (high - low) / 2;
+        // Check if the middle element is the target.
+        if (nums[middle] == target)
+            return true;
+        // Edge case:
+        // If all three values are equal, we cannot identify the sorted half.
+        if (nums[low] == nums[middle] && nums[middle] == nums[high])
+        {
+            low = low + 1;
+            high = high - 1;
+            continue;
+        }
+        // Check if the left half is sorted.
+        if (nums[low] <= nums[middle])
+        {
+            // Check if the target lies within the sorted left half.
+            if (nums[low] <= target && target <= nums[middle])
+            {
+                // element exists:
+                high = middle - 1;
+            }
+            else
+            {
+                // element does not exist:
+                low = middle + 1;
+            }
+        }
+        // Otherwise, the right half is sorted.
+        else
+        {
+            // Check if the target lies within the sorted right half.
+            if (nums[middle] <= target && target <= nums[high])
+            {
+                // element exists:
+                low = middle + 1;
+            }
+            else
+            {
+                // element does not exist:
+                high = middle - 1;
+            }
+        }
+    }
+    return false; // Target not found.
+}
+
+//int main(){
+//    vector<int> nums = {1, 0, 1, 1, 1};
+//    cout << search2Tuf(nums, 0) << endl;
 //    return 0;
 //}
 
