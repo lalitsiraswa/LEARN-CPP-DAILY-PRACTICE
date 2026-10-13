@@ -319,3 +319,126 @@ bool search2Tuf(vector<int>& nums, int target) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 540. Single Element in a Sorted Array
+int singleNonDuplicate(vector<int>& nums) {
+    int n = nums.size();
+    int i = 0;
+    while(i < n - 1 && nums[i] == nums[i + 1]){
+        i += 2;
+    }
+    return nums[i];
+}
+
+//-------------------------------------------//
+int singleNonDuplicate01(vector<int>& nums) {
+    int n = nums.size();
+    int left = 0, right = n - 1;
+    while(left <= right){
+        if(left < n - 1 && nums[left] != nums[left + 1]){
+            return nums[left];
+        }
+        if(right > 0 && nums[right] != nums[right - 1]){
+            return nums[right];
+        }
+        left += 2;
+        right -= 2;
+    }
+    return nums[0];
+}
+
+//-------------------------------------------//
+int singleNonDuplicate02(vector<int>& nums) {
+    int n = nums.size();
+    unordered_map<int, int> frequency;
+    for(auto item : nums){
+        frequency[item]++;
+    }
+    unordered_map<int, int>::iterator itr;
+    for(itr = frequency.begin(); itr != frequency.end(); itr++){
+        if(itr->second == 1){
+            return itr->first;
+        }
+    }
+    return nums[0];
+}
+
+//-------------------------------------------//
+int singleNonDuplicateBinarySearch(vector<int>& nums) {
+    int n = nums.size();
+    // EDGE CASES:
+    if (n == 1)
+    {
+        return nums[0];
+    }
+    if (nums[0] != nums[1])
+    {
+        return nums[0];
+    }
+    if (nums[n - 1] != nums[n - 2])
+    {
+        return nums[n - 1];
+    }
+    int low = 1;
+    int high = n - 2;
+    int singleElement;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        if (nums[mid] != nums[mid - 1] && nums[mid] != nums[mid + 1])
+        {
+            singleElement = nums[mid];
+            break;
+        }
+        // EVEN INDEX:
+        if (mid % 2 == 0)
+        {
+            if (nums[mid] == nums[mid + 1])
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+        // ODD INDEX:
+        else
+        {
+            if (nums[mid] == nums[mid - 1])
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+    }
+    return singleElement;
+}
+
+//-------------------------------------------//
+int singleNonDuplicateXOR(vector<int>& nums) {
+    // Start with the first element.
+    int singleElement = nums[0];
+    for(int i = 1; i < nums.size(); i++){
+        // XOR the current element with the result so far.
+        // If an element appears twice, both occurrences cancel out:
+        // x ^ x = 0.
+        // XOR with 0 keeps the other element unchanged:
+        // x ^ 0 = x.
+        singleElement ^= nums[i];
+    }
+    // All duplicate pairs cancel out, leaving only the
+    // element that appears once.
+    return singleElement;
+}
+
+
+//int main(){
+//    vector<int> nums = {3,3,7,7,10,11,11};
+//    cout << singleNonDuplicateXOR(nums) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
