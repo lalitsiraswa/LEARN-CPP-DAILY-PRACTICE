@@ -569,3 +569,152 @@ bool searchMatrix02(vector<vector<int>>& matrix, int target) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 240. Search a 2D Matrix II
+bool searchMatrix2(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size();
+    int n = matrix[0].size();
+    int firstRow = 0, firstColumn = 0;
+    int lastRow = m - 1, lastColumn = n - 1;
+    // Exclude bottom rows whose first element is greater than target.
+    while(lastRow >= 0 && matrix[lastRow][firstColumn] > target){
+        lastRow--;
+    }
+    // Exclude rightmost columns whose first-row element is greater than target.
+    while(lastColumn >= 0 && matrix[firstRow][lastColumn] > target){
+        lastColumn--;
+    }
+    // No valid search area remains.
+    if(lastRow < 0 || lastColumn < 0){
+        return false;
+    }
+    // Search the remaining rows and columns for the target.
+    for(int i = 0; i <= lastRow; i++){
+        for(int j = 0; j <= lastColumn; j++){
+            if(matrix[i][j] == target){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+//-------------------------------------------//
+bool binarySearch201(vector<int> &nums, int target){
+    int low = 0, high = nums.size() - 1;
+    while(low <= high){
+        int mid = low + (high - low) / 2;
+        if(nums[mid] == target){
+            return true;
+        }
+        // Target is smaller, so search the left half.
+        if(target < nums[mid]){
+            high = mid - 1;
+        }
+        // Otherwise, search the right half.
+        else{
+            low = mid + 1;
+        }
+    }
+    return false; // Target not found.
+}
+
+bool searchMatrix2TUF01(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    for(int row = 0; row < m; row++){
+        // Search the selected row using binary search.
+        if(binarySearch201(matrix[row], target)){
+            return true;
+        }
+    }
+    return false; // Target not found in any row.
+}
+
+bool searchMatrix2TUF02(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    for(int row = 0; row < m; row++){
+        // Skip rows where the target is outside the row's value range.
+        if(matrix[row][0] <= target && target <= matrix[row][n - 1]){
+            // Search the selected row using binary search.
+            if(binarySearch201(matrix[row], target)){
+                return true;
+            }
+        }
+    }
+    return false; // Target not found in any row.
+}
+//-------------------------------------------//
+// This will not work for this problem
+bool searchMatrixTUF01(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    int low = 0, high = (m * n) - 1;
+    while(low <= high){
+        int mid = low + (high - low) / 2;
+        int row = mid / n;
+        int column = mid % n;
+        if(matrix[row][column] == target){
+            return true;
+        }
+        else if(matrix[row][column] < target){
+            low = mid + 1;
+        }
+        else{
+            high = mid - 1;
+        }
+    }
+    return false;
+}
+
+//-------------------------------------------//
+bool searchMatrixTufPreferred01(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    // Start from the top-right corner.
+    int row = 0, column = n - 1;
+    while(row <= m - 1 && column >= 0){
+        if(matrix[row][column] == target){
+            return true;
+        }
+        // Current element is smaller, so move down to find larger values.
+        else if(matrix[row][column] < target){
+            row++;
+        }
+        // Current element is larger, so move left to find smaller values.
+        else{
+            column--;
+        }
+    }
+    return false; // Target not found.
+}
+
+//-------------------------------------------//
+bool searchMatrixTufPreferred02(vector<vector<int>>& matrix, int target) {
+    int m = matrix.size(), n = matrix[0].size();
+    // Start from the bottom-left corner.
+    int row = m - 1, column = 0;
+    while(row >= 0 && column < n){
+        if(matrix[row][column] == target){
+            return true;
+        }
+        // Current element is smaller, so move right to find larger values.
+        else if(matrix[row][column] < target){
+            column++;
+        }
+        // Current element is larger, so move up to find smaller values.
+        else{
+            row--;
+        }
+    }
+    return false; // Target not found.
+}
+
+//int main(){
+//    vector<vector<int>> matrix = {{1,4,7,11,15},{2,5,8,12,19},{3,6,9,16,22},{10,13,14,17,24},{18,21,23,26,30}};
+////    vector<vector<int>> matrix = {{-5}};
+//    cout << searchMatrixTufPreferred02(matrix, 5) << endl;
+//    vector<int> temp = {matrix[0].begin(), matrix[0].begin() + 1};
+//    for(auto item : temp){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
