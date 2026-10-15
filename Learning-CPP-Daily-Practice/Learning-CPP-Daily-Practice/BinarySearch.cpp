@@ -452,26 +452,30 @@ bool binarySearch(vector<int> &nums, int target){
         if(nums[mid] == target){
             return true;
         }
+        // Target is greater, so search the right half.
         else if(nums[mid] < target){
             low = mid + 1;
         }
+        // Target is smaller, so search the left half.
         else{
             high = mid - 1;
         }
     }
-    return false;
+    return false; // Target not found.
 }
 
 bool searchMatrix(vector<vector<int>>& matrix, int target) {
     int m = matrix.size(), n = matrix[0].size();
     for(int row = 0; row < m; row++){
+        // Skip rows where the target is outside the row's value range.
         if(matrix[row][0] <= target && target <= matrix[row][n - 1]){
+            // Search the selected row using binary search.
             if(binarySearch(matrix[row], target)){
                 return true;
             }
         }
     }
-    return false;
+    return false; // Target not found in any row.
 }
 
 //-------------------------------------------//
