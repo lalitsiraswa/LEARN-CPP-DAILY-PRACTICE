@@ -718,3 +718,196 @@ bool searchMatrixTufPreferred02(vector<vector<int>>& matrix, int target) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 1901. Find a Peak Element II
+vector<int> findPeakGrid(vector<vector<int>>& mat) {
+    int m = mat.size(), n = mat[0].size();
+    for(int row = 0; row < m; row++){
+        // Check whether the current row has upper and lower neighbors.
+        bool up = true, down = true;
+        if(row == 0){
+            up = false; // No row exists above the first row.
+        }
+        if(row == m - 1){
+            down = false; // No row exists below the last row.
+        }
+        for(int column = 0; column < n; column++){
+            bool isPeakElement = true;
+            // Check whether the current column has left and right neighbors.
+            bool left = true, right = true;
+            if(column == 0){
+                left = false; // No column exists to the left.
+            }
+            if(column == n - 1){
+                right = false; // No column exists to the right.
+            }
+            // Compare with the element above.
+            if(up && mat[row][column] < mat[row - 1][column]){
+                isPeakElement = false;
+            }
+            // Compare with the element below.
+            if(down && mat[row][column] < mat[row + 1][column]){
+                isPeakElement = false;
+            }
+            // Compare with the element on the left.
+            if(left && mat[row][column] < mat[row][column - 1]){
+                isPeakElement = false;
+            }
+            // Compare with the element on the right.
+            if(right && mat[row][column] < mat[row][column + 1]){
+                isPeakElement = false;
+            }
+            // If no neighbor is greater, the current element is a peak.
+            if(isPeakElement){
+                return {row, column};
+            }
+        }
+    }
+    // Fallback return; under the problem's constraints, a peak exists.
+    return {0, 0};
+}
+
+//-------------------------------------------//
+vector<int> findPeakGridTuf(vector<vector<int>>& mat) {
+    // Get the number of rows (m) and columns (n) in the matrix.
+    int m = mat.size(), n = mat[0].size();
+    // We will use binary search on the columns.
+    // Initially, every column from 0 to n - 1 is a possible candidate.
+    int lowColumn = 0, highColumn = n - 1;
+    // Continue searching while there are columns left to check.
+    while (lowColumn <= highColumn) {
+        // Assume the current element is a peak until we find a larger
+        // neighboring element on the left or right.
+        bool isPeakElement = true;
+        // Find the middle column to reduce the search space by half.
+        int middleColumn = lowColumn + (highColumn - lowColumn) / 2;
+        // Assume the maximum element in the middle column is in row 0.
+        int maxElementRowIndex = 0;
+        // Find the row containing the maximum element in the middle column.
+        // Start from row 1 because row 0 is already our initial candidate.
+        for (int row = 1; row < m; row++) {
+            // If the current element is greater than the maximum found so far,
+            // update the row index to the current row.
+            if (mat[row][middleColumn] > mat[maxElementRowIndex][middleColumn]) {
+                maxElementRowIndex = row;
+            }
+        }
+        // Assume the left and right neighbors exist initially.
+        // These flags help us check whether each neighbor exists
+        // before accessing it, avoiding out-of-bounds access.
+        bool left = true, right = true;
+        // If the middle column is the first column, no left neighbor exists.
+        if (middleColumn == 0) {
+            left = false;
+        }
+        // If the middle column is the last column, no right neighbor exists.
+        if (middleColumn == n - 1) {
+            right = false;
+        }
+        // Check whether the left neighbor is greater than the current element.
+        // If it is, a peak may exist in the columns to the left.
+        if (left && mat[maxElementRowIndex][middleColumn - 1] > mat[maxElementRowIndex][middleColumn]) {
+            // Discard the middle column and all columns to its right.
+            highColumn = middleColumn - 1;
+            // The current element is not a peak because its left neighbor
+            // is greater than it.
+            isPeakElement = false;
+        }
+        // If the left neighbor is not greater, check the right neighbor.
+        else if (right && mat[maxElementRowIndex][middleColumn + 1] > mat[maxElementRowIndex][middleColumn]) {
+            // Discard the middle column and all columns to its left.
+            lowColumn = middleColumn + 1;
+            // The current element is not a peak because its right neighbor
+            // is greater than it.
+            isPeakElement = false;
+        }
+        // If neither existing horizontal neighbor is greater,
+        // the current element is a peak.
+        //
+        // We already selected the maximum element in its column,
+        // so its vertical neighbors cannot be greater either.
+        if (isPeakElement) {
+            // Return the row index and column index of the peak.
+            return {maxElementRowIndex, middleColumn};
+        }
+    }
+    // Fallback return. Under the usual Find a Peak Element II constraints,
+    // a peak exists, so the function should return before reaching this line.
+    return {-1, -1};
+}
+
+//-------------------------------------------//
+vector<int> findPeakGridTuf01(vector<vector<int>>& mat) {
+    // Get the number of rows (m) and columns (n) in the matrix.
+    int m = mat.size(), n = mat[0].size();
+    // We will apply binary search on columns.
+    // Initially, all columns from 0 to n - 1 are possible candidates.
+    int lowColumn = 0, highColumn = n - 1;
+    // Continue searching while there are columns left to check.
+    while (lowColumn <= highColumn) {
+        // Find the middle column of the current search range.
+        int middleColumn = lowColumn + (highColumn - lowColumn) / 2;
+        // Assume the maximum element in the middle column is in row 0.
+        int maxElementRowIndex = 0;
+        // Find the row index of the maximum element in the middle column.
+        // Start from row 1 because row 0 is already our initial candidate.
+        for (int row = 1; row < m; row++) {
+            // If the current element is greater than the maximum found so far,
+            // update the row index to the current row.
+            if (mat[row][middleColumn] > mat[maxElementRowIndex][middleColumn]) {
+                maxElementRowIndex = row;
+            }
+        }
+        // Get the element immediately to the left of the maximum element.
+        // If the middle column is the first column, no left neighbor exists.
+        // Use INT_MIN as a placeholder so the missing neighbor cannot be
+        // greater than the current element.
+        int leftElement = (middleColumn - 1) >= 0 ? mat[maxElementRowIndex][middleColumn - 1] : INT_MIN;
+        // Get the element immediately to the right of the maximum element.
+        // If the middle column is the last column, no right neighbor exists.
+        // Use INT_MIN as a placeholder for the missing neighbor.
+        int rightElement = (middleColumn + 1) < n ? mat[maxElementRowIndex][middleColumn + 1] : INT_MIN;
+        // Check whether the current element is greater than both
+        // its left and right neighbors.
+        //
+        // It is already the maximum element in its column, so its vertical
+        // neighbors cannot be greater than it either.
+        if (leftElement < mat[maxElementRowIndex][middleColumn] && mat[maxElementRowIndex][middleColumn] > rightElement) {
+            // We found a peak element.
+            // Return its row index and column index.
+            return {maxElementRowIndex, middleColumn};
+        }
+        // If the left neighbor is greater than the current element,
+        // a peak can be found by searching the columns to the left.
+        if (leftElement > mat[maxElementRowIndex][middleColumn]) {
+            // Discard the middle column and all columns to its right.
+            highColumn = middleColumn - 1;
+        }
+        else {
+            // Otherwise, the right neighbor is greater than the current
+            // element, so continue searching the columns to the right.
+            // Discard the middle column and all columns to its left.
+            lowColumn = middleColumn + 1;
+        }
+    }
+    // Return {-1, -1} if no peak is found.
+    // Under the usual problem constraints, a peak is guaranteed to exist.
+    return {-1, -1};
+}
+
+
+//int main(){
+////    vector<vector<int>> mat = {{4, 2, 5, 1, 4, 5}, {2, 9, 3, 2, 3, 2}, {1, 7, 6, 0, 1, 3}, {3, 6, 2, 3, 7, 2}};
+//    vector<vector<int>> mat = {{1,2,3,4,5,6,7,8},{2,3,4,5,6,7,8,9},{3,4,5,6,7,8,9,10},{4,5,6,7,8,9,10,11}};
+//    vector<int> result = findPeakGridTuf01(mat);
+//    cout << result[0] << ", " << result[1] << endl;
+//    vector<vector<int>> vect(2, vector<int>(3, 5));
+//    for(int i = 0; i < vect.size(); i++){
+//        for(int j = 0; j < vect[i].size(); j++){
+//            cout << vect[i][j] << " ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
