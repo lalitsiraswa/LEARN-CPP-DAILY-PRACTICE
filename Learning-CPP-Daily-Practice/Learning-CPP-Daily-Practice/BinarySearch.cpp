@@ -763,7 +763,7 @@ vector<int> findPeakGrid(vector<vector<int>>& mat) {
         }
     }
     // Fallback return; under the problem's constraints, a peak exists.
-    return {0, 0};
+    return {-1, -1};
 }
 
 //-------------------------------------------//
