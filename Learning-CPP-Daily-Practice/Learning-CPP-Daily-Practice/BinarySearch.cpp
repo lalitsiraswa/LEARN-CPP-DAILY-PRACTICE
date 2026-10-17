@@ -1112,3 +1112,177 @@ int minEatingSpeedBinarySearch(vector<int>& piles, int h) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Aggressive Cows - GFG
+int aggressiveCows01(vector<int>& arr, int k) {
+    // Sort stall positions in ascending order so we can calculate
+    // the distances between stalls from left to right.
+    sort(arr.begin(), arr.end());
+    // Get the total number of stalls.
+    int numberOfStalls = arr.size();
+    // Store the position of the last stall after sorting.
+    int maximumStallPosition = INT_MIN;
+    // Store the maximum minimum distance found so far.
+    int maximumMinimumDistance;
+    // Find the maximum stall position.
+    for (int stallIndex = 0; stallIndex < numberOfStalls; stallIndex++) {
+        maximumStallPosition = max(maximumStallPosition, arr[stallIndex]);
+    }
+    // Try every possible minimum distance, starting from 1.
+    // Stop when a distance cannot accommodate all the cows.
+    for (int minimumDistance = 1; minimumDistance <= maximumStallPosition; minimumDistance++) {
+        // Place the first cow in the first stall.
+        int lastPlacedCowIndex = 0;
+        // Start checking from the second stall.
+        int currentStallIndex = 1;
+        // We have already placed one cow, so k - 1 cows remain.
+        int remainingCows = k - 1;
+        // Try placing the remaining cows while stalls are available.
+        while (currentStallIndex < numberOfStalls && remainingCows != 0) {
+            // Calculate the distance between the current stall
+            // and the stall where the last cow was placed.
+            int distance = arr[currentStallIndex] - arr[lastPlacedCowIndex];
+            // If the distance is large enough, place a cow here.
+            if (distance >= minimumDistance) {
+                // One fewer cow remains to be placed.
+                remainingCows--;
+                // This becomes the stall where the last cow was placed.
+                lastPlacedCowIndex = currentStallIndex;
+                // Move to the next stall.
+                currentStallIndex++;
+            }
+            else {
+                // The current stall is too close to the last cow.
+                // Skip it and check the next stall.
+                currentStallIndex++;
+            }
+        }
+        // If all cows were placed, this minimum distance is possible.
+        if (remainingCows == 0) {
+            // Save this distance as the best answer found so far.
+            maximumMinimumDistance = minimumDistance;
+        }
+        else {
+            // The cows cannot be placed with this minimum distance.
+            // Larger distances will not work either, so stop searching.
+            break;
+        }
+    }
+    // Return the largest feasible minimum distance.
+    return maximumMinimumDistance;
+}
+
+//-------------------------------------------//
+int aggressiveCowsLinearSearch02(vector<int>& arr, int k) {
+    // Sort the stall positions in ascending order.
+    // This helps us place cows from left to right and calculate distances.
+    sort(arr.begin(), arr.end());
+    // Get the total number of stalls.
+    int numberOfStalls = arr.size();
+    // Store the position of the last stall.
+    int maximumStallPosition = INT_MIN;
+    // Find the maximum stall position.
+    for (int stallIndex = 0; stallIndex < numberOfStalls; stallIndex++) {
+        maximumStallPosition = max(maximumStallPosition, arr[stallIndex]);
+    }
+    // Store the largest minimum distance that allows us to place all cows.
+    int maximumMinimumDistance;
+    // Try each possible minimum distance, starting from 1.
+    for (int minimumDistance = 1; minimumDistance <= maximumStallPosition; minimumDistance++) {
+        // Place the first cow in the first stall.
+        int lastCowPosition = arr[0];
+        // One cow is already placed, so k - 1 cows remain.
+        int remainingCows = k - 1;
+        // Check the remaining stalls to place the remaining cows.
+        for (int stallIndex = 1; stallIndex < numberOfStalls && remainingCows != 0; stallIndex++) {
+            // Calculate the distance between the current stall
+            // and the stall containing the last placed cow.
+            int distance = arr[stallIndex] - lastCowPosition;
+            // If the current stall is far enough from the last cow,
+            // place the next cow here.
+            if (distance >= minimumDistance) {
+                // One fewer cow remains to be placed.
+                remainingCows--;
+                // Update the position of the last placed cow.
+                lastCowPosition = arr[stallIndex];
+            }
+        }
+        // If all cows have been placed, this distance is possible.
+        if (remainingCows == 0) {
+            // Save this distance as the best answer found so far.
+            maximumMinimumDistance = minimumDistance;
+        }
+        else {
+            // If all cows cannot be placed at this distance,
+            // larger minimum distances will not work either.
+            break;
+        }
+    }
+    // Return the largest valid minimum distance.
+    return maximumMinimumDistance;
+}
+
+//-------------------------------------------//
+int aggressiveCowsBinarySearch(vector<int>& arr, int k) {
+    // Sort the stall positions in ascending order.
+    // This allows us to place cows from left to right.
+    sort(arr.begin(), arr.end());
+    // Get the total number of stalls.
+    int numberOfStalls = arr.size();
+    // Store the maximum stall position.
+    int maximumStallPosition = INT_MIN;
+    // Find the maximum position among all stalls.
+    for (int stallIndex = 0; stallIndex < numberOfStalls; stallIndex++) {
+        maximumStallPosition = max(maximumStallPosition, arr[stallIndex]);
+    }
+    // Set the search range for the minimum distance between cows.
+    // The minimum distance starts at 1.
+    // The maximum possible distance is bounded by the stall positions.
+    int low = 1, high = maximumStallPosition;
+    // Store the largest minimum distance that allows us to place all cows.
+    int maximumMinimumDistance;
+    // Use binary search to find the maximum possible minimum distance.
+    while (low <= high) {
+        // Find the middle distance to check.
+        int minimumDistance = low + (high - low) / 2;
+        // Place the first cow in the first stall.
+        int lastCowPosition = arr[0];
+        // One cow is already placed, so k - 1 cows remain.
+        int remainingCows = k - 1;
+        // Try placing the remaining cows in the other stalls.
+        for (int stallIndex = 1; stallIndex < numberOfStalls && remainingCows != 0; stallIndex++) {
+            // Calculate the distance between the current stall
+            // and the stall where the last cow was placed.
+            int distance = arr[stallIndex] - lastCowPosition;
+            // If the distance is large enough, place a cow in this stall.
+            if (distance >= minimumDistance) {
+                // One fewer cow remains to be placed.
+                remainingCows--;
+                // Update the position of the last placed cow.
+                lastCowPosition = arr[stallIndex];
+            }
+        }
+        // If all cows are placed, the current minimum distance is possible.
+        if (remainingCows == 0) {
+            // Save this distance as a possible answer.
+            maximumMinimumDistance = minimumDistance;
+            // Try a larger minimum distance to see if we can do better.
+            low = minimumDistance + 1;
+        }
+        else {
+            // We could not place all cows at this distance.
+            // Reduce the minimum distance and search the left half.
+            high = minimumDistance - 1;
+        }
+    }
+    // Return the largest valid minimum distance found.
+    return maximumMinimumDistance;
+}
+
+//int main(){
+//    vector<int> arr = {1, 2, 4, 8, 9};
+////    vector<int> arr = {10, 1, 2, 7, 5};
+//    cout << aggressiveCowsLinearSearch02(arr, 3) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
