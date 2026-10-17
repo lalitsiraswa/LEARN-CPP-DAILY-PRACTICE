@@ -911,3 +911,98 @@ vector<int> findPeakGridTuf01(vector<vector<int>>& mat) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Nth Root of M - GFG
+int nthRoot(int n, int m) {
+    // If m is 0, its Nth root is 0.
+    if (m == 0) {
+        return 0;
+    }
+    // If m is 1, its Nth root is 1.
+    if (m == 1) {
+        return 1;
+    }
+    // Check possible root values starting from 2.
+    // We only need to check values up to m / n.
+    bool isPowerGreaterThanM = false;
+    for (int possibleRoot = 2; possibleRoot <= m / n; possibleRoot++) {
+        // Start with 1 to calculate possibleRoot raised to the power n.
+        int powerResult = 1;
+        // Multiply possibleRoot by itself n times.
+        for (int exponent = 1; exponent <= n; exponent++) {
+            powerResult *= possibleRoot;
+            // If the result exceeds m, this root is too large.
+            // Stop calculating its power.
+            if (powerResult > m) {
+                isPowerGreaterThanM = true;
+                break;
+            }
+        }
+        // Since larger possible roots will also produce powers greater
+        // than m, stop checking further roots.
+        if (isPowerGreaterThanM) {
+            break;
+        }
+        // If the calculated power equals m, we found the exact Nth root.
+        if (powerResult == m) {
+            return possibleRoot;
+        }
+    }
+    // No exact integer Nth root was found.
+    return -1;
+}
+
+//-------------------------------------------//
+int nthRootBinarySearch(int n, int m) {
+    // If m is 0, its Nth root is 0.
+    if (m == 0) {
+        return 0;
+    }
+    // If m is 1, its Nth root is 1.
+    if (m == 1) {
+        return 1;
+    }
+    // Set the search range for the possible integer root.
+    int low = 2, high = m / n;
+    // Continue searching while the range is not empty.
+    while (low <= high) {
+        // Find the middle value to check as a possible Nth root.
+        int possibleRoot = low + (high - low) / 2;
+        // Start with 1 to calculate possibleRoot raised to the power n.
+        int powerResult = 1;
+        // Multiply possibleRoot by itself n times.
+        for (int exponent = 1; exponent <= n; exponent++) {
+            powerResult *= possibleRoot;
+            // If the calculated power exceeds m, stop multiplying.
+            // There is no need to calculate the remaining multiplications.
+            if (powerResult > m) {
+                break;
+            }
+        }
+        // If possibleRoot raised to the power n equals m,
+        // we have found the exact integer Nth root.
+        if (powerResult == m) {
+            return possibleRoot;
+        }
+        // If the calculated power is greater than m,
+        // the possible root is too large.
+        // Search the smaller values.
+        else if (powerResult > m) {
+            high = possibleRoot - 1;
+        }
+        // If the calculated power is smaller than m,
+        // the possible root is too small.
+        // Search the larger values.
+        else {
+            low = possibleRoot + 1;
+        }
+    }
+    // No exact integer Nth root exists.
+    return -1;
+}
+
+//int main(){
+//    cout << nthRoot(2, 25) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
