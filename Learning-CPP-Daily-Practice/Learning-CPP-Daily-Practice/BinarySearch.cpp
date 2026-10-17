@@ -1006,3 +1006,109 @@ int nthRootBinarySearch(int n, int m) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 875. Koko Eating Bananas
+// Time Limit Exceeded
+int minEatingSpeed(vector<int>& piles, int h) {
+    // Get the total number of piles.
+    int numberOfPiles = piles.size();
+    // Store the maximum number of bananas in any pile.
+    // This is the maximum possible eating speed we need to check.
+    int maximumPileSize = INT_MIN;
+    // Store the minimum eating speed that allows us to finish
+    // all the bananas within h hours.
+    int minimumEatingSpeed = INT_MAX;
+    // Find the largest pile because eating at this speed
+    // allows us to finish any pile in at most one hour.
+    for (int pileIndex = 0; pileIndex < numberOfPiles; pileIndex++) {
+        maximumPileSize = max(maximumPileSize, piles[pileIndex]);
+    }
+    // Try every possible eating speed, starting from 1
+    // up to the size of the largest pile.
+    for (int eatingSpeed = 1; eatingSpeed <= maximumPileSize; eatingSpeed++) {
+        // Track the total number of hours needed at this eating speed.
+        // Use long long to reduce the risk of integer overflow.
+        long long totalHoursRequired = 0;
+        // Calculate how many hours are needed to finish each pile.
+        for (int pileIndex = 0; pileIndex < numberOfPiles; pileIndex++) {
+            // Count the complete hours needed to eat this pile.
+            totalHoursRequired += piles[pileIndex] / eatingSpeed;
+            // If bananas remain after complete hours, one additional
+            // hour is needed to finish the remaining bananas.
+            if (piles[pileIndex] % eatingSpeed != 0) {
+                totalHoursRequired += 1;
+            }
+        }
+        // If all piles can be finished within h hours,
+        // this eating speed is valid.
+        if (totalHoursRequired <= h) {
+            // Since we are checking speeds in increasing order,
+            // the first valid speed is the minimum eating speed.
+            minimumEatingSpeed = eatingSpeed;
+            // Stop searching because we have found the answer.
+            break;
+        }
+    }
+    // Return the minimum eating speed that satisfies the time limit.
+    return minimumEatingSpeed;
+}
+
+//-------------------------------------------//
+int minEatingSpeedBinarySearch(vector<int>& piles, int h) {
+    // Get the total number of banana piles.
+    int numberOfPiles = piles.size();
+    // Store the size of the largest pile.
+    // Eating at this speed allows Koko to finish each pile in at most one hour.
+    int maximumPileSize = INT_MIN;
+    // Store the minimum valid eating speed found so far.
+    int minimumEatingSpeed = INT_MAX;
+    // Find the largest pile to determine the upper limit of the search range.
+    for (int pileIndex = 0; pileIndex < numberOfPiles; pileIndex++) {
+        maximumPileSize = max(maximumPileSize, piles[pileIndex]);
+    }
+    // The minimum possible eating speed is 1 banana per hour.
+    // The maximum possible eating speed is the size of the largest pile.
+    int low = 1, high = maximumPileSize;
+    // Use binary search to find the minimum valid eating speed.
+    while (low <= high) {
+        // Find the middle eating speed of the current search range.
+        int eatingSpeed = low + (high - low) / 2;
+        // Track the total hours needed to finish all the banana piles
+        // at the current eating speed.
+        long long totalRequiredHours = 0;
+        // Calculate the time required to finish each pile.
+        for (int pileIndex = 0; pileIndex < numberOfPiles; pileIndex++) {
+            // Count the complete hours needed to eat this pile.
+            totalRequiredHours += piles[pileIndex] / eatingSpeed;
+            // If some bananas remain after complete hours,
+            // one additional hour is needed to finish the pile.
+            if (piles[pileIndex] % eatingSpeed != 0) {
+                totalRequiredHours += 1;
+            }
+        }
+        // If Koko can finish all piles within the given time limit,
+        // the current eating speed is valid.
+        if (totalRequiredHours <= h) {
+            // Save the current speed as a possible minimum answer.
+            minimumEatingSpeed = min(minimumEatingSpeed, eatingSpeed);
+            // Try a smaller eating speed to see if it also works.
+            high = eatingSpeed - 1;
+        }
+        else {
+            // The current speed is too slow because Koko needs
+            // more than h hours. Search for a higher eating speed.
+            low = eatingSpeed + 1;
+        }
+    }
+    // Return the minimum eating speed that allows Koko to finish on time.
+    return minimumEatingSpeed;
+}
+
+//int main(){
+////    vector<int> piles = {3, 6, 7, 11};
+////    vector<int> piles = {312884470};
+//    vector<int> piles = {30, 11, 23, 4, 20};
+//    cout << minEatingSpeedBinarySearch(piles, 5) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
