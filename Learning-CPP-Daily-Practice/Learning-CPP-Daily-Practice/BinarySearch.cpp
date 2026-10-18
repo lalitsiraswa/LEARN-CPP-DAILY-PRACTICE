@@ -1286,3 +1286,126 @@ int aggressiveCowsBinarySearch(vector<int>& arr, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Allocate Minimum Pages - GFG
+// Time Limit Exceeded
+int findPages(vector<int> &pages, int totalStudents) {
+    int totalBooks = pages.size();
+    // If there are more students than books, every student
+    // cannot receive at least one book.
+    if (totalStudents > totalBooks) {
+        return -1;
+    }
+    int largestBookPages = INT_MIN;
+    int totalPages = 0;
+    // Find the largest number of pages in a single book
+    // and calculate the total pages across all books.
+    for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
+        largestBookPages = max(largestBookPages, pages[bookIndex]);
+        totalPages += pages[bookIndex];
+    }
+    // The maximum page limit cannot be smaller than the largest book,
+    // because a book cannot be divided between students.
+    //
+    // The total number of pages is the largest possible limit,
+    // because one student could receive all the books.
+    for (int maxPagesPerStudent = largestBookPages; maxPagesPerStudent <= totalPages; maxPagesPerStudent++) {
+        // Start by assigning books to the first student.
+        int currentStudentPages = 0;
+        int studentsNeeded = 1;
+        // Allocate books in their original order.
+        for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
+            // If this book fits within the current student's page limit,
+            // assign it to that student.
+            if (currentStudentPages + pages[bookIndex] <= maxPagesPerStudent) {
+                currentStudentPages += pages[bookIndex];
+            }
+            else {
+                // If adding this book exceeds the limit, assign it
+                // to a new student.
+                studentsNeeded++;
+                // Start the new student's allocation with this book.
+                currentStudentPages = pages[bookIndex];
+            }
+        }
+        // If we need more students than allowed, this page limit
+        // is too small. Try a larger page limit.
+        if (studentsNeeded > totalStudents) {
+            continue;
+        }
+        // This is the first valid page limit we found.
+        // Since we check limits from smallest to largest,
+        // it is the minimum possible maximum page allocation.
+        return maxPagesPerStudent;
+    }
+    // Return -1 if no valid allocation is found.
+    return -1;
+}
+//-------------------------------------------//
+int findPagesBinarySearch(vector<int> &bookPages, int totalStudents) {
+    int totalBooks = bookPages.size();
+    // If there are more students than books, every student cannot get a book.
+    if (totalStudents > totalBooks) {
+        return -1;
+    }
+    int largestBookPages = INT_MIN;
+    long long sumOfAllPages = 0;
+    // Find the largest book and calculate the total pages in all books.
+    for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
+        largestBookPages = max(largestBookPages, bookPages[bookIndex]);
+        sumOfAllPages += bookPages[bookIndex];
+    }
+    // The answer cannot be smaller than the largest book,
+    // because a book cannot be divided between students.
+    long long minimumPageLimit = largestBookPages;
+    // The answer cannot exceed the total pages of all books.
+    long long maximumPageLimit = sumOfAllPages;
+    // Store the smallest valid maximum page limit found so far.
+    long long minimumMaximumPages = -1;
+    // Use binary search to find the minimum valid page limit.
+    while (minimumPageLimit <= maximumPageLimit) {
+        // Assume each student can receive at most this many pages.
+        long long allowedPagesPerStudent = minimumPageLimit + (maximumPageLimit - minimumPageLimit) / 2;
+        // Initially, assign books to the first student.
+        int studentsRequired = 1;
+        long long pagesAssignedToCurrentStudent = 0;
+        // Allocate books in their original order.
+        for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
+            // If this book fits within the current student's page limit,
+            // assign it to the current student.
+            if (pagesAssignedToCurrentStudent + bookPages[bookIndex] <= allowedPagesPerStudent) {
+                pagesAssignedToCurrentStudent += bookPages[bookIndex];
+            }
+            else {
+                // This book would exceed the current student's page limit.
+                // Assign it to a new student instead.
+                studentsRequired++;
+                // Start the new student's allocation with this book.
+                pagesAssignedToCurrentStudent = bookPages[bookIndex];
+            }
+        }
+        // If more than the allowed number of students is required,
+        // the page limit is too small. Search for a larger limit.
+        if (studentsRequired > totalStudents) {
+            minimumPageLimit = allowedPagesPerStudent + 1;
+        }
+        else {
+            // This page limit is valid.
+            // Save it as a possible answer.
+            minimumMaximumPages = allowedPagesPerStudent;
+            // Try a smaller page limit to minimize the maximum pages.
+            maximumPageLimit = allowedPagesPerStudent - 1;
+        }
+    }
+    // Return the minimum possible maximum pages assigned to a student.
+    return static_cast<int>(minimumMaximumPages);
+}
+
+int main(){
+//    vector<int> arr = {1, 2, 3, 4, 5, 6};
+//    vector<int> arr = {1, 2, 3, 4, 5};
+    vector<int> arr = {15, 10, 19, 10, 5, 18, 7};
+    cout << findPagesBinarySearch(arr, 5) << endl;
+    return 0;
+}
+
+//-------------------------------------------//-------------------------------------------//
