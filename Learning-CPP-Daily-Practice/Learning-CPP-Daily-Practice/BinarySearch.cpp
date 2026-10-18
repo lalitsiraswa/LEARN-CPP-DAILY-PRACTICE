@@ -1288,54 +1288,54 @@ int aggressiveCowsBinarySearch(vector<int>& arr, int k) {
 //-------------------------------------------//-------------------------------------------//
 // Allocate Minimum Pages - GFG
 // Time Limit Exceeded
-int findPages(vector<int> &pages, int totalStudents) {
-    int totalBooks = pages.size();
+int findPages(vector<int> &bookPages, int totalStudents) {
+    int totalBooks = bookPages.size();
     // If there are more students than books, every student
     // cannot receive at least one book.
     if (totalStudents > totalBooks) {
         return -1;
     }
     int largestBookPages = INT_MIN;
-    int totalPages = 0;
-    // Find the largest number of pages in a single book
-    // and calculate the total pages across all books.
+    int sumOfAllPages = 0;
+    // Find the largest book and calculate the total pages
+    // across all books.
     for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
-        largestBookPages = max(largestBookPages, pages[bookIndex]);
-        totalPages += pages[bookIndex];
+        largestBookPages = max(largestBookPages, bookPages[bookIndex]);
+        sumOfAllPages += bookPages[bookIndex];
     }
-    // The maximum page limit cannot be smaller than the largest book,
-    // because a book cannot be divided between students.
+    // Start with the largest book's pages as the minimum limit.
+    // The limit cannot be smaller because a book cannot be divided.
     //
-    // The total number of pages is the largest possible limit,
-    // because one student could receive all the books.
-    for (int maxPagesPerStudent = largestBookPages; maxPagesPerStudent <= totalPages; maxPagesPerStudent++) {
-        // Start by assigning books to the first student.
-        int currentStudentPages = 0;
-        int studentsNeeded = 1;
+    // The total pages across all books is the maximum possible limit.
+    // One student could receive all the books.
+    for (int allowedPagesPerStudent = largestBookPages; allowedPagesPerStudent <= sumOfAllPages; allowedPagesPerStudent++) {
+        // Initially, assign books to the first student.
+        int studentsRequired = 1;
+        int pagesAssignedToCurrentStudent = 0;
         // Allocate books in their original order.
         for (int bookIndex = 0; bookIndex < totalBooks; bookIndex++) {
             // If this book fits within the current student's page limit,
-            // assign it to that student.
-            if (currentStudentPages + pages[bookIndex] <= maxPagesPerStudent) {
-                currentStudentPages += pages[bookIndex];
+            // assign it to the current student.
+            if (pagesAssignedToCurrentStudent + bookPages[bookIndex] <= allowedPagesPerStudent) {
+                pagesAssignedToCurrentStudent += bookPages[bookIndex];
             }
             else {
-                // If adding this book exceeds the limit, assign it
-                // to a new student.
-                studentsNeeded++;
-                // Start the new student's allocation with this book.
-                currentStudentPages = pages[bookIndex];
+                // Adding this book would exceed the current student's limit.
+                // Assign the book to the next student instead.
+                studentsRequired++;
+                // Start the next student's allocation with this book.
+                pagesAssignedToCurrentStudent = bookPages[bookIndex];
             }
         }
-        // If we need more students than allowed, this page limit
-        // is too small. Try a larger page limit.
-        if (studentsNeeded > totalStudents) {
+        // If more students than allowed are required,
+        // this page limit is too small. Try the next larger limit.
+        if (studentsRequired > totalStudents) {
             continue;
         }
         // This is the first valid page limit we found.
-        // Since we check limits from smallest to largest,
+        // Since limits are checked in increasing order,
         // it is the minimum possible maximum page allocation.
-        return maxPagesPerStudent;
+        return allowedPagesPerStudent;
     }
     // Return -1 if no valid allocation is found.
     return -1;
