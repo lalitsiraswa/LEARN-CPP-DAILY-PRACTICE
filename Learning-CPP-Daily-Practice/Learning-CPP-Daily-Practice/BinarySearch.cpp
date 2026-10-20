@@ -1409,3 +1409,170 @@ int findPagesBinarySearch(vector<int> &bookPages, int totalStudents) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Median in a Row-Wise Sorted Matrix - GFG
+
+// Time Limit Exceeded
+// Partition the array by placing the pivot element
+// in its correct position.
+int medianQuickSortPartitionHelper(vector<int> &elements, int low, int high) {
+    // Choose the first element as the pivot.
+    int pivotElement = elements[low];
+    int leftIndex = low;
+    int rightIndex = high;
+    while (leftIndex <= rightIndex) {
+        // Move leftIndex forward while elements are
+        // smaller than or equal to the pivot.
+        while (leftIndex <= rightIndex && elements[leftIndex] <= pivotElement) {
+            leftIndex++;
+        }
+        // Move rightIndex backward while elements are
+        // greater than the pivot.
+        while (leftIndex <= rightIndex && elements[rightIndex] > pivotElement) {
+            rightIndex--;
+        }
+        // Swap elements that are on the wrong sides of the pivot.
+        if (leftIndex < rightIndex) {
+            swap(elements[leftIndex], elements[rightIndex]);
+        }
+    }
+    // Place the pivot in its correct sorted position.
+    swap(elements[low], elements[rightIndex]);
+    // Return the final position of the pivot.
+    return rightIndex;
+}
+
+// Recursively sort the array using Quick Sort.
+void medianQuickSortHelper(vector<int> &elements, int low, int high) {
+    // Stop when the subarray has zero or one element.
+    if (low >= high) {
+        return;
+    }
+    // Partition the array and get the pivot's final position.
+    int pivotIndex = medianQuickSortPartitionHelper(elements, low, high);
+    // Sort the elements before the pivot.
+    medianQuickSortHelper(elements, low, pivotIndex - 1);
+    // Sort the elements after the pivot.
+    medianQuickSortHelper(elements, pivotIndex + 1, high);
+}
+
+// Sort all elements using Quick Sort.
+void medianQuickSort(vector<int> &elements) {
+    int totalElements = elements.size();
+    medianQuickSortHelper(elements, 0, totalElements - 1);
+}
+
+// Find the median of the row-wise sorted matrix.
+int median(vector<vector<int>> &matrix) {
+    int totalRows = matrix.size();
+    int totalColumns = matrix[0].size();
+    // Store all matrix elements in a single 1D vector.
+    vector<int> allElements;
+    for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+        // Append every element of the current row.
+        allElements.insert(allElements.end(), matrix[rowIndex].begin(), matrix[rowIndex].end());
+    }
+    // Sort all elements in ascending order.
+    medianQuickSort(allElements);
+    // Return the middle element of the sorted vector.
+    int middleIndex = allElements.size() / 2;
+    int medianElement = allElements[middleIndex];
+    return medianElement;
+}
+//-------------------------------------------//
+// Time Limit Exceeded
+int medianBruteForce(vector<vector<int>> &matrix) {
+    int totalRows = matrix.size();
+    int totalColumns = matrix[0].size();
+    int smallestElement = INT_MAX;
+    int largestElement = INT_MIN;
+    // Since each row is sorted:
+    // The first element of each row is its smallest element.
+    // The last element of each row is its largest element.
+    for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+        smallestElement = min(smallestElement, matrix[rowIndex][0]);
+        largestElement = max(largestElement, matrix[rowIndex][totalColumns - 1]);
+    }
+    // Find the middle position of all elements.
+    // For an odd number of elements, this is the median's zero-based index.
+    int medianPosition = (totalRows * totalColumns) / 2;
+    // Check every possible value from the smallest to the largest element.
+    for (int candidateMedian = smallestElement; candidateMedian <= largestElement; candidateMedian++) {
+        int elementsLessThanOrEqualToCandidate = 0;
+        // Count how many matrix elements are less than
+        // or equal to the current candidate value.
+        for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < totalColumns; columnIndex++) {
+                if (matrix[rowIndex][columnIndex] <= candidateMedian) {
+                    elementsLessThanOrEqualToCandidate++;
+                }
+                // If more than half the elements are <= the candidate,
+                // this candidate is the median.
+                if (elementsLessThanOrEqualToCandidate > medianPosition) {
+                    return candidateMedian;
+                }
+            }
+        }
+    }
+    // Return 0 if no candidate is found.
+    return 0;
+}
+
+//-------------------------------------------//
+int medianBinarySearch(vector<vector<int>> &matrix) {
+    int totalRows = matrix.size();
+    int totalColumns = matrix[0].size();
+    int smallestElement = INT_MAX;
+    int largestElement = INT_MIN;
+    // Find the smallest and largest elements in the matrix.
+    // Since each row is sorted, the first element is the smallest
+    // and the last element is the largest element in that row.
+    for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+        smallestElement = min(smallestElement, matrix[rowIndex][0]);
+        largestElement = max(largestElement, matrix[rowIndex][totalColumns - 1]);
+    }
+    // Set the search range between the smallest and largest elements.
+    int low = smallestElement;
+    int high = largestElement;
+    // Find the middle position of all elements.
+    // For an odd number of elements, this is the median's zero-based index.
+    int medianPosition = (totalRows * totalColumns) / 2;
+    // Store the median found so far.
+    int medianResult = 0;
+    // Use binary search to find the smallest value
+    // for which more than half of the elements are less than or equal to it.
+    while (low <= high) {
+        int candidateMedian = low + (high - low) / 2;
+        int elementsLessThanOrEqualToCandidate = 0;
+        // Count how many elements in the matrix are <= candidateMedian.
+        for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < totalColumns; columnIndex++) {
+                if (matrix[rowIndex][columnIndex] <= candidateMedian) {
+                    elementsLessThanOrEqualToCandidate++;
+                }
+            }
+        }
+        // If more than half the elements are <= candidateMedian,
+        // this value could be the median.
+        // Save it and search for a smaller valid value.
+        if (elementsLessThanOrEqualToCandidate > medianPosition) {
+            medianResult = candidateMedian;
+            high = candidateMedian - 1;
+        }
+        else {
+            // Not enough elements are <= candidateMedian.
+            // Search for a larger value.
+            low = candidateMedian + 1;
+        }
+    }
+    // Return the median found by binary search.
+    return medianResult;
+}
+
+int main(){
+//    vector<vector<int>> mat = {{1, 3, 5}, {2, 6, 9}, {3, 6, 9}};
+    vector<vector<int>> mat = {{1, 5, 7, 9, 11}, {2, 3, 4, 5, 10}, {9, 10, 12, 14, 16}};
+    cout << medianBinarySearch(mat) << endl;
+    return 0;
+}
+
+//-------------------------------------------//-------------------------------------------//

@@ -195,11 +195,13 @@ int partition(vector<int>& nums, int low, int high) {
     int pivot = nums[low];
     // left moves from left to right looking for an element
     // that is greater than the pivot.
+//    int left = low + 1;
     int left = low;
     // right moves from right to left looking for an element
     // that is smaller than or equal to the pivot.
     int right = high;
     // Continue until the two pointers cross.
+//    while (left <= right) {
     while (left < right) {
         // Move left to the right while elements are
         // already on the correct side of the pivot.
@@ -207,6 +209,9 @@ int partition(vector<int>& nums, int low, int high) {
         // Stop when:
         // 1. We find an element greater than the pivot, or
         // 2. left reaches the end of the current range.
+//        while(left <= right && nums[left] <= pivot){
+//            left++;
+//        }
         while (nums[left] <= pivot && left < high) {
             left++;
         }
@@ -216,6 +221,9 @@ int partition(vector<int>& nums, int low, int high) {
         // Stop when:
         // 1. We find an element smaller than or equal to the pivot, or
         // 2. right reaches the beginning of the current range.
+//        while(left <= right && nums[right] > pivot){
+//            right--;
+//        }
         while (nums[right] > pivot && right > low) {
             right--;
         }
@@ -270,7 +278,52 @@ vector<int> quickSort(vector<int>& nums) {
     // Return the sorted array.
     return nums;
 }
+//-------------//-------------//
+int quickSortPartition001(vector<int> &elements, int low, int high) {
+    // Choose the first element as the pivot.
+    int pivotElement = elements[low];
+    int leftIndex = low;
+    int rightIndex = high;
+    while (leftIndex <= rightIndex) {
+        // Move leftIndex forward while elements are
+        // smaller than or equal to the pivot.
+        while (leftIndex <= rightIndex && elements[leftIndex] <= pivotElement) {
+            leftIndex++;
+        }
+        // Move rightIndex backward while elements are
+        // greater than the pivot.
+        while (leftIndex <= rightIndex && elements[rightIndex] > pivotElement) {
+            rightIndex--;
+        }
+        // Swap elements that are on the wrong sides of the pivot.
+        if (leftIndex < rightIndex) {
+            swap(elements[leftIndex], elements[rightIndex]);
+        }
+    }
+    // Place the pivot in its correct sorted position.
+    swap(elements[low], elements[rightIndex]);
+    // Return the final position of the pivot.
+    return rightIndex;
+}
 
+// Recursively sort the elements before and after the pivot.
+void quickSortHelper001(vector<int> &elements, int low, int high) {
+    // Stop when the subarray has zero or one element.
+    if (low >= high) {
+        return;
+    }
+    // Partition the array and get the pivot's final position.
+    int pivotIndex = quickSortPartition001(elements, low, high);
+    // Sort the elements before the pivot.
+    quickSortHelper001(elements, low, pivotIndex - 1);
+    // Sort the elements after the pivot.
+    quickSortHelper001(elements, pivotIndex + 1, high);
+}
+// Sort the entire vector using Quick Sort.
+void quickSort001(vector<int> &elements) {
+    int totalElements = elements.size();
+    quickSortHelper001(elements, 0, totalElements - 1);
+}
 //-------------//-------------//
 // Partition the array around the pivot.
 //
