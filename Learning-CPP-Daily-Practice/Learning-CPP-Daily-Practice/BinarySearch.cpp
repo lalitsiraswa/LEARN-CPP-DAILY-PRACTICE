@@ -1803,6 +1803,16 @@ int kthElementBinarySearch(vector<int>& a, vector<int>& b, int k) {
     }
     // Find the valid range for partition1 so that
     // partition2 also stays within the bounds of array B.
+    
+    // Example: a = {2, 3}, b = {1, 4, 5}, k = 4
+    //
+    // partitionA + partitionB = k
+    // partitionB = k - partitionA
+    //
+    // Array B has only 3 elements, so partitionA must be at least 1.
+    // Array A has only 2 elements, so partitionA cannot exceed 2.
+    //
+    // Therefore, the valid range for partitionA is [1, 2].
     int low = max(0, k - sizeB);
     int high = min(k, sizeA);
     while (low <= high) {
