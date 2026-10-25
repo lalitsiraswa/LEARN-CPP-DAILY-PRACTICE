@@ -1568,11 +1568,189 @@ int medianBinarySearch(vector<vector<int>> &matrix) {
     return medianResult;
 }
 
-int main(){
-//    vector<vector<int>> mat = {{1, 3, 5}, {2, 6, 9}, {3, 6, 9}};
-    vector<vector<int>> mat = {{1, 5, 7, 9, 11}, {2, 3, 4, 5, 10}, {9, 10, 12, 14, 16}};
-    cout << medianBinarySearch(mat) << endl;
+//int main(){
+////    vector<vector<int>> mat = {{1, 3, 5}, {2, 6, 9}, {3, 6, 9}};
+//    vector<vector<int>> mat = {{1, 5, 7, 9, 11}, {2, 3, 4, 5, 10}, {9, 10, 12, 14, 16}};
+//    cout << medianBinarySearch(mat) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+// 4. Median of Two Sorted Arrays
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+    int size1 = nums1.size();
+    int size2 = nums2.size();
+    int totalSize = size1 + size2;
+    int medianIndex = totalSize / 2;
+    int index1 = 0, index2 = 0;
+    int currentIndex = 0;
+    int previousValue;
+    // Traverse both arrays in sorted order until reaching the median.
+    while (index1 < size1 && index2 < size2) {
+        if (currentIndex == medianIndex) {
+            if (totalSize % 2 == 0) {
+                return (min(nums1[index1], nums2[index2]) + previousValue) / 2.0;
+            }
+            return min(nums1[index1], nums2[index2]);
+        }
+        if (nums1[index1] <= nums2[index2]) {
+            previousValue = nums1[index1++];
+        } else {
+            previousValue = nums2[index2++];
+        }
+        currentIndex++;
+    }
+    // Process remaining elements in the first array.
+    while (index1 < size1) {
+        if (currentIndex == medianIndex) {
+            if (totalSize % 2 == 0) {
+                return (nums1[index1] + previousValue) / 2.0;
+            }
+            return nums1[index1];
+        }
+        previousValue = nums1[index1++];
+        currentIndex++;
+    }
+    // Process remaining elements in the second array.
+    while (index2 < size2) {
+        if (currentIndex == medianIndex) {
+            if (totalSize % 2 == 0) {
+                return (nums2[index2] + previousValue) / 2.0;
+            }
+            return nums2[index2];
+        }
+        previousValue = nums2[index2++];
+        currentIndex++;
+    }
+    return -1;
+}
+
+//-------------------------------------------//
+double findMedianSortedArraysTUF(vector<int>& nums1, vector<int>& nums2) {
+    int size1 = nums1.size();
+    int size2 = nums2.size();
+    int totalSize = size1 + size2;
+    // Find the indices of the two middle elements.
+    int secondMedianIndex = totalSize / 2;
+    int firstMedianIndex = secondMedianIndex - 1;
+    int firstMedianValue = -1;
+    int secondMedianValue = -1;
+    int index1 = 0, index2 = 0;
+    int currentIndex = 0;
+    // Traverse both arrays in sorted order.
+    while (index1 < size1 && index2 < size2) {
+        if (nums1[index1] <= nums2[index2]) {
+            if (currentIndex == firstMedianIndex) {
+                firstMedianValue = nums1[index1];
+            }
+            if (currentIndex == secondMedianIndex) {
+                secondMedianValue = nums1[index1];
+            }
+            index1++;
+        } else {
+            if (currentIndex == firstMedianIndex) {
+                firstMedianValue = nums2[index2];
+            }
+            if (currentIndex == secondMedianIndex) {
+                secondMedianValue = nums2[index2];
+            }
+            index2++;
+        }
+        currentIndex++;
+    }
+    // Process remaining elements in the first array.
+    while (index1 < size1) {
+        if (currentIndex == firstMedianIndex) {
+            firstMedianValue = nums1[index1];
+        }
+        if (currentIndex == secondMedianIndex) {
+            secondMedianValue = nums1[index1];
+        }
+        index1++;
+        currentIndex++;
+    }
+    // Process remaining elements in the second array.
+    while (index2 < size2) {
+        if (currentIndex == firstMedianIndex) {
+            firstMedianValue = nums2[index2];
+        }
+        if (currentIndex == secondMedianIndex) {
+            secondMedianValue = nums2[index2];
+        }
+        index2++;
+        currentIndex++;
+    }
+    // Calculate the median based on the total number of elements.
+    if (totalSize % 2 == 0) {
+        return (firstMedianValue + secondMedianValue) / 2.0;
+    }
+    return secondMedianValue;
+}
+
+//-------------------------------------------//
+double findMedianSortedArraysBinarySearch(vector<int>& nums1, vector<int>& nums2) {
+    int size1 = nums1.size();
+    int size2 = nums2.size();
+    // Always perform binary search on the smaller array.
+    // This reduces the search space and ensures O(log(min(m, n))) time.
+    if (size1 > size2) {
+        return findMedianSortedArraysBinarySearch(nums2, nums1);
+    }
+    int totalSize = size1 + size2;
+    // Number of elements that should be present in the left partition.
+    // Adding 1 ensures the left partition has one extra element for odd sizes.
+    int leftPartitionSize = (totalSize + 1) / 2;
+    // Binary search for the correct partition in the first array.
+    int low = 0;
+    int high = size1;
+    while (low <= high) {
+        // Number of elements taken from the first array's left partition.
+        int partition1 = low + (high - low) / 2;
+        // Remaining elements needed from the second array.
+        int partition2 = leftPartitionSize - partition1;
+        // Largest elements on the left side of each partition.
+        // Use INT_MIN when the left partition is empty.
+        int leftMax1 = (partition1 > 0) ? nums1[partition1 - 1] : INT_MIN;
+        int leftMax2 = (partition2 > 0) ? nums2[partition2 - 1] : INT_MIN;
+        // Smallest elements on the right side of each partition.
+        // Use INT_MAX when the right partition is empty.
+        int rightMin1 = (partition1 < size1) ? nums1[partition1] : INT_MAX;
+        int rightMin2 = (partition2 < size2) ? nums2[partition2] : INT_MAX;
+        // A valid partition requires every left-side element
+        // to be less than or equal to every right-side element.
+        if (leftMax1 <= rightMin2 && leftMax2 <= rightMin1) {
+            // For even-sized input, average the two middle elements.
+            if (totalSize % 2 == 0) {
+                return (max(leftMax1, leftMax2) + min(rightMin1, rightMin2)) / 2.0;
+            }
+            // For odd-sized input, the left partition's maximum is the median.
+            return max(leftMax1, leftMax2);
+        }
+        else if (leftMax1 > rightMin2) {
+            // Too many elements from nums1 are in the left partition.
+            // Move the binary search toward smaller partition sizes.
+            high = partition1 - 1;
+        }
+        else {
+            // Too few elements from nums1 are in the left partition.
+            // Move the binary search toward larger partition sizes.
+            low = partition1 + 1;
+        }
+    }
+    // Reached only if the input or partition assumptions are invalid.
     return 0;
 }
 
+//int main(){
+////    vector<int> nums1 = {2, 3, 4};
+////    vector<int> nums2 = {1, 3};
+////    vector<int> nums1 = {7, 12, 14, 15};
+////    vector<int> nums2 = {1, 2, 3, 4, 9, 11};
+//    vector<int> nums1 = {1, 3, 4, 7, 10, 12};
+//    vector<int> nums2 = {2, 3, 6, 15};
+//    cout << findMedianSortedArraysBinarySearch(nums1, nums2) << endl;
+//    return 0;
+//}
+
 //-------------------------------------------//-------------------------------------------//
+
