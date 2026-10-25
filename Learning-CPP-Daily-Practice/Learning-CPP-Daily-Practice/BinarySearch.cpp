@@ -1754,4 +1754,98 @@ double findMedianSortedArraysBinarySearch(vector<int>& nums1, vector<int>& nums2
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// K-th of Two Sorted Arrays - GFG
+int kthElement(vector<int>& a, vector<int>& b, int k) {
+    int sizeA = a.size();
+    int sizeB = b.size();
+    int indexA = 0, indexB = 0;
+    int currentPosition = 1;
+    // Traverse both sorted arrays to find the k-th smallest element.
+    while (indexA < sizeA && indexB < sizeB) {
+        if (currentPosition == k) {
+            return min(a[indexA], b[indexB]);
+        }
+        // Move the index of the array with the smaller current element.
+        if (a[indexA] <= b[indexB]) {
+            indexA++;
+        } else {
+            indexB++;
+        }
+        currentPosition++;
+    }
+    // Process remaining elements in array A.
+    while (indexA < sizeA) {
+        if (currentPosition == k) {
+            return a[indexA];
+        }
+        indexA++;
+        currentPosition++;
+    }
+    // Process remaining elements in array B.
+    while (indexB < sizeB) {
+        if (currentPosition == k) {
+            return b[indexB];
+        }
+        indexB++;
+        currentPosition++;
+    }
+    return -1;
+}
 
+//-------------------------------------------//
+int kthElementBinarySearch(vector<int>& a, vector<int>& b, int k) {
+    int sizeA = a.size();
+    int sizeB = b.size();
+    // Always perform binary search on the smaller array.
+    // This reduces the search space and improves efficiency.
+    if (sizeA > sizeB) {
+        return kthElementBinarySearch(b, a, k);
+    }
+    // Find the valid range for partition1 so that
+    // partition2 also stays within the bounds of array B.
+    int low = max(0, k - sizeB);
+    int high = min(k, sizeA);
+    while (low <= high) {
+        // Number of elements taken from array A's left partition.
+        int partitionA = low + (high - low) / 2;
+        // The remaining elements needed from array B's left partition.
+        // Together, both left partitions must contain exactly k elements.
+        int partitionB = k - partitionA;
+        // Largest elements in the left partitions.
+        // Use INT_MIN when a left partition is empty.
+        int leftMaxA = (partitionA > 0) ? a[partitionA - 1] : INT_MIN;
+        int leftMaxB = (partitionB > 0) ? b[partitionB - 1] : INT_MIN;
+        // Smallest elements in the right partitions.
+        // Use INT_MAX when a right partition is empty.
+        int rightMinA = (partitionA < sizeA) ? a[partitionA] : INT_MAX;
+        int rightMinB = (partitionB < sizeB) ? b[partitionB] : INT_MAX;
+        // A valid partition requires every left-side element
+        // to be less than or equal to every right-side element.
+        if (leftMaxA <= rightMinB && leftMaxB <= rightMinA) {
+            // The left partition contains exactly k elements.
+            // Its maximum is the k-th smallest element.
+            return max(leftMaxA, leftMaxB);
+        }
+        // Too many elements from array A are in the left partition.
+        // Move the binary search toward smaller partition sizes.
+        if (leftMaxA > rightMinB) {
+            high = partitionA - 1;
+        }
+        else {
+            // Too few elements from array A are in the left partition.
+            // Move the binary search toward larger partition sizes.
+            low = partitionA + 1;
+        }
+    }
+    // Fallback if no valid partition is found.
+    return -1;
+}
+
+//int main(){
+//    vector<int> a = {1, 4, 8, 10, 12};
+//    vector<int> b = {5, 7, 11, 15, 17};
+//    cout << kthElementBinarySearch(a, b, 5) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
