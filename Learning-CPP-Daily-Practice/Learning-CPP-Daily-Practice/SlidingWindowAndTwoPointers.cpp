@@ -147,13 +147,63 @@ int lengthOfLongestSubstring03(string s) {
     return maxSubstringLength;
 }
 
-int main(){
-//    string s = "abcabcbb";
-//    string s = "ccbbcc";
-//    string s = "abcabcbbdefghijklmno";
-    string s = "cadbzabcd";
-    cout << lengthOfLongestSubstring03(s) << endl;
-    return 0;
+//int main(){
+////    string s = "abcabcbb";
+////    string s = "ccbbcc";
+////    string s = "abcabcbbdefghijklmno";
+//    string s = "cadbzabcd";
+//    cout << lengthOfLongestSubstring03(s) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+// 1423. Maximum Points You Can Obtain from Cards
+int maxScore(vector<int>& cardPoints, int k) {
+    int totalCards = cardPoints.size();
+    // Calculate the score by initially selecting the first k cards
+    // from the left side of the array.
+    int currentScore = 0;
+    for (int index = 0; index < k; index++) {
+        currentScore += cardPoints[index];
+    }
+    // If k equals to the total number of cards, we must select all cards.
+    // The score calculated above is already the maximum possible score.
+    if (totalCards == k) {
+        return currentScore;
+    }
+    // Initialize the pointers for replacing cards from the left
+    // with cards from the right.
+    //
+    // leftIndex points to the last selected card on the left.
+    // rightIndex points to the last card in the array.
+    int leftIndex = k - 1;
+    int rightIndex = totalCards - 1;
+    // Store the best score found so far.
+    int maximumScore = currentScore;
+    // Gradually remove cards from the left selection and add cards
+    // from the right side, considering every possible combination.
+    while (leftIndex >= 0) {
+        // Remove the current leftmost selected card from the score.
+        currentScore -= cardPoints[leftIndex];
+        // Add one more card from the right end of the array.
+        currentScore += cardPoints[rightIndex];
+        // Move both pointers one position to the left.
+        leftIndex--;
+        rightIndex--;
+        // Update the maximum score if this combination gives a better result.
+        maximumScore = max(maximumScore, currentScore);
+    }
+    // Return the maximum score obtained by selecting exactly k cards
+    // from the beginning and/or the end of the array.
+    return maximumScore;
 }
+
+//int main(){
+////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6, 1};
+////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6};
+//    vector<int> cardPoints = {5, 4, 1, 8, 7, 1, 3};
+//    cout << maxScore(cardPoints, 3) << endl;
+//    return 0;
+//}
 
 //-------------------------------------------//-------------------------------------------//
