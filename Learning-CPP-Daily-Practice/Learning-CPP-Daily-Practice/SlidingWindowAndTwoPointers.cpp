@@ -202,6 +202,7 @@ int maxScore(vector<int>& cardPoints, int k) {
 ////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6, 1};
 ////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6};
 //    vector<int> cardPoints = {5, 4, 1, 8, 7, 1, 3};
+//    vector<int> cardPoints = {6, 2, 3, 4, 7, 2, 1, 7, 1}; k = 4
 //    cout << maxScore(cardPoints, 3) << endl;
 //    return 0;
 //}
