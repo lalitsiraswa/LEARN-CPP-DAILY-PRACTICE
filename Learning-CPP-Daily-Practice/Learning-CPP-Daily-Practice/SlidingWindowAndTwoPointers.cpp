@@ -158,7 +158,48 @@ int lengthOfLongestSubstring03(string s) {
 
 //-------------------------------------------//-------------------------------------------//
 // 1423. Maximum Points You Can Obtain from Cards
+// Time Limit Exceeded
 int maxScore(vector<int>& cardPoints, int k) {
+    int totalCards = cardPoints.size();
+    // Initially, select all k cards from the left side.
+    int cardsFromLeft = k;
+    // Initially, no cards are selected from the right side.
+    int cardsFromRight = 0;
+    // Stores the maximum score found among all combinations.
+    int maximumScore = 0;
+    // Try every possible combination:
+    // k cards from the left and 0 from the right,
+    // k-1 from the left and 1 from the right, and so on,
+    // until 0 cards from the left and k from the right.
+    while (cardsFromLeft >= 0) {
+        // Calculate the score for the current combination.
+        int currentScore = 0;
+        // Add the points from the first cardsFromLeft cards.
+        for (int leftIndex = 0; leftIndex < cardsFromLeft; leftIndex++) {
+            currentScore += cardPoints[leftIndex];
+        }
+        // Prepare the next combination by selecting one fewer card
+        // from the left.
+        cardsFromLeft--;
+        // Add the points from the last cardsFromRight cards.
+        for (int rightIndex = totalCards - 1;
+             rightIndex >= totalCards - cardsFromRight;
+             rightIndex--) {
+            currentScore += cardPoints[rightIndex];
+        }
+        // Prepare the next combination by selecting one more card
+        // from the right.
+        cardsFromRight++;
+        // Update the maximum score if the current combination is better.
+        maximumScore = max(maximumScore, currentScore);
+    }
+    // Return the highest score among all possible combinations.
+    return maximumScore;
+}
+
+
+//-------------------------------------------//
+int maxScore01(vector<int>& cardPoints, int k) {
     int totalCards = cardPoints.size();
     // Calculate the score by initially selecting the first k cards
     // from the left side of the array.
@@ -199,10 +240,10 @@ int maxScore(vector<int>& cardPoints, int k) {
 }
 
 //int main(){
-////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6, 1};
+//    vector<int> cardPoints = {1, 2, 3, 4, 5, 6, 1};
 ////    vector<int> cardPoints = {1, 2, 3, 4, 5, 6};
-//    vector<int> cardPoints = {5, 4, 1, 8, 7, 1, 3};
-//    vector<int> cardPoints = {6, 2, 3, 4, 7, 2, 1, 7, 1}; k = 4
+////    vector<int> cardPoints = {5, 4, 1, 8, 7, 1, 3};
+////    vector<int> cardPoints = {6, 2, 3, 4, 7, 2, 1, 7, 1}; k = 4
 //    cout << maxScore(cardPoints, 3) << endl;
 //    return 0;
 //}
