@@ -182,9 +182,7 @@ int maxScore(vector<int>& cardPoints, int k) {
         // from the left.
         cardsFromLeft--;
         // Add the points from the last cardsFromRight cards.
-        for (int rightIndex = totalCards - 1;
-             rightIndex >= totalCards - cardsFromRight;
-             rightIndex--) {
+        for (int rightIndex = totalCards - 1; rightIndex >= totalCards - cardsFromRight; rightIndex--) {
             currentScore += cardPoints[rightIndex];
         }
         // Prepare the next combination by selecting one more card
