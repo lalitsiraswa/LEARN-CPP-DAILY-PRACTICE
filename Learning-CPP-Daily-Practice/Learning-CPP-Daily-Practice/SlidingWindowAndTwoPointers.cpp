@@ -247,3 +247,130 @@ int maxScore01(vector<int>& cardPoints, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 1004. Max Consecutive Ones III
+int longestOnes01(vector<int>& nums, int k) {
+    int arraySize = nums.size();
+    // Stores the maximum length of a subarray containing at most k zeros.
+    int maxConsecutiveOnes = 0;
+    // Try every possible starting index of a subarray.
+    // Continue only if the remaining elements could produce
+    // a subarray longer than the best one found so far.
+    for (int startIndex = 0; startIndex < arraySize && (arraySize - startIndex) > maxConsecutiveOnes; startIndex++) {
+        // Counts the number of zeros in the current subarray.
+        int zeroCount = 0;
+        // Extend the subarray from startIndex toward the end.
+        for (int endIndex = startIndex; endIndex < arraySize; endIndex++) {
+            // Count a zero because it would need to be flipped to 1.
+            if (nums[endIndex] == 0) {
+                zeroCount++;
+            }
+            // If the subarray contains more than k zeros,
+            // it cannot be made entirely of ones using only k flips.
+            // Stop extending this subarray.
+            if (zeroCount > k) {
+                break;
+            }
+            // The current subarray contains at most k zeros,
+            // so update the maximum valid subarray length.
+            int currentLength = endIndex - startIndex + 1;
+            maxConsecutiveOnes = max(maxConsecutiveOnes, currentLength);
+        }
+    }
+    // Return the longest subarray that can contain all ones
+    // after flipping at most k zeros.
+    return maxConsecutiveOnes;
+}
+
+//-------------------------------------------//
+int longestOnes02(vector<int>& nums, int k) {
+    int arraySize = nums.size();
+    // Stores the maximum length of a valid window found so far.
+    int maxWindowLength = 0;
+    // Defines the current sliding window:
+    // windowStart is the first index, and windowEnd is the index
+    // of the next element to include in the window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Counts the number of zeros inside the current window.
+    // We can flip at most k zeros to ones.
+    int zeroCount = 0;
+    // Move windowEnd forward to expand the window.
+    while (windowEnd < arraySize && windowStart < arraySize) {
+        // If the new element is zero, increment the zero count.
+        if (nums[windowEnd] == 0) {
+            zeroCount++;
+        }
+        // If the window contains more than k zeros,
+        // shrink it from the left until it becomes valid.
+        while (zeroCount > k) {
+            // If the element being removed is zero,
+            // decrement the zero count.
+            if (nums[windowStart] == 0) {
+                zeroCount--;
+            }
+            // Remove the leftmost element from the window.
+            windowStart++;
+        }
+        // Move the ending pointer forward to include the next element.
+        windowEnd++;
+        // Calculate the current valid window length.
+        // windowEnd is exclusive here because it was incremented above.
+        int currentWindowLength = windowEnd - windowStart;
+        // Update the maximum length if the current window is longer.
+        maxWindowLength = max(maxWindowLength, currentWindowLength);
+    }
+    // Return the longest subarray that can contain all ones
+    // after flipping at most k zeros.
+    return maxWindowLength;
+}
+
+//-------------------------------------------//
+int longestOnes03(vector<int>& nums, int k) {
+    int arraySize = nums.size();
+    // Stores the maximum length of a valid window found so far.
+    int maxWindowLength = 0;
+    // Define the boundaries of the sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Counts the number of zeros inside the current window.
+    int zeroCount = 0;
+    // Traverse the array by expanding the window from the right.
+    while (windowStart < arraySize && windowEnd < arraySize) {
+        // Include the current element in the window.
+        // If it is zero, increment the zero count.
+        if (nums[windowEnd] == 0) {
+            zeroCount++;
+        }
+        // If the window contains more than k zeros,
+        // shrink it by removing one element from the left.
+        if (zeroCount > k) {
+            // If the element being removed is zero,
+            // decrement the zero count.
+            if (nums[windowStart] == 0) {
+                zeroCount--;
+            }
+            // Move the starting boundary one position forward.
+            windowStart++;
+        }
+        // Move the ending boundary forward.
+        windowEnd++;
+        // Update the maximum length only when the window
+        // contains at most k zeros.
+        if (zeroCount <= k) {
+            int currentWindowLength = windowEnd - windowStart;
+            maxWindowLength = max(maxWindowLength, currentWindowLength);
+        }
+    }
+    // Return the longest subarray that can be converted entirely
+    // into ones by flipping at most k zeros.
+    return maxWindowLength;
+}
+
+//int main(){
+////    vector<int> nums = {1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0};
+//    vector<int> nums = {0, 0, 0, 0};
+//    cout << longestOnes03(nums, 0) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
