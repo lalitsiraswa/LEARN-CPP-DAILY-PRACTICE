@@ -374,3 +374,155 @@ int longestOnes03(vector<int>& nums, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 424. Longest Repeating Character Replacement
+int characterReplacement01(string s, int k) {
+    int stringLength = s.size();
+    // Stores the length of the longest valid substring found so far.
+    int maxSubstringLength = 0;
+    // Try every possible starting index of a substring.
+    // Continue only while the remaining characters could produce
+    // a substring longer than the best result found so far.
+    for (int startIndex = 0; startIndex < stringLength && maxSubstringLength < (stringLength - startIndex); startIndex++) {
+        // Stores the frequency of each uppercase English letter.
+        // Index 0 represents 'A', index 1 represents 'B', and so on.
+        int characterFrequency[26] = {0};
+        // Stores the highest frequency of any character
+        // in the current substring.
+        int maxFrequency = 0;
+        // Extend the substring from startIndex toward the end.
+        for (int endIndex = startIndex; endIndex < stringLength; endIndex++) {
+            // Convert the current uppercase character into an array index
+            // and increase its frequency.
+            int characterIndex = s[endIndex] - 'A';
+            characterFrequency[characterIndex]++;
+            // Update the highest frequency among all characters
+            // in the current substring.
+            maxFrequency = max(maxFrequency, characterFrequency[characterIndex]);
+            // Calculate the current substring length.
+            int currentSubstringLength = endIndex - startIndex + 1;
+            // To make every character identical, we can keep the most
+            // frequent character and replace all other characters.
+            //
+            // Required replacements = substring length - max frequency.
+            if (currentSubstringLength - maxFrequency > k) {
+                // More than k replacements would be needed.
+                // Extending this substring further cannot make it valid,
+                // so stop checking this starting index.
+                break;
+            }
+            // The substring is valid because it requires at most k
+            // replacements. Update the longest length found so far.
+            maxSubstringLength = max(maxSubstringLength, currentSubstringLength);
+        }
+    }
+    // Return the length of the longest substring that can be made
+    // to contain identical characters using at most k replacements.
+    return maxSubstringLength;
+}
+
+//-------------------------------------------//
+int characterReplacement02(string s, int k) {
+    int stringLength = s.size();
+    // Stores the length of the longest valid substring found so far.
+    int maxSubstringLength = 0;
+    // The sliding window starts with both pointers at index 0.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the frequency of each uppercase English letter.
+    // Index 0 represents 'A', index 1 represents 'B', and so on.
+    int characterFrequency[26] = {0};
+    // Stores the highest character frequency in the current window.
+    int maxFrequency = 0;
+    // Expand the window by moving windowEnd to the right.
+    while (windowEnd < stringLength) {
+        // Convert the current character into an array index.
+        int characterIndex = s[windowEnd] - 'A';
+        // Include the current character in the window.
+        characterFrequency[characterIndex]++;
+        // Update the highest frequency of any character seen so far.
+        maxFrequency = max(maxFrequency, characterFrequency[characterIndex]);
+        // Calculate the current window length.
+        int currentWindowLength = windowEnd - windowStart + 1;
+        // The minimum replacements needed are:
+        // window length - frequency of the most common character.
+        //
+        // If more than k replacements are required, shrink the window
+        // from the left until it becomes valid.
+        while (currentWindowLength - maxFrequency > k) {
+            // Remove the character at windowStart from the window.
+            int leftCharacterIndex = s[windowStart] - 'A';
+            characterFrequency[leftCharacterIndex]--;
+            // Recalculate the highest frequency using the updated counts.
+            // This ensures maxFrequency reflects the current window.
+            maxFrequency = 0;
+            for (int i = 0; i < 26; i++) {
+                maxFrequency = max(maxFrequency, characterFrequency[i]);
+            }
+            // Move the left pointer forward to shrink the window.
+            windowStart++;
+            // Recalculate the window length after shrinking.
+            currentWindowLength = windowEnd - windowStart + 1;
+        }
+        // The current window is valid because it needs at most k replacements.
+        maxSubstringLength = max(maxSubstringLength, currentWindowLength);
+        // Expand the window by moving the right pointer forward.
+        windowEnd++;
+    }
+    // Return the length of the longest valid substring.
+    return maxSubstringLength;
+}
+
+//-------------------------------------------//
+int characterReplacement03(string s, int k) {
+    int stringLength = s.size();
+    // Stores the length of the longest valid substring found so far.
+    int maxSubstringLength = 0;
+    // Pointers representing the current sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the frequency of each uppercase English letter.
+    // Index 0 represents 'A', index 1 represents 'B', and so on.
+    int characterFrequency[26] = {0};
+    // Stores the highest character frequency encountered
+    // while expanding the sliding window.
+    int maxFrequency = 0;
+    // Expand the window by moving windowEnd to the right.
+    while (windowEnd < stringLength) {
+        // Convert the current character into an array index.
+        int characterIndex = s[windowEnd] - 'A';
+        // Include the current character in the window.
+        characterFrequency[characterIndex]++;
+        // Update the highest frequency encountered so far.
+        maxFrequency = max(maxFrequency, characterFrequency[characterIndex]);
+        // Calculate the current window length.
+        int currentWindowLength = windowEnd - windowStart + 1;
+        // Minimum replacements required =
+        // window length - frequency of the most common character.
+        //
+        // If more than k replacements are needed, shrink the window
+        // by removing one character from the left.
+        if (currentWindowLength - maxFrequency > k) {
+            // Remove the character at windowStart from the window.
+            int leftCharacterIndex = s[windowStart] - 'A';
+            characterFrequency[leftCharacterIndex]--;
+            // Move the left pointer forward by one position.
+            windowStart++;
+            // Recalculate the window length after shrinking.
+            currentWindowLength = windowEnd - windowStart + 1;
+        }
+        // Update the maximum window length found so far.
+        maxSubstringLength = max(maxSubstringLength, currentWindowLength);
+        // Expand the window by moving the right pointer forward.
+        windowEnd++;
+    }
+    // Return the longest substring length found.
+    return maxSubstringLength;
+}
+
+//int main(){
+//    string s = "BAABAABBBAAA";
+//    cout << characterReplacement03(s, 2) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
