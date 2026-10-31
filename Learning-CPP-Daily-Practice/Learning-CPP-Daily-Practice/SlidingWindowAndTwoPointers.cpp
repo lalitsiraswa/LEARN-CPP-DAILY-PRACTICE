@@ -526,3 +526,167 @@ int characterReplacement03(string s, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Longest Substring with K Uniques - GFG
+// Brute-force approach (Time Limit Exceeded)
+int longestKSubstr01(string &s, int k) {
+    int stringLength = s.size();
+    // Stores the maximum length of a substring
+    // containing exactly k distinct characters.
+    // -1 means no valid substring has been found yet.
+    int maxSubstringLength = -1;
+    // Try every possible starting index of a substring.
+    for (int startIndex = 0; startIndex < stringLength; startIndex++) {
+        // Stores the frequency of each lowercase English letter.
+        // Index 0 represents 'a', index 1 represents 'b', and so on.
+        int characterFrequency[26] = {0};
+        // Counts the number of distinct characters in the current substring.
+        int distinctCharacterCount = 0;
+        // Extend the substring from startIndex toward the end.
+        for (int endIndex = startIndex; endIndex < stringLength; endIndex++) {
+            // Convert the current lowercase character into an array index.
+            int characterIndex = s[endIndex] - 'a';
+            // Increase the frequency of the current character.
+            characterFrequency[characterIndex]++;
+            // If its frequency becomes 1, this character has appeared
+            // for the first time in the current substring.
+            if (characterFrequency[characterIndex] == 1) {
+                distinctCharacterCount++;
+            }
+            // If the substring contains more than k distinct characters,
+            // extending it further cannot make it valid.
+            if (distinctCharacterCount > k) {
+                break;
+            }
+            // Calculate the current substring length.
+            int currentSubstringLength = endIndex - startIndex + 1;
+            // Update the answer only when the substring contains
+            // exactly k distinct characters.
+            if (distinctCharacterCount == k) {
+                maxSubstringLength = max(maxSubstringLength, currentSubstringLength);
+            }
+        }
+    }
+    // Return the longest valid substring length.
+    // Returns -1 if no substring contains exactly k distinct characters.
+    return maxSubstringLength;
+}
+
+//-------------------------------------------//
+// Sliding-window approach
+int longestKSubstr02(string &s, int k) {
+    int stringLength = s.size();
+    // Stores the maximum length of a substring
+    // containing exactly k distinct characters.
+    // -1 means no valid substring has been found yet.
+    int maxSubstringLength = -1;
+    // Pointers representing the current sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the frequency of each lowercase English letter.
+    // Index 0 represents 'a', index 1 represents 'b', and so on.
+    int characterFrequency[26] = {0};
+    // Counts the number of distinct characters in the current window.
+    int distinctCharacterCount = 0;
+    // Expand the window by moving windowEnd to the right.
+    while (windowEnd < stringLength) {
+        // Convert the current lowercase character into an array index.
+        int characterIndex = s[windowEnd] - 'a';
+        // Include the current character in the window.
+        characterFrequency[characterIndex]++;
+        // If this character appears for the first time in the window,
+        // increase the number of distinct characters.
+        if (characterFrequency[characterIndex] == 1) {
+            distinctCharacterCount++;
+        }
+        // If the window contains more than k distinct characters,
+        // shrink it from the left until it becomes valid.
+        while (distinctCharacterCount > k) {
+            // Remove the character at windowStart from the window.
+            int leftCharacterIndex = s[windowStart] - 'a';
+            characterFrequency[leftCharacterIndex]--;
+            // If its frequency becomes zero, the character no longer
+            // exists in the current window, so reduce the distinct count.
+            if (characterFrequency[leftCharacterIndex] == 0) {
+                distinctCharacterCount--;
+            }
+            // Move the left pointer forward to shrink the window.
+            windowStart++;
+        }
+        // Calculate the current window length.
+        int currentSubstringLength = windowEnd - windowStart + 1;
+        // Update the answer only when the window contains
+        // exactly k distinct characters.
+        if (distinctCharacterCount == k) {
+            maxSubstringLength = max(maxSubstringLength, currentSubstringLength);
+        }
+        // Expand the window by moving the right pointer forward.
+        windowEnd++;
+    }
+    // Return the longest substring length containing exactly k
+    // distinct characters, or -1 if no such substring exists.
+    return maxSubstringLength;
+}
+
+//-------------------------------------------//
+// Sliding-window approach using a single if condition
+int longestKSubstr03(string &s, int k) {
+    int stringLength = s.size();
+    // Stores the maximum length of a substring
+    // containing exactly k distinct characters.
+    // -1 means no valid substring has been found yet.
+    int maxSubstringLength = -1;
+    // Pointers representing the current sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the frequency of each lowercase English letter.
+    // Index 0 represents 'a', index 1 represents 'b', and so on.
+    int characterFrequency[26] = {0};
+    // Counts the distinct characters in the current window.
+    int distinctCharacterCount = 0;
+    // Expand the window by moving windowEnd to the right.
+    while (windowEnd < stringLength) {
+        // Convert the current lowercase character into an array index.
+        int characterIndex = s[windowEnd] - 'a';
+        // Include the current character in the window.
+        characterFrequency[characterIndex]++;
+        // If this character appears for the first time,
+        // increase the distinct character count.
+        if (characterFrequency[characterIndex] == 1) {
+            distinctCharacterCount++;
+        }
+        // If the window contains more than k distinct characters,
+        // remove one character from the left.
+        if (distinctCharacterCount > k) {
+            // Remove the leftmost character from the window.
+            int leftCharacterIndex = s[windowStart] - 'a';
+            characterFrequency[leftCharacterIndex]--;
+            // If its frequency becomes zero, it no longer exists
+            // in the window, so decrease the distinct character count.
+            if (characterFrequency[leftCharacterIndex] == 0) {
+                distinctCharacterCount--;
+            }
+            // Move the left pointer forward by one position.
+            windowStart++;
+        }
+        // Calculate the current window length.
+        int currentSubstringLength = windowEnd - windowStart + 1;
+        // Update the answer only when the window contains
+        // exactly k distinct characters.
+        if (distinctCharacterCount == k) {
+            maxSubstringLength = max(maxSubstringLength, currentSubstringLength);
+        }
+        // Expand the window by moving the right pointer forward.
+        windowEnd++;
+    }
+    // Return the longest substring length containing exactly k
+    // distinct characters, or -1 if no such substring exists.
+    return maxSubstringLength;
+}
+
+//int main(){
+//    string s = "aabacbebebe";
+//    cout << longestKSubstr03(s, 3) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
