@@ -527,19 +527,22 @@ int characterReplacement03(string s, int k) {
 
 //-------------------------------------------//-------------------------------------------//
 // Longest Substring with K Uniques - GFG
-// Brute-force approach (Time Limit Exceeded)
+// Brute-force approach with outer-loop optimization
 int longestKSubstr01(string &s, int k) {
     int stringLength = s.size();
     // Stores the maximum length of a substring
     // containing exactly k distinct characters.
     // -1 means no valid substring has been found yet.
     int maxSubstringLength = -1;
-    // Try every possible starting index of a substring.
-    for (int startIndex = 0; startIndex < stringLength; startIndex++) {
+    // Try every possible starting index.
+    // Continue only if the remaining characters could produce
+    // a substring longer than the best answer found so far.
+    for (int startIndex = 0; startIndex < stringLength && (stringLength - startIndex) > maxSubstringLength; startIndex++) {
         // Stores the frequency of each lowercase English letter.
         // Index 0 represents 'a', index 1 represents 'b', and so on.
         int characterFrequency[26] = {0};
-        // Counts the number of distinct characters in the current substring.
+        // Counts the number of distinct characters
+        // in the current substring.
         int distinctCharacterCount = 0;
         // Extend the substring from startIndex toward the end.
         for (int endIndex = startIndex; endIndex < stringLength; endIndex++) {
