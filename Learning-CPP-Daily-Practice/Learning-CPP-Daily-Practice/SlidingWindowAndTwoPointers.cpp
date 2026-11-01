@@ -693,3 +693,263 @@ int longestKSubstr03(string &s, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 76. Minimum Window Substring
+// Brute-force approach (Time Limit Exceeded)
+string minWindow01(string s, string t) {
+    int sourceLength = s.size();
+    int targetLength = t.size();
+    // Stores the smallest substring of s that contains
+    // all characters of t, including duplicate characters.
+    string minimumWindow = "";
+    // Initially, no valid window has been found.
+    int minimumWindowLength = INT_MAX;
+    // Try every possible starting index of a window in s.
+    for (int startIndex = 0; startIndex < sourceLength; startIndex++) {
+        // Stores the number of times each character is required
+        // to form a valid window containing all characters of t.
+        unordered_map<char, int> characterFrequency;
+        // Count the frequency of every character in t.
+        for (int targetIndex = 0; targetIndex < targetLength; targetIndex++) {
+            characterFrequency[t[targetIndex]]++;
+        }
+        // Counts how many required character occurrences
+        // have been matched by the current window.
+        int matchedCharacterCount = 0;
+        // Expand the window from startIndex toward the end of s.
+        for (int endIndex = startIndex; endIndex < sourceLength; endIndex++) {
+            char currentCharacter = s[endIndex];
+            // If this character is required and its remaining
+            // required frequency is positive, it contributes
+            // to satisfying the target string.
+            if (characterFrequency.find(currentCharacter) !=  characterFrequency.end() && characterFrequency[currentCharacter] > 0) {
+                matchedCharacterCount++;
+            }
+            // Decrease the remaining frequency for this character.
+            // Frequencies can become negative when the window
+            // contains more occurrences than t requires.
+            characterFrequency[currentCharacter]--;
+            // Calculate the current window length.
+            int currentWindowLength = endIndex - startIndex + 1;
+            // If all characters required by t have been matched
+            // and this window is smaller than the best one found,
+            // save it as the new minimum window.
+            if (matchedCharacterCount == targetLength && currentWindowLength < minimumWindowLength) {
+                minimumWindow = s.substr(startIndex, currentWindowLength);
+                minimumWindowLength = currentWindowLength;
+                // Since endIndex moves from left to right,
+                // this is the first valid window for this startIndex.
+                // Any longer window with the same start cannot be better.
+                break;
+            }
+        }
+    }
+    // Return the smallest valid window, or an empty string
+    // if no window contains all characters of t.
+    return minimumWindow;
+}
+
+//-------------------------------------------//
+// Sliding-window approach (Memory Limit Exceeded)
+string minWindow02(string s, string t) {
+    int sourceLength = s.size();
+    int targetLength = t.size();
+    // Stores the length of the smallest valid window found so far.
+    int minimumWindowLength = INT_MAX;
+    // Stores the smallest valid substring found so far.
+    string minimumWindow = "";
+    // Pointers representing the current sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the required frequency of each character in t.
+    // During window expansion and shrinking, these frequencies
+    // are updated to track which characters are still required.
+    unordered_map<char, int> characterFrequency;
+    // Counts how many required character occurrences
+    // have been matched in the current window.
+    int matchedCharacterCount = 0;
+    // Count the frequency of every character in the target string.
+    for (int targetIndex = 0;targetIndex < targetLength; targetIndex++) {
+        characterFrequency[t[targetIndex]]++;
+    }
+    // Expand the sliding window by moving windowEnd to the right.
+    while (windowEnd < sourceLength) {
+        // Get the character at the current right boundary.
+        char currentCharacter = s[windowEnd];
+        // If this character exists in the map and is still required,
+        // count this occurrence as a match.
+        if (characterFrequency.find(currentCharacter) != characterFrequency.end() && characterFrequency[currentCharacter] > 0) {
+            matchedCharacterCount++;
+        }
+        // Decrease the remaining frequency of the current character.
+        // Negative frequencies indicate extra occurrences in the window.
+        characterFrequency[currentCharacter]--;
+        // When all required character occurrences are matched,
+        // try shrinking the window to find a smaller valid substring.
+        while (matchedCharacterCount == targetLength) {
+            // Calculate the current window length.
+            int currentWindowLength = windowEnd - windowStart + 1;
+            // If this window is smaller than the best one found,
+            // save the substring and its length.
+            if (minimumWindowLength > currentWindowLength) {
+                minimumWindow = s.substr(windowStart,currentWindowLength);
+                minimumWindowLength = currentWindowLength;
+            }
+            // Get the character at the current left boundary.
+            currentCharacter = s[windowStart];
+            // Restore its frequency because it is being removed
+            // from the current window.
+            characterFrequency[currentCharacter]++;
+            // If this character is required again, the current window
+            // no longer contains enough required character occurrences.
+            if (characterFrequency[currentCharacter] > 0) {
+                matchedCharacterCount--;
+            }
+            // Move the left boundary forward to shrink the window.
+            windowStart++;
+        }
+        // Move the right boundary forward to expand the window.
+        windowEnd++;
+    }
+    // Return the smallest valid substring.
+    // If no valid window was found, this returns an empty string.
+    return minimumWindow;
+}
+
+//-------------------------------------------//
+string minWindow03(string s, string t) {
+    // Store the lengths of the source and target strings.
+    int sourceLength = s.size();
+    int targetLength = t.size();
+    // Store the length of the smallest valid window found so far.
+    int minimumWindowLength = INT_MAX;
+    // Store the starting index of the smallest valid window.
+    // -1 means that no valid window has been found yet.
+    int minimumWindowStartIndex = -1;
+    // Pointers representing the current sliding window.
+    int windowStart = 0, windowEnd = 0;
+    // Store the required frequency of each character in the target string.
+    unordered_map<char, int> characterFrequency;
+    // Count how many characters from the target string have been matched.
+    int matchedCharacterCount = 0;
+    // Count the frequency of each character in the target string.
+    for (int targetIndex = 0; targetIndex < targetLength; targetIndex++) {
+        characterFrequency[t[targetIndex]]++;
+    }
+    // Expand the window by moving windowEnd through the source string.
+    while (windowEnd < sourceLength) {
+        // Get the character at the current window's ending position.
+        int currentCharacter = s[windowEnd];
+        // If this character is required and its remaining frequency is
+        // positive, it contributes to matching a required character.
+        if (characterFrequency.find(currentCharacter) != characterFrequency.end() && characterFrequency[currentCharacter] > 0) {
+            matchedCharacterCount++;
+        }
+        // Decrease the remaining frequency of the current character.
+        characterFrequency[s[windowEnd]]--;
+        // When all target characters are matched, try to shrink the window.
+        while (matchedCharacterCount == targetLength) {
+            // Calculate the current window's length.
+            int currentWindowLength = (windowEnd - windowStart) + 1;
+            // Update the smallest window if the current one is shorter.
+            if (minimumWindowLength > currentWindowLength) {
+                minimumWindowStartIndex = windowStart;
+                minimumWindowLength = currentWindowLength;
+            }
+            // Get the character at the starting position of the window.
+            currentCharacter = s[windowStart];
+            // Restore its frequency because it is leaving the window.
+            characterFrequency[currentCharacter]++;
+            // If its frequency becomes positive, removing it means
+            // the current window no longer contains all required characters.
+            if (characterFrequency[currentCharacter] > 0) {
+                matchedCharacterCount--;
+            }
+            // Move the starting pointer forward to shrink the window.
+            windowStart++;
+        }
+        // Expand the window by moving the ending pointer forward.
+        windowEnd++;
+    }
+    // Return an empty string if no valid window was found.
+    // Otherwise, return the smallest valid substring.
+    return minimumWindowStartIndex == -1 ? "" : s.substr(minimumWindowStartIndex, minimumWindowLength);
+}
+
+//-------------------------------------------//
+// Optimized sliding-window approach
+string minWindow04(string s, string t) {
+    int sourceLength = s.size();
+    int targetLength = t.size();
+    // Stores the length of the smallest valid window found so far.
+    int minimumWindowLength = INT_MAX;
+    // Stores the starting index of the smallest valid window.
+    // -1 means that no valid window has been found yet.
+    int minimumWindowStartIndex = -1;
+    // Pointers representing the current sliding window.
+    int windowStart = 0;
+    int windowEnd = 0;
+    // Stores the remaining required frequency of each character.
+    // The array supports character values from 0 to 255.
+    int characterFrequency[256] = {0};
+    // Counts how many required character occurrences
+    // have been matched in the current window.
+    int matchedCharacterCount = 0;
+    // Count the frequency of every character required by t.
+    for (int targetIndex = 0; targetIndex < targetLength; targetIndex++) {
+        characterFrequency[t[targetIndex]]++;
+    }
+    // Expand the window by moving windowEnd to the right.
+    while (windowEnd < sourceLength) {
+        // Get the character at the current right boundary.
+        char currentCharacter = s[windowEnd];
+        // If this character is still required, it matches
+        // one of the character occurrences needed from t.
+        if (characterFrequency[currentCharacter] > 0) {
+            matchedCharacterCount++;
+        }
+        // Decrease the remaining required frequency.
+        // A negative value means the window contains extra occurrences.
+        characterFrequency[currentCharacter]--;
+        // When all target character occurrences are matched,
+        // try shrinking the window to find a smaller valid substring.
+        while (matchedCharacterCount == targetLength) {
+            // Calculate the current window length.
+            int currentWindowLength = windowEnd - windowStart + 1;
+            // If this window is smaller than the best one found,
+            // save its starting index and length.
+            if (currentWindowLength < minimumWindowLength) {
+                minimumWindowStartIndex = windowStart;
+                minimumWindowLength = currentWindowLength;
+            }
+            // Remove the leftmost character from the window.
+            char leftCharacter = s[windowStart];
+            characterFrequency[leftCharacter]++;
+            // If its frequency becomes positive, the window no longer
+            // contains enough occurrences of this required character.
+            if (characterFrequency[leftCharacter] > 0) {
+                matchedCharacterCount--;
+            }
+            // Move the left boundary forward to shrink the window.
+            windowStart++;
+        }
+        // Expand the window by moving the right boundary forward.
+        windowEnd++;
+    }
+    // If no valid window was found, return an empty string.
+    // Otherwise, return the smallest valid substring.
+    return minimumWindowStartIndex == -1 ? "" : s.substr(minimumWindowStartIndex, minimumWindowLength);
+}
+
+//int main(){
+////    string s = "ADOBECODEBANC";
+////    cout << minWindow01(s, "ABC") << endl;
+////    string s = "bba";
+////    cout << minWindow01(s, "ab") << endl;
+//    string s = "ddaaabbca";
+//    cout << minWindow03(s, "abc") << endl;
+//    unordered_map<char, int> umap;
+////    cout << umap['Z'] << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
