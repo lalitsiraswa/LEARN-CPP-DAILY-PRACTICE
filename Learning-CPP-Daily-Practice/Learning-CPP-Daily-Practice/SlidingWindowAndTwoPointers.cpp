@@ -1084,3 +1084,102 @@ int numberOfSubstrings03(string s) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 560. Subarray Sum Equals K
+// Brute Force Approach
+int subarraySum01(vector<int>& nums, int k) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Store the total number of subarrays whose sum equals k.
+    int totalSubarrays = 0;
+    // Choose the starting index of each subarray.
+    for (int startIndex = 0; startIndex < arraySize; startIndex++) {
+        // Reset the sum for each new starting index.
+        int currentSubarraySum = 0;
+        // Expand the subarray by moving the ending index forward.
+        for (int endIndex = startIndex; endIndex < arraySize; endIndex++) {
+            // Add the current element to the subarray sum.
+            currentSubarraySum += nums[endIndex];
+            // Check whether the current subarray sum equals k.
+            if (currentSubarraySum == k) {
+                totalSubarrays++;
+            }
+        }
+    }
+    // Return the total number of subarrays whose sum equals k.
+    return totalSubarrays;
+}
+
+//-------------------------------------------//
+// Approach:
+// Prefix Sum + Hash Map
+int subarraySum02(vector<int>& nums, int k) {
+    int n = nums.size();
+    // Stores:
+    // prefix sum -> how many times that prefix sum has appeared
+    //
+    // We store the frequency because the same prefix sum
+    // can appear multiple times, and each occurrence can
+    // represent a different valid subarray.
+    unordered_map<int, int> prefixSumMap;
+    int subarrayCount = 0;
+    // Sum of elements from index 0 to the current index.
+    int prefixSum = 0;
+    for (int i = 0; i < n; i++) {
+        // Add the current element to the prefix sum.
+        prefixSum += nums[i];
+        // --------------------------------------------------
+        // Check if the subarray [0 ... i] has sum K.
+        // --------------------------------------------------
+        //
+        // If prefixSum == k:
+        //
+        // nums[0] + nums[1] + ... + nums[i] = k
+        //
+        // So [0 ... i] is one valid subarray.
+        //
+        // This is an INDEPENDENT check.
+        // Do NOT use else here because the next check
+        // can also find another valid subarray at the
+        // same index.
+        if (prefixSum == k) {
+            subarrayCount++;
+        }
+        // --------------------------------------------------
+        // Check if there are previous prefix sums that
+        // can form another subarray with sum K.
+        // --------------------------------------------------
+        //
+        // We know:
+        //
+        // currentPrefixSum - previousPrefixSum = K
+        //
+        // Therefore:
+        //
+        // previousPrefixSum = currentPrefixSum - K
+        //
+        // So we look for:
+        //
+        // prefixSum - k
+        int remaining = prefixSum - k;
+        // If 'remaining' appeared before, then each occurrence
+        // gives us one subarray ending at index i with sum K.
+        //
+        // We add the frequency because the same prefix sum
+        // may have appeared multiple times.
+        subarrayCount += prefixSumMap[remaining];
+        // Store the current prefix sum for future elements.
+        //
+        // If this prefix sum already exists, increase its
+        // frequency.
+        prefixSumMap[prefixSum]++;
+    }
+    return subarrayCount;
+}
+
+//int main(){
+//    vector<int> nums = {1, 2, 3, -3, 1, 1, 1, 4, 2, -3};
+//    cout << subarraySum02(nums, 3) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
