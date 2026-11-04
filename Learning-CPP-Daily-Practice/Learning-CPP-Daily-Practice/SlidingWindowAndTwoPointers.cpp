@@ -953,3 +953,134 @@ string minWindow04(string s, string t) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 1358. Number of Substrings Containing All Three Characters
+int numberOfSubstrings01(string s) {
+    // Store the length of the input string.
+    int stringLength = s.size();
+    // Store the total number of valid substrings.
+    int totalSubstrings = 0;
+    // Choose the starting index of each substring.
+    for (int startIndex = 0; startIndex < stringLength; startIndex++) {
+        // Store the frequency of 'a', 'b', and 'c'.
+        // Index 0 represents 'a', 1 represents 'b', and 2 represents 'c'.
+        int characterFrequency[3] = {0};
+        // Count how many distinct required characters have appeared.
+        int matchedCharacterCount = 0;
+        // Expand the substring by moving the ending index forward.
+        for (int endIndex = startIndex; endIndex < stringLength; endIndex++) {
+            // Convert the character into an array index:
+            // 'a' - 97 = 0, 'b' - 97 = 1, 'c' - 97 = 2.
+            char characterIndex = s[endIndex] - 97;
+            // Increase the frequency of the current character.
+            characterFrequency[characterIndex]++;
+            // If this character appears for the first time in the
+            // current substring, increase the distinct character count.
+            if (characterFrequency[characterIndex] == 1) {
+                matchedCharacterCount++;
+            }
+            // If the substring contains all three characters ('a', 'b', 'c'),
+            // every extension ending at a later index is also valid.
+            if (matchedCharacterCount == 3) {
+                // Count all valid substrings starting at startIndex
+                // and ending at endIndex or any position after it.
+                totalSubstrings += (stringLength - endIndex);
+                // Stop because all extensions have already been counted.
+                break;
+            }
+        }
+    }
+    // Return the total number of valid substrings.
+    return totalSubstrings;
+}
+
+//-------------------------------------------//
+int numberOfSubstrings02(string s) {
+    // Store the length of the input string.
+    int stringLength = s.size();
+    // Store the total number of valid substrings.
+    int totalSubstrings = 0;
+    // Store the frequency of 'a', 'b', and 'c'.
+    // Index 0 represents 'a', 1 represents 'b', and 2 represents 'c'.
+    int characterFrequency[3] = {0};
+    // Count how many distinct characters ('a', 'b', 'c')
+    // are currently present in the sliding window.
+    int matchedCharacterCount = 0;
+    // Pointers representing the current sliding window.
+    int windowStart = 0, windowEnd = 0;
+    // Expand the window by moving windowEnd forward.
+    while (windowEnd < stringLength) {
+        // Convert the current character into an array index:
+        // 'a' - 97 = 0, 'b' - 97 = 1, 'c' - 97 = 2.
+        int characterIndex = s[windowEnd] - 97;
+        // Increase the frequency of the current character.
+        characterFrequency[characterIndex]++;
+        // If this character appears for the first time in the window,
+        // increase the count of distinct characters.
+        if (characterFrequency[characterIndex] == 1) {
+            matchedCharacterCount++;
+        }
+        // When all three characters are present, count valid substrings
+        // and try to shrink the window from the left.
+        while (matchedCharacterCount == 3) {
+            // Every substring starting at windowStart and ending at
+            // windowEnd or any later position is valid.
+            totalSubstrings += stringLength - windowEnd;
+            // Get the character that will leave the window.
+            characterIndex = s[windowStart] - 97;
+            // Decrease its frequency because windowStart is moving forward.
+            characterFrequency[characterIndex]--;
+            // If its frequency becomes zero, this character is no longer
+            // present in the current window.
+            if (characterFrequency[characterIndex] == 0) {
+                matchedCharacterCount--;
+            }
+            // Shrink the window by moving the starting pointer forward.
+            windowStart++;
+        }
+        // Expand the window by moving the ending pointer forward.
+        windowEnd++;
+    }
+    // Return the total number of valid substrings.
+    return totalSubstrings;
+}
+
+//-------------------------------------------//
+int numberOfSubstrings03(string s) {
+    // Store the length of the input string.
+    int stringLength = s.size();
+    // Store the last seen index of 'a', 'b', and 'c'.
+    // Index 0 represents 'a', 1 represents 'b', and 2 represents 'c'.
+    // Initially, -1 means the character has not been visited.
+    int lastSeenIndex[3] = {-1, -1, -1};
+    // Store the total number of valid substrings.
+    int totalSubstrings = 0;
+    // Traverse each character in the input string.
+    for (int currentIndex = 0; currentIndex < stringLength; currentIndex++) {
+        // Convert the current character into an array index:
+        // 'a' - 97 = 0, 'b' - 97 = 1, 'c' - 97 = 2.
+        int characterIndex = s[currentIndex] - 97;
+        // Update the last seen index of the current character.
+        lastSeenIndex[characterIndex] = currentIndex;
+        // Check whether all three characters have been visited.
+        if (lastSeenIndex[0] != -1 && lastSeenIndex[1] != -1 && lastSeenIndex[2] != -1) {
+            // Find the smallest last-seen index among 'a', 'b', and 'c'.
+            int minimumLastSeenIndex = min(lastSeenIndex[0], min(lastSeenIndex[1], lastSeenIndex[2]));
+            // Every substring ending at currentIndex and starting
+            // from index 0 through minimumLastSeenIndex contains
+            // all three characters.
+            totalSubstrings += (minimumLastSeenIndex + 1);
+        }
+    }
+    // Return the total number of valid substrings.
+    return totalSubstrings;
+}
+
+// "aaaabc" -> Dry Run -> 4
+//int main(){
+////    string s = "abcabc";
+//    string s = "ccabcc";
+//    cout << numberOfSubstrings03(s) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
