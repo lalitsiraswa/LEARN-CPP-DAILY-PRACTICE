@@ -1183,3 +1183,172 @@ int subarraySum02(vector<int>& nums, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 930. Binary Subarrays With Sum
+// Brute Force Approach - Time Limit Exceeded
+int numSubarraysWithSum01(vector<int>& nums, int goal) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Store the total number of subarrays whose sum equals goal.
+    int totalSubarrays = 0;
+    // Choose the starting index of each subarray.
+    for (int startIndex = 0; startIndex < arraySize; startIndex++) {
+        // Reset the sum for each new starting index.
+        int currentSubarraySum = 0;
+        // Expand the subarray by moving the ending index forward.
+        for (int endIndex = startIndex; endIndex < arraySize; endIndex++) {
+            // Add the current element to the subarray sum.
+            currentSubarraySum += nums[endIndex];
+            // Since the array contains only 0s and 1s,
+            // the sum cannot decrease as the window expands.
+            // Therefore, stop if the sum exceeds the goal.
+            if (currentSubarraySum > goal) {
+                break;
+            }
+            // If the current subarray sum equals the goal,
+            // increment the count of valid subarrays.
+            if (currentSubarraySum == goal) {
+                totalSubarrays++;
+            }
+        }
+    }
+    // Return the total number of subarrays with the required sum.
+    return totalSubarrays;
+}
+//-------------------------------------------//
+// Prefix Sum + Unordered Map
+// DRY - RUN
+// nums = [1, 1, 0, 1, 0, 0, 1] , goal = 3
+int numSubarraysWithSum02(vector<int>& nums, int goal) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Stores:
+    // Prefix sum -> Number of times that prefix sum has appeared.
+    //
+    // The same prefix sum can appear multiple times.
+    // Each occurrence can represent a different valid subarray.
+    unordered_map<int, int> prefixSumFrequency;
+    // Store the total number of valid subarrays.
+    int totalSubarrays = 0;
+    // Store the sum of elements from index 0 to the current index.
+    int currentPrefixSum = 0;
+    // Traverse the input array.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Add the current element to the prefix sum.
+        currentPrefixSum += nums[currentIndex];
+        // --------------------------------------------------
+        // Check whether the subarray [0 ... currentIndex]
+        // has a sum equal to goal.
+        // --------------------------------------------------
+        //
+        // If currentPrefixSum == goal:
+        //
+        // nums[0] + nums[1] + ... + nums[currentIndex] = goal
+        //
+        // Therefore, [0 ... currentIndex] is one valid subarray.
+        //
+        // This is an INDEPENDENT check.
+        // Do not use else here because the next check
+        // can also find another valid subarray at the same index.
+        if (currentPrefixSum == goal) {
+            totalSubarrays++;
+        }
+        // --------------------------------------------------
+        // Check whether previous prefix sums can form
+        // another subarray whose sum equals goal.
+        // --------------------------------------------------
+        //
+        // We know:
+        //
+        // currentPrefixSum - previousPrefixSum = goal
+        //
+        // Therefore:
+        //
+        // previousPrefixSum = currentPrefixSum - goal
+        //
+        // So, search for currentPrefixSum - goal.
+        int requiredPrefixSum = currentPrefixSum - goal;
+        // If requiredPrefixSum appeared previously,
+        // each occurrence represents one valid subarray
+        // ending at currentIndex.
+        //
+        // Add its frequency because the same prefix sum
+        // might have appeared multiple times.
+        totalSubarrays += prefixSumFrequency[requiredPrefixSum];
+        // Store the current prefix sum for future elements.
+        //
+        // If it already exists, increase its frequency.
+        prefixSumFrequency[currentPrefixSum]++;
+    }
+    // Return the total number of valid subarrays.
+    return totalSubarrays;
+}
+
+//-------------------------------------------//
+// DRY-RUN
+// nums = {1,0,0,1,1,0}
+// k = 2
+// Sliding Window: At Most K Technique
+// Counts the number of subarrays whose sum is less than
+// or equal to the given limit.
+int countSubarraysWithSumLessThanOrEqualToK(
+    const vector<int>& nums, int k) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Store the total number of valid subarrays.
+    int totalSubarrays = 0;
+    // Store the sum of elements in the current sliding window.
+    int currentWindowSum = 0;
+    // Starting index of the sliding window.
+    int windowStart = 0;
+    // A subarray sum cannot be less than or equal to a negative
+    // limit because the array contains only 0s and 1s.
+    if (k < 0) {
+        return 0;
+    }
+    // Expand the sliding window by moving windowEnd forward.
+    for (int windowEnd = 0; windowEnd < arraySize; windowEnd++) {
+        // Add the current element to the window sum.
+        currentWindowSum += nums[windowEnd];
+        // Shrink the window while its sum exceeds the given limit.
+        while (currentWindowSum > k) {
+            // Remove the element at the starting position.
+            currentWindowSum -= nums[windowStart];
+            // Move the starting pointer forward.
+            windowStart++;
+        }
+        // Every subarray ending at windowEnd and starting
+        // anywhere from windowStart to windowEnd has a sum <= k.
+        //
+        // Number of such subarrays = windowEnd - windowStart + 1.
+        totalSubarrays += (windowEnd - windowStart + 1);
+    }
+    // Return the total number of subarrays with sum <= k.
+    return totalSubarrays;
+}
+
+// Counts the number of subarrays whose sum is exactly equal to goal.
+int numSubarraysWithSum03(vector<int>& nums, int goal) {
+    // Exactly(goal) = AtMost(goal) - AtMost(goal - 1).
+    //
+    // First function call:
+    // Counts subarrays whose sum is <= goal.
+    //
+    // Second function call:
+    // Counts subarrays whose sum is <= goal - 1.
+    //
+    // Subtracting both gives subarrays whose sum is exactly goal.
+    return countSubarraysWithSumLessThanOrEqualToK(nums, goal)
+         - countSubarraysWithSumLessThanOrEqualToK(nums, goal - 1);
+}
+
+//int main(){
+////    vector<int> nums = {1,0,1,0,1};
+////    cout << numSubarraysWithSum03(nums, 2) << endl;
+////    vector<int> nums = {0,0,0,0,0};
+////    cout << numSubarraysWithSum02(nums, 0) << endl;
+//    vector<int> nums = {1,0,0,1,1,0};
+//    cout << numSubarraysWithSum03(nums, 2) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
