@@ -1352,3 +1352,104 @@ int numSubarraysWithSum03(vector<int>& nums, int goal) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 1248. Count Number of Nice Subarrays
+// Brute Force Approach - Time Limit Exceeded
+int numberOfSubarrays01(vector<int>& nums, int k) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Store the total number of nice subarrays.
+    int totalSubarrays = 0;
+    // Choose the starting index of each subarray.
+    for (int startIndex = 0; startIndex < arraySize; startIndex++) {
+        // Reset the odd number count for each new starting index.
+        int currentOddNumberCount = 0;
+        // Expand the subarray by moving the ending index forward.
+        for (int endIndex = startIndex; endIndex < arraySize; endIndex++) {
+            // Check whether the current element is odd.
+            if (nums[endIndex] % 2 != 0) {
+                currentOddNumberCount++;
+            }
+            // A nice subarray contains exactly k odd numbers.
+            if (currentOddNumberCount == k) {
+                totalSubarrays++;
+            }
+            // If the odd number count exceeds k, extending
+            // the subarray cannot make it valid again.
+            if (currentOddNumberCount > k) {
+                break;
+            }
+        }
+    }
+    // Return the total number of nice subarrays.
+    return totalSubarrays;
+}
+
+//-------------------------------------------//
+// Sliding Window - At Most K Technique
+// Counts the number of subarrays containing at most k odd numbers.
+int countSubarraysWithOddCountLessThanOrEqualToK(
+    vector<int>& nums, int k) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Store the total number of valid subarrays.
+    int totalSubarrays = 0;
+    // A negative odd-number limit is not possible.
+    if (k < 0) {
+        return 0;
+    }
+    // Starting index of the sliding window.
+    int windowStart = 0;
+    // Count the number of odd numbers in the current window.
+    int currentOddCount = 0;
+    // Expand the sliding window by moving windowEnd forward.
+    for (int windowEnd = 0; windowEnd < arraySize; windowEnd++) {
+        // Check whether the current element is odd.
+        if (nums[windowEnd] % 2 != 0) {
+            currentOddCount++;
+        }
+        // Shrink the window while the odd-number count
+        // exceeds the allowed limit.
+        while (currentOddCount > k) {
+            // If the element leaving the window is odd,
+            // decrease the odd-number count.
+            if (nums[windowStart] % 2 != 0) {
+                currentOddCount--;
+            }
+            // Move the starting pointer forward.
+            windowStart++;
+        }
+        // Every subarray ending at windowEnd and starting
+        // anywhere from windowStart to windowEnd contains
+        // at most k odd numbers.
+        //
+        // Number of such subarrays = windowEnd - windowStart + 1.
+        totalSubarrays += (windowEnd - windowStart + 1);
+    }
+    // Return the total number of subarrays containing at most k odd numbers.
+    return totalSubarrays;
+}
+
+// Counts the number of nice subarrays containing exactly k odd numbers.
+int numberOfSubarrays02(vector<int>& nums, int k) {
+    // Exactly(k) = AtMost(k) - AtMost(k - 1).
+    //
+    // First call:
+    // Counts subarrays containing at most k odd numbers.
+    //
+    // Second call:
+    // Counts subarrays containing at most k - 1 odd numbers.
+    //
+    // Their difference gives subarrays containing exactly k odd numbers.
+    return countSubarraysWithOddCountLessThanOrEqualToK(nums, k)
+         - countSubarraysWithOddCountLessThanOrEqualToK(nums, k - 1);
+}
+
+//int main(){
+////    vector<int> nums = {1,1,2,1,1};
+////    cout << numberOfSubarrays01(nums, 3) << endl;
+//    vector<int> nums = {2,2,2,1,2,2,1,2,2,2};
+//    cout << numberOfSubarrays02(nums, 2) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
