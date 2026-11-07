@@ -104,3 +104,64 @@ vector<vector<int>> subsets02(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 22. Generate Parentheses
+void generateParenthesesHelper(int openCount, int closeCount, int totalPairs, vector<string>& result, string& currentCombination) {
+    // BASE CASE:
+    // If we have added all required opening and closing parentheses,
+    // the current combination is complete and valid.
+    if (openCount == totalPairs && closeCount == totalPairs) {
+        result.push_back(currentCombination);
+        return;
+    }
+    // ADD OPENING PARENTHESIS:
+    // We can add '(' only if the number of opening parentheses
+    // added so far is less than the required total pairs.
+    if (openCount < totalPairs) {
+        // Add an opening parenthesis to the current combination.
+        currentCombination.push_back('(');
+        // Recursively generate the remaining parentheses
+        // after adding one opening parenthesis.
+        generateParenthesesHelper(openCount + 1, closeCount, totalPairs, result, currentCombination);
+        // BACKTRACKING:
+        // Remove the last added '(' to restore the previous state.
+        // This allows us to explore another possible combination.
+        currentCombination.pop_back();
+    }
+    // ADD CLOSING PARENTHESIS:
+    // We can add ')' only when:
+    // 1. There are more opening parentheses than closing parentheses.
+    // 2. We have not reached the required total closing parentheses.
+    //
+    // This ensures that every closing parenthesis has a matching
+    // opening parenthesis before it.
+    if (closeCount < openCount && closeCount < totalPairs) {
+        // Add a closing parenthesis to the current combination.
+        currentCombination.push_back(')');
+        // Recursively generate the remaining parentheses
+        // after adding one closing parenthesis.
+        generateParenthesesHelper(openCount, closeCount + 1, totalPairs, result, currentCombination);
+        // BACKTRACKING:
+        // Remove the last added ')' to restore the previous state.
+        currentCombination.pop_back();
+    }
+}
+
+vector<string> generateParenthesis01(int n) {
+    // Stores all valid parentheses combinations.
+    vector<string> result;
+    // Temporarily stores the combination being constructed.
+    string currentCombination;
+    // Initially, no opening or closing parentheses have been added.
+    generateParenthesesHelper(0, 0, n, result, currentCombination);
+    return result;
+}
+
+int main(){
+    vector<string> result = generateParenthesis01(3);
+    for(string str : result){
+        cout << str << endl;
+    }
+    return 0;
+}
+
+//-------------------------------------------//-------------------------------------------//
