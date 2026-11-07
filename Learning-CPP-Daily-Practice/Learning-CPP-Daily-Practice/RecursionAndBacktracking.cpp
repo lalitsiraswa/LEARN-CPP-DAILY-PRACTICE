@@ -156,12 +156,12 @@ vector<string> generateParenthesis01(int n) {
     return result;
 }
 
-int main(){
-    vector<string> result = generateParenthesis01(3);
-    for(string str : result){
-        cout << str << endl;
-    }
-    return 0;
-}
+//int main(){
+//    vector<string> result = generateParenthesis01(3);
+//    for(string str : result){
+//        cout << str << endl;
+//    }
+//    return 0;
+//}
 
 //-------------------------------------------//-------------------------------------------//
