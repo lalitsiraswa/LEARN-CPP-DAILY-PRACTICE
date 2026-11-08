@@ -238,3 +238,128 @@ vector<string> letterCombinations01(string digits) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 39. Combination Sum
+void combinationSumHelper01(int startIndex, vector<int>& candidates, vector<vector<int>>& combinations, vector<int>& currentCombination, int& currentSum, int target) {
+    // BASE CASE:
+    // If the current sum reaches the target,
+    // the current combination is a valid solution.
+    // Store it in the result.
+    if (currentSum == target) {
+        combinations.push_back(currentCombination);
+        return;
+    }
+    // If we have processed all candidates,
+    // there are no more elements to explore.
+    if (startIndex >= candidates.size()) {
+        return;
+    }
+    // Try every candidate starting from startIndex.
+    //
+    // We start from startIndex instead of 0 to avoid
+    // generating duplicate combinations in different orders.
+    for (int candidateIndex = startIndex; candidateIndex < candidates.size(); candidateIndex++) {
+        // PRUNING:
+        // If adding the current candidate exceeds the target,
+        // skip it because all candidates are positive integers.
+        if (currentSum + candidates[candidateIndex] <= target) {
+            // PICK:
+            // Add the current candidate to the combination.
+            currentSum += candidates[candidateIndex];
+            currentCombination.push_back(candidates[candidateIndex]);
+            // RECURSION:
+            // Pass candidateIndex instead of candidateIndex + 1.
+            // This allows us to reuse the same candidate multiple times.
+            //
+            // Starting from candidateIndex also ensures that
+            // we do not generate combinations in different orders.
+            combinationSumHelper01( candidateIndex, candidates, combinations, currentCombination, currentSum, target);
+            // BACKTRACKING:
+            // Undo the selected candidate from the current sum.
+            currentSum -= candidates[candidateIndex];
+            // Remove the last selected candidate from the combination.
+            // This allows us to explore the next candidate.
+            currentCombination.pop_back();
+        }
+    }
+}
+
+vector<vector<int>> combinationSum01(vector<int>& candidates, int target) {
+    // Stores all valid combinations whose sum equals the target.
+    vector<vector<int>> result;
+    // Temporarily stores the combination being constructed.
+    vector<int> currentCombination;
+    // Maintains the sum of the elements in currentCombination.
+    int currentSum = 0;
+    // Start exploring candidates from index 0.
+    combinationSumHelper01(0, candidates, result, currentCombination, currentSum, target);
+    return result;
+}
+
+//-------------------------------------------//
+// 39. Combination Sum - Pick / Not-Pick Approach
+void combinationSumHelper02(int currentIndex, vector<int>& candidates, vector<vector<int>>& result, vector<int>& currentCombination, int& remainingTarget) {
+    // BASE CASE:
+    // If the remaining target becomes 0,
+    // we have found a valid combination.
+    // Store the current combination and return.
+    if (remainingTarget == 0) {
+        result.push_back(currentCombination);
+        return;
+    }
+    // BASE CASE:
+    // If we have processed all candidates,
+    // there are no more elements to explore.
+    if (currentIndex >= candidates.size()) {
+        return;
+    }
+    // PICK:
+    // We can pick the current candidate only if
+    // its value does not exceed the remaining target.
+    if (candidates[currentIndex] <= remainingTarget) {
+        // Add the current candidate to the combination.
+        currentCombination.push_back(candidates[currentIndex]);
+        // Reduce the remaining target by the selected candidate.
+        remainingTarget -= candidates[currentIndex];
+        // RECURSION:
+        // Pass the same index because we are allowed
+        // to reuse the current candidate multiple times.
+        combinationSumHelper02( currentIndex, candidates, result, currentCombination, remainingTarget);
+        // BACKTRACKING:
+        // Restore the remaining target to its previous value.
+        remainingTarget += candidates[currentIndex];
+        // Remove the selected candidate from the combination.
+        // This allows us to explore the Not-Pick decision.
+        currentCombination.pop_back();
+    }
+    // NOT-PICK:
+    // Skip the current candidate and move to the next candidate.
+    // This ensures that we explore combinations without
+    // including the current candidate.
+    combinationSumHelper02( currentIndex + 1, candidates, result, currentCombination, remainingTarget);
+}
+
+vector<vector<int>> combinationSum02(vector<int>& candidates, int target) {
+    // Stores all valid combinations.
+    vector<vector<int>> result;
+    // Temporarily stores the combination being constructed.
+    vector<int> currentCombination;
+    // Stores the remaining target that needs to be achieved.
+    int remainingTarget = target;
+    // Start exploring candidates from index 0.
+    combinationSumHelper02(0, candidates, result, currentCombination, remainingTarget);
+    return result;
+}
+
+//int main(){
+//    vector<int> candidates = {2, 3, 6, 7};
+//    vector<vector<int>> combinations = combinationSum02(candidates, 7);
+//    for(auto combination : combinations){
+//        for(auto num : combination){
+//            cout << num << ", ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
