@@ -165,3 +165,76 @@ vector<string> generateParenthesis01(int n) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 17. Letter Combinations of a Phone Number
+void generateLetterCombinationsHelper(vector<string>& lettersForEachDigit, int currentIndex, string& currentCombination, vector<string>& result) {
+    // BASE CASE:
+    // If we have processed all the digits,
+    // the current combination is complete.
+    // Store it in the result and return.
+    if (currentIndex >= lettersForEachDigit.size()) {
+        result.push_back(currentCombination);
+        return;
+    }
+    // Get all possible letters mapped to the current digit.
+    // For example, if the current digit is '2',
+    // possible letters are "abc".
+    //
+    // Explore each possible letter one by one.
+    for (int letterIndex = 0; letterIndex < lettersForEachDigit[currentIndex].size(); letterIndex++) {
+        // PICK:
+        // Add the current letter to the combination.
+        currentCombination.push_back(lettersForEachDigit[currentIndex][letterIndex]);
+        // RECURSION:
+        // Move to the next digit and generate combinations
+        // using the remaining digits.
+        generateLetterCombinationsHelper(lettersForEachDigit, currentIndex + 1, currentCombination, result);
+        // BACKTRACKING:
+        // Remove the last added letter to restore the previous state.
+        // This allows us to try the next possible letter
+        // for the current digit.
+        currentCombination.pop_back();
+    }
+}
+
+vector<string> letterCombinations01(string digits) {
+    // Stores the mapping between phone digits and their corresponding letters.
+    unordered_map<char, string> digitToLetters = {
+        {'2', "abc"},
+        {'3', "def"},
+        {'4', "ghi"},
+        {'5', "jkl"},
+        {'6', "mno"},
+        {'7', "pqrs"},
+        {'8', "tuv"},
+        {'9', "wxyz"}
+    };
+    // Stores the possible letters for each input digit.
+    //
+    // Example:
+    // digits = "23"
+    // lettersForEachDigit = {"abc", "def"}
+    vector<string> lettersForEachDigit;
+    // Convert every digit into its corresponding letters.
+    for (int digitIndex = 0; digitIndex < digits.size(); digitIndex++) {
+        // Get the letters associated with the current digit
+        // and store them in the vector.
+        lettersForEachDigit.push_back(digitToLetters[digits[digitIndex]]);
+    }
+    // Stores all generated letter combinations.
+    vector<string> result;
+    // Temporarily stores the combination being constructed.
+    string currentCombination;
+    // Start generating combinations from the first digit (index 0).
+    generateLetterCombinationsHelper(lettersForEachDigit, 0, currentCombination, result);
+    return result;
+}
+
+//int main(){
+//    vector<string> combinations = letterCombinations01("23");
+//    for(auto combination : combinations){
+//        cout << combination << ", ";
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
