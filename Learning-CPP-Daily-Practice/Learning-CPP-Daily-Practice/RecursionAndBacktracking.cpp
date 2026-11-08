@@ -363,3 +363,74 @@ vector<vector<int>> combinationSum02(vector<int>& candidates, int target) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 40. Combination Sum II
+void combinationSum2Helper01( int startIndex, vector<int>& candidates, vector<vector<int>>& result, vector<int>& currentCombination, int& currentSum, int& target) {
+    // If the current sum equals the target,
+    // we have found a valid combination.
+    if(currentSum == target){
+        result.push_back(currentCombination);
+        return;
+    }
+    // If all candidates have been considered,
+    // there are no more elements to explore.
+    if(startIndex >= candidates.size()){
+        return;
+    }
+    // Explore all possible candidates starting from startIndex.
+    for(int currentIndex = startIndex; currentIndex < candidates.size(); currentIndex++){
+        // Skip duplicate elements at the same recursion level.
+        // This prevents generating duplicate combinations.
+        //
+        // We only skip when currentIndex is not equal to startIndex
+        // because the first occurrence of a value should still be considered.
+        if(currentIndex != startIndex && candidates[currentIndex] == candidates[currentIndex - 1]){
+            continue;
+        }
+        // Since the candidates are sorted, if adding the current
+        // candidate exceeds the target, there is no need to explore
+        // this candidate or any subsequent candidate.
+        if(currentSum + candidates[currentIndex] > target){
+            break;
+        }
+        // Include the current candidate in the combination.
+        currentSum += candidates[currentIndex];
+        currentCombination.push_back(candidates[currentIndex]);
+        // Move to currentIndex + 1 because each candidate
+        // can be used only once.
+        combinationSum2Helper01(currentIndex + 1, candidates, result, currentCombination, currentSum, target);
+        // Backtracking:
+        // Remove the current candidate and restore the previous sum
+        // so that other possible combinations can be explored.
+        currentSum -= candidates[currentIndex];
+        currentCombination.pop_back();
+    }
+}
+
+vector<vector<int>> combinationSum201(vector<int>& candidates, int target) {
+    // Sort the candidates to:
+    // 1. Handle duplicate elements efficiently.
+    // 2. Stop exploring when the current sum exceeds the target.
+    sort(candidates.begin(), candidates.end());
+    vector<vector<int>> result;
+    vector<int> currentCombination;
+    int currentSum = 0;
+    // Start exploring combinations from index 0.
+    combinationSum2Helper01( 0, candidates, result, currentCombination, currentSum, target);
+    return result;
+}
+
+//int main(){
+//    vector<int> candidates = {10,1,2,7,6,1,5};
+//    vector<vector<int>> combinations = combinationSum201(candidates, 8);
+////    vector<int> candidates = {2,5,2,1,2};
+////    vector<vector<int>> combinations = combinationSum201(candidates, 5);
+//    for(auto combination : combinations){
+//        for(auto num : combination){
+//            cout << num << ", ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
