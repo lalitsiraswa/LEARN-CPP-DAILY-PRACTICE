@@ -1,6 +1,8 @@
 #include<iostream>
 using namespace std;
 
+// https://leetcode.com/problems/permutations/solutions/18239/a-general-approach-to-backtracking-questions-in-java-subsets-permutations-combination-sum-palindrome-partioning/
+
 //-------------------------------------------//-------------------------------------------//
 // 78. Subsets
 void generateSubsetsHelper(vector<int>& nums, vector<vector<int>>& result, int currentIndex, vector<int>& currentSubset) {
@@ -426,6 +428,63 @@ vector<vector<int>> combinationSum201(vector<int>& candidates, int target) {
 ////    vector<vector<int>> combinations = combinationSum201(candidates, 5);
 //    for(auto combination : combinations){
 //        for(auto num : combination){
+//            cout << num << ", ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+// 90. Subsets II
+void subsetsWithoutDupHelper01(int startIndex, vector<int>& nums, vector<vector<int>>& result, vector<int>& currentSubset) {
+    // Every subset is a valid answer, including the empty subset.
+    // Therefore, add the current subset to the result at every
+    // recursive call.
+    result.push_back(currentSubset);
+    // If all elements have been considered, stop exploring.
+    if(startIndex >= nums.size()){
+        return;
+    }
+    // Explore all possible elements starting from startIndex.
+    for(int currentIndex = startIndex; currentIndex < nums.size(); currentIndex++){
+        // Skip duplicate elements at the same recursion level.
+        // This prevents generating duplicate subsets.
+        //
+        // We do not skip the first element at the current recursion
+        // level because it should be considered.
+        if(currentIndex != startIndex && nums[currentIndex] == nums[currentIndex - 1]){
+            continue;
+        }
+        // Include the current element in the subset.
+        currentSubset.push_back(nums[currentIndex]);
+        // Recursively explore subsets using the remaining elements.
+        // Move to currentIndex + 1 because each array position
+        // can be selected only once.
+        subsetsWithoutDupHelper01(currentIndex + 1, nums, result, currentSubset);
+        // Backtracking:
+        // Remove the last selected element to restore the previous
+        // subset before exploring the next possible element.
+        currentSubset.pop_back();
+    }
+}
+
+vector<vector<int>> subsetsWithDup01(vector<int>& nums) {
+    // Sort the array so that duplicate elements are adjacent.
+    // This allows us to identify and skip duplicate elements.
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> result;
+    vector<int> currentSubset;
+    // Start generating subsets from index 0.
+    subsetsWithoutDupHelper01(0, nums, result, currentSubset);
+    return result;
+}
+
+//int main(){
+//    vector<int> nums = {1,2,2};
+//    vector<vector<int>> subsets = subsetsWithDup01(nums);
+//    for(auto subset : subsets){
+//        for(auto num : subset){
 //            cout << num << ", ";
 //        }
 //        cout << endl;
