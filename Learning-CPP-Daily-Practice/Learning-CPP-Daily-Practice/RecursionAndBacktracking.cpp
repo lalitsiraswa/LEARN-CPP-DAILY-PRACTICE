@@ -493,3 +493,83 @@ vector<vector<int>> subsetsWithDup01(vector<int>& nums) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 131. Palindrome Partitioning
+// Checks whether the given substring is a palindrome.
+bool isSubstringPalindrome(string& substring){
+    // Use two pointers:
+    // low starts from the beginning.
+    // high starts from the end.
+    int left = 0;
+    int right = substring.size() - 1;
+    // Compare characters from both ends and move towards the center.
+    while(left <= right){
+        // If characters at both positions do not match,
+        // the substring is not a palindrome.
+        if(substring[left] != substring[right]){
+            return false;
+        }
+        // Move both pointers towards the center.
+        left++;
+        right--;
+    }
+    // If all corresponding characters match,
+    // the substring is a palindrome.
+    return true;
+}
+
+void partitionHelper01(string& inputString, int startIndex, vector<string>& currentPartition, vector<vector<string>>& result) {
+    // Base condition:
+    // If startIndex reaches the end of the string,
+    // we have successfully partitioned the entire string.
+    //
+    // Since every selected substring was checked for palindrome,
+    // the current partition is a valid answer.
+    if(startIndex >= inputString.size()){
+        result.push_back(currentPartition);
+        return;
+    }
+    // Build substrings starting from startIndex.
+    // Each iteration extends the substring by one character.
+    string currentSubstring;
+    for(int currentIndex = startIndex; currentIndex < inputString.size(); currentIndex++){
+        // Extend the current substring by including the character
+        // at currentIndex.
+        currentSubstring.push_back(inputString[currentIndex]);
+        // Only consider the substring if it is a palindrome.
+        if(isSubstringPalindrome(currentSubstring)){
+            // Include the palindrome in the current partition.
+            currentPartition.push_back(currentSubstring);
+            // Recursively partition the remaining part of the string.
+            // Start from the next index because the current substring
+            // has already been included in the partition.
+            partitionHelper01(inputString, currentIndex + 1, currentPartition, result);
+            // Backtracking:
+            // Remove the last selected palindrome so that we can
+            // explore other possible palindrome partitions.
+            currentPartition.pop_back();
+        }
+    }
+}
+
+vector<vector<string>> partition01(string inputString) {
+    vector<vector<string>> result;
+    vector<string> currentPartition;
+    // Start partitioning the string from index 0.
+    partitionHelper01(inputString, 0, currentPartition, result);
+    return result;
+}
+
+//int main(){
+//    string s = "aabaa";
+////    string s = "aabb";
+//    vector<vector<string>> partitions = partition01(s);
+//    for(auto partition : partitions){
+//        for(auto substring : partition){
+//            cout << substring << ", ";
+//        }
+//        cout << endl;
+//    }
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
