@@ -573,3 +573,159 @@ vector<vector<string>> partition01(string inputString) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 79. Word Search
+bool existHelper01(int currentRow, int currentColumn, vector<vector<char>>& board, string& word, int currentIndex, vector<vector<int>>& visited) {
+    // Base condition:
+    // If currentIndex reaches the length of the word,
+    // it means we have successfully matched every character.
+    if(currentIndex >= word.size()){
+        return true;
+    }
+    // Check whether the current position is outside the board boundaries.
+    // If the position is invalid, we cannot explore further in this direction.
+    if(currentRow < 0 || currentRow >= board.size() || currentColumn < 0 || currentColumn >= board[0].size()){
+        return false;
+    }
+    // Check two conditions:
+    // 1. If the current cell is already visited, we cannot use it again.
+    // 2. If the current cell's character does not match the required
+    //    character in the word, this path is invalid.
+    if(visited[currentRow][currentColumn] || board[currentRow][currentColumn] != word[currentIndex]){
+        return false;
+    }
+    // Mark the current cell as visited so that we do not use
+    // the same cell again while searching for the remaining characters.
+    visited[currentRow][currentColumn] = 1;
+    // Explore all four possible directions from the current cell.
+    // Move to the next character in the word (currentIndex + 1).
+    // Explore the left cell.
+    bool foundInLeft = existHelper01(currentRow, currentColumn - 1, board, word, currentIndex + 1, visited);
+    // Explore the right cell.
+    bool foundInRight = existHelper01(currentRow, currentColumn + 1, board, word, currentIndex + 1, visited);
+    // Explore the cell above the current cell.
+    bool foundInTop = existHelper01(currentRow - 1, currentColumn,board, word, currentIndex + 1, visited);
+    // Explore the cell below the current cell.
+    bool foundInBottom = existHelper01(currentRow + 1, currentColumn,board, word, currentIndex + 1, visited);
+    // Backtracking:
+    // Unmark the current cell so that it can be used in
+    // other possible search paths.
+    visited[currentRow][currentColumn] = 0;
+    // If the word is found in any of the four directions,
+    // return true. Otherwise, return false.
+    return (foundInLeft || foundInRight || foundInTop || foundInBottom);
+}
+
+bool exist01(vector<vector<char>>& board, string word) {
+    // Get the number of rows and columns in the board.
+    int rowCount = board.size();
+    int columnCount = board[0].size();
+    // Create a visited matrix of the same dimensions as the board.
+    // Initially, all cells are unvisited (0).
+    vector<vector<int>> visited(rowCount,vector<int>(columnCount, 0));
+    // Try starting the word search from every cell in the board.
+    for(int currentRow = 0; currentRow < rowCount; currentRow++){
+        for(int currentColumn = 0; currentColumn < columnCount; currentColumn++){
+            // Start searching for the word from the current cell.
+            // currentIndex = 0 means we are looking for the first
+            // character of the word.
+            if(existHelper01(currentRow, currentColumn, board, word, 0, visited)){
+                return true;
+            }
+        }
+    }
+    // If no starting position produces the complete word,
+    // the word does not exist in the board.
+    return false;
+}
+
+//-------------------------------------------//
+// WITHOUT USING ANY EXTRA SPACE
+bool existHelper02(int currentRow, int currentColumn, vector<vector<char>>& board, string& word, int currentIndex) {
+    // Base condition:
+    // If currentIndex reaches the length of the word,
+    // it means all characters have been successfully matched.
+    if(currentIndex >= word.size()){
+        return true;
+    }
+    // Check whether the current position is outside the board boundaries.
+    // If the position is invalid, this search path cannot continue.
+    if(currentRow < 0 || currentRow >= board.size() || currentColumn < 0 || currentColumn >= board[0].size()){
+        return false;
+    }
+    // If the current cell does not contain the expected character,
+    // this search path is invalid.
+    if(board[currentRow][currentColumn] != word[currentIndex]){
+        return false;
+    }
+    // Store the original character before modifying the board.
+    // We need this character later to restore the original board.
+    char originalCharacter = board[currentRow][currentColumn];
+    // Mark the current cell as visited by temporarily replacing
+    // its character with '.'.
+    //
+    // This prevents us from visiting the same cell again
+    // in the current search path.
+    board[currentRow][currentColumn] = '.';
+    // Explore the left cell for the next character in the word.
+    bool foundInLeft = existHelper02(currentRow, currentColumn - 1, board, word, currentIndex + 1);
+    // If the complete word is found in the left direction,
+    // return true immediately.
+    if(foundInLeft){
+        return true;
+    }
+    // Explore the right cell for the next character.
+    bool foundInRight = existHelper02( currentRow, currentColumn + 1, board, word, currentIndex + 1);
+    // If the complete word is found in the right direction,
+    // return true immediately.
+    if(foundInRight){
+        return true;
+    }
+    // Explore the cell above the current cell.
+    bool foundInTop = existHelper02(currentRow - 1, currentColumn, board, word, currentIndex + 1);
+    // If the complete word is found in the top direction,
+    // return true immediately.
+    if(foundInTop){
+        return true;
+    }
+    // Explore the cell below the current cell.
+    bool foundInBottom = existHelper02( currentRow + 1, currentColumn, board, word, currentIndex + 1);
+    // If the complete word is found in the bottom direction,
+    // return true immediately.
+    if(foundInBottom){
+        return true;
+    }
+    // Backtracking:
+    // None of the four directions contains the remaining word.
+    // Restore the original character so that this cell can be
+    // used in other possible search paths.
+    board[currentRow][currentColumn] = originalCharacter;
+    return false;
+}
+
+bool exist02(vector<vector<char>>& board, string word) {
+    // Get the number of rows and columns in the board.
+    int rowCount = board.size();
+    int columnCount = board[0].size();
+    // Try starting the word search from every cell in the board.
+    for(int currentRow = 0; currentRow < rowCount; currentRow++){
+        for(int currentColumn = 0; currentColumn < columnCount; currentColumn++){
+            // Start searching from the current cell.
+            // currentIndex = 0 represents the first character of the word.
+            if(existHelper02( currentRow, currentColumn, board, word, 0)){
+                return true;
+            }
+        }
+    }
+    // The word was not found starting from any cell.
+    return false;
+}
+
+//int main(){
+//    vector<vector<char>> board = {{'A','B','C','E'},{'S','F','C','S'},{'A','D','E','E'}};
+////    string word = "ABCCEDF";
+//    string word = "ABCB";
+//    cout << exist02(board, word);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
