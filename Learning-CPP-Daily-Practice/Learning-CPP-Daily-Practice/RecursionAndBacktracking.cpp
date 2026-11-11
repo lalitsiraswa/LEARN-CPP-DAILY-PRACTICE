@@ -711,7 +711,7 @@ bool exist02(vector<vector<char>>& board, string word) {
         for(int currentColumn = 0; currentColumn < columnCount; currentColumn++){
             // Start searching from the current cell.
             // currentIndex = 0 represents the first character of the word.
-            if(existHelper02( currentRow, currentColumn, board, word, 0)){
+            if(existHelper02(currentRow, currentColumn, board, word, 0)){
                 return true;
             }
         }
@@ -725,6 +725,154 @@ bool exist02(vector<vector<char>>& board, string word) {
 ////    string word = "ABCCEDF";
 //    string word = "ABCB";
 //    cout << exist02(board, word);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
+// 51. N-Queens
+bool isValidPosition01(int& currentRow, int& currentColumn, vector<string>& chessBoard, int& boardSize) {
+    // CHECK COLUMN:
+    // Check whether any queen already exists in the current column.
+    // We check all rows from 0 to currentRow.
+    for(int row = 0; row <= currentRow; row++){
+        // If a queen already exists in this column,
+        // placing another queen here would violate the column constraint.
+        if(chessBoard[row][currentColumn] == 'Q'){
+            return false;
+        }
+    }
+    // CHECK MAIN DIAGONAL:
+    // Check the upper-left diagonal starting from the current position.
+    // This is required because queens may already exist in previous rows.
+    int row = currentRow;
+    int column = currentColumn;
+    while(true){
+        // Stop if we move outside the upper or left boundary.
+        if(row < 0 || column < 0){
+            break;
+        }
+        // If a queen exists on this diagonal,
+        // the current position is invalid.
+        if(chessBoard[row][column] == 'Q'){
+            return false;
+        }
+        // Move diagonally towards the upper-left direction.
+        row--;
+        column--;
+    }
+    // LOWER-RIGHT DIAGONAL (OPTIONAL):
+    // Since we are placing queens row by row, starting from top to bottom,
+    // no queens have been placed in the rows below the current row.
+    // Therefore, checking the lower-right diagonal is unnecessary.
+    row = currentRow + 1;
+    column = currentColumn + 1;
+    while(true){
+        // Stop if we move outside the lower or right boundary.
+        if(row >= boardSize || column >= boardSize){
+            break;
+        }
+        // If a queen exists on this diagonal,
+        // the current position is invalid.
+        if(chessBoard[row][column] == 'Q'){
+            return false;
+        }
+        // Move diagonally towards the lower-right direction.
+        row++;
+        column++;
+    }
+    // CHECK ANTI-DIAGONAL
+    // Check the upper-right diagonal.
+    // This is required because queens may already exist in previous rows.
+    row = currentRow;
+    column = currentColumn;
+    while(true){
+        // Stop if we move outside the upper or right boundary.
+        if(row < 0 || column >= boardSize){
+            break;
+        }
+        // If a queen exists on this diagonal,
+        // the current position is invalid.
+        if(chessBoard[row][column] == 'Q'){
+            return false;
+        }
+        // Move diagonally towards the upper-right direction.
+        row--;
+        column++;
+    }
+    // LOWER-LEFT DIAGONAL (OPTIONAL):
+    // Since we are placing queens row by row, starting from top to bottom,
+    // no queens have been placed in the rows below the current row.
+    // Therefore, checking the lower-left diagonal is unnecessary.
+    row = currentRow + 1;
+    column = currentColumn - 1;
+    while(true){
+        // Stop if we move outside the lower or left boundary.
+        if(row >= boardSize || column < 0){
+            break;
+        }
+        // If a queen exists on this diagonal,
+        // the current position is invalid.
+        if(chessBoard[row][column] == 'Q'){
+            return false;
+        }
+        // Move diagonally towards the lower-left direction.
+        row++;
+        column--;
+    }
+    // No queen was found in the same column or either diagonal.
+    // Therefore, the current position is valid.
+    return true;
+}
+
+void solveNQueensHelper01( int currentRow, int boardSize, vector<vector<string>>& result, vector<string>& chessBoard) {
+    // Base condition:
+    // If currentRow reaches boardSize, it means we have successfully
+    // placed one queen in every row without violating any constraints.
+    if(currentRow >= boardSize){
+        // Store the completed chessboard configuration.
+        result.push_back(chessBoard);
+        return;
+    }
+    // Try placing a queen in every column of the current row.
+    for(int currentColumn = 0; currentColumn < boardSize; currentColumn++){
+        // Check whether the current position is safe for placing a queen.
+        if(isValidPosition01( currentRow, currentColumn, chessBoard, boardSize)){
+            // Place a queen at the current position.
+            chessBoard[currentRow][currentColumn] = 'Q';
+            // Recursively move to the next row to place another queen.
+            solveNQueensHelper01( currentRow + 1, boardSize, result, chessBoard);
+            // Backtracking:
+            // Remove the queen from the current position.
+            // This allows us to try placing the queen in another
+            // column of the current row.
+            chessBoard[currentRow][currentColumn] = '.';
+        }
+    }
+}
+
+vector<vector<string>> solveNQueens01(int boardSize) {
+    // Create an empty chessboard with boardSize rows.
+    vector<string> chessBoard(boardSize);
+    // Stores all valid chessboard configurations.
+    vector<vector<string>> result;
+    // Create a single row containing only empty cells.
+    string emptyRow(boardSize, '.');
+    // Initialize every row of the chessboard with empty cells.
+    fill(chessBoard.begin(), chessBoard.end(), emptyRow);
+    // Start placing queens from the first row (row 0).
+    solveNQueensHelper01(0, boardSize, result, chessBoard);
+    return result;
+}
+
+//int main(){
+//    int n = 4;
+//    vector<vector<string>> result = solveNQueens01(n);
+//    for(auto chessBoard : result){
+//        for(auto row : chessBoard){
+//            cout << row << endl;
+//        }
+//        cout << endl;
+//    }
 //    return 0;
 //}
 
