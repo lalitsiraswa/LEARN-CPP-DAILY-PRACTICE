@@ -877,3 +877,235 @@ vector<vector<string>> solveNQueens01(int boardSize) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 37. Sudoku Solver
+bool check3x3Matrix01(int currentRow, int currentColumn, vector<vector<char>>& board, char digit) {
+    // Traverse the 3x3 subgrid starting from the given row and column.
+    for(int row = currentRow; row < currentRow + 3; row++){
+        for(int column = currentColumn; column < currentColumn + 3; column++){
+            // Check whether the digit already exists in the 3x3 subgrid.
+            if(board[row][column] == digit){
+                return false;
+            }
+        }
+    }
+    // The digit does not exist in the 3x3 subgrid.
+    return true;
+}
+
+bool isValidNumber01(int currentRow, int currentColumn, char digit, vector<vector<char>>& board) {
+    // CHECK CURRENT ROW
+    for(int column = 0; column < 9; column++){
+        // Check whether the digit already exists in the current row.
+        if(board[currentRow][column] == digit){
+            return false;
+        }
+    }
+    // CHECK CURRENT COLUMN
+    for(int row = 0; row < 9; row++){
+        // Check whether the digit already exists in the current column.
+        if(board[row][currentColumn] == digit){
+            return false;
+        }
+    }
+    // CHECK CORRESPONDING 3x3 SUBGRID
+    // Identify which of the nine 3x3 subgrids contains the current cell.
+    if(currentRow <= 2){
+        if(currentColumn <= 2){
+            // Top-left 3x3 subgrid.
+            if(!check3x3Matrix01(0, 0, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 5){
+            // Top-middle 3x3 subgrid.
+            if(!check3x3Matrix01(0, 3, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 8){
+            // Top-right 3x3 subgrid.
+            if(!check3x3Matrix01(0, 6, board, digit)){
+                return false;
+            }
+        }
+    }
+    else if(currentRow <= 5){
+        if(currentColumn <= 2){
+            // Middle-left 3x3 subgrid.
+            if(!check3x3Matrix01(3, 0, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 5){
+            // Middle-middle 3x3 subgrid.
+            if(!check3x3Matrix01(3, 3, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 8){
+            // Middle-right 3x3 subgrid.
+            if(!check3x3Matrix01(3, 6, board, digit)){
+                return false;
+            }
+        }
+    }
+    else if(currentRow <= 8){
+        if(currentColumn <= 2){
+            // Bottom-left 3x3 subgrid.
+            if(!check3x3Matrix01(6, 0, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 5){
+            // Bottom-middle 3x3 subgrid.
+            if(!check3x3Matrix01(6, 3, board, digit)){
+                return false;
+            }
+        }
+        else if(currentColumn <= 8){
+            // Bottom-right 3x3 subgrid.
+            if(!check3x3Matrix01(6, 6, board, digit)){
+                return false;
+            }
+        }
+    }
+    // The digit is valid if it does not exist in the row, column, or subgrid.
+    return true;
+}
+
+// Recursive helper function to solve Sudoku using backtracking.
+bool solveSudokuHelper01(int currentRow, vector<vector<char>>& board) {
+    // Traverse the board starting from the current row.
+    for(int row = currentRow; row < 9; row++){
+        for(int column = 0; column < 9; column++){
+            // Find an empty cell.
+            if(board[row][column] == '.'){
+                // Try placing digits from 1 to 9 in the empty cell.
+                for(int number = 1; number <= 9; number++){
+                    // Convert the integer into its corresponding character digit.
+                    char digit = number + 48;
+                    // Check whether the digit can be placed in the current cell.
+                    if(isValidNumber01(row, column, digit, board)){
+                        // Place the digit in the empty cell.
+                        board[row][column] = digit;
+                        // Recursively solve the remaining Sudoku board.
+                        if(solveSudokuHelper01(row, board)){
+                            return true;
+                        }
+                        // BACKTRACK:
+                        // If the current digit does not lead to a solution,
+                        // reset the cell and try the next digit.
+                        board[row][column] = '.';
+                    }
+                }
+                // No valid digit could be placed in this empty cell.
+                // Return false to backtrack to the previous cell.
+                return false;
+            }
+        }
+    }
+    // All cells are filled successfully. Sudoku is solved.
+    return true;
+}
+
+// Main function to solve the Sudoku board.
+void solveSudoku01(vector<vector<char>>& board) {
+    // Start solving the Sudoku from the first row.
+    solveSudokuHelper01(0, board);
+}
+
+//-------------------------------------------//
+bool check3x3Matrix02(int startRow, int startColumn, vector<vector<char>>& board, char digit) {
+    // Traverse the corresponding 3x3 subgrid.
+    for(int row = startRow; row < startRow + 3; row++){
+        for(int column = startColumn; column < startColumn + 3; column++){
+            // Check whether the digit already exists.
+            if(board[row][column] == digit){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+bool isValidNumber02(int currentRow, int currentColumn, char digit, vector<vector<char>>& board) {
+    // CHECK CURRENT ROW
+    for(int column = 0; column < 9; column++){
+        if(board[currentRow][column] == digit){
+            return false;
+        }
+    }
+    // CHECK CURRENT COLUMN
+    for(int row = 0; row < 9; row++){
+        if(board[row][currentColumn] == digit){
+            return false;
+        }
+    }
+    // FIND STARTING POSITION OF THE 3x3 SUBGRID.
+    int startRow = (currentRow / 3) * 3;
+    int startColumn = (currentColumn / 3) * 3;
+    // CHECK CORRESPONDING 3x3 SUBGRID.
+    if(!check3x3Matrix02(startRow, startColumn, board, digit)){
+        return false;
+    }
+    return true;
+}
+
+
+bool solveSudokuHelper02(int currentRow, vector<vector<char>>& board) {
+    // Traverse the Sudoku board.
+    for(int row = currentRow; row < 9; row++){
+        for(int column = 0; column < 9; column++){
+            // Find an empty cell.
+            if(board[row][column] == '.'){
+                // Try digits from 1 to 9.
+                for(int number = 1; number <= 9; number++){
+                    char digit = number + '0';
+                    // Check whether the digit is valid.
+                    if(isValidNumber02(row, column, digit, board)){
+                        // Place the digit.
+                        board[row][column] = digit;
+                        // Recursively solve the remaining board.
+                        if(solveSudokuHelper02(row, board)){
+                            return true;
+                        }
+                        // BACKTRACK: Undo the previous placement.
+                        board[row][column] = '.';
+                    }
+                }
+                // No valid digit found. Backtrack.
+                return false;
+            }
+        }
+    }
+    // Sudoku is solved.
+    return true;
+}
+
+void solveSudoku02(vector<vector<char>>& board) {
+    solveSudokuHelper02(0, board);
+}
+
+//int main(){
+//    vector<vector<char>> board = {{'5','3','.','.','7','.','.','.','.'},
+//                                  {'6','.','.','1','9','5','.','.','.'},
+//                                  {'.','9','8','.','.','.','.','6','.'},
+//                                  {'8','.','.','.','6','.','.','.','3'},
+//                                  {'4','.','.','8','.','3','.','.','1'},
+//                                  {'7','.','.','.','2','.','.','.','6'},
+//                                  {'.','6','.','.','.','.','2','8','.'},
+//                                  {'.','.','.','4','1','9','.','.','5'},
+//                                  {'.','.','.','.','8','.','.','7','9'}};
+//    solveSudoku02(board);
+//    for(auto row : board){
+//        for(auto element : row){
+//            cout << element << " ";
+//        }
+//        cout << endl;
+//    }
+//    cout << endl << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
