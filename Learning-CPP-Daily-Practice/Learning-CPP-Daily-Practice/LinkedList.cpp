@@ -172,3 +172,161 @@ ListNode* getIntersectionNodeTuf(ListNode* headA, ListNode* headB) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 234. Palindrome Linked List
+// Find the middle node and disconnect the first half of the linked list.
+ListNode* isPalindromeFindMiddleNodeHelper(ListNode* head){
+    // Handle an empty linked list.
+    if(head == nullptr){
+        return head;
+    }
+    // Initialize slow and fast pointers at the head.
+    ListNode* slowPointer = head;
+    ListNode* fastPointer = head;
+    // Keep track of the node before the slow pointer.
+    ListNode* previousNode = nullptr;
+    // Move slowPointer one step and fastPointer two steps.
+    while(fastPointer != nullptr && fastPointer->next != nullptr){
+        previousNode = slowPointer;
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+    // Disconnect the first half from the second half.
+    // For a single-node list, previousNode remains nullptr.
+    if(previousNode){
+        previousNode->next = nullptr;
+    }
+    // Return the middle node, which is the starting node of the second half.
+    return slowPointer;
+}
+
+// Reverse the linked list and return its new head.
+ListNode* isPalindromeReverseLinkedListHelper(ListNode* head){
+    ListNode* currentNode = head;
+    ListNode* previousNode = nullptr;
+    ListNode* newHead = nullptr;
+    // Reverse the links of the linked list.
+    while(currentNode != nullptr){
+        // Store the current node as the new head.
+        newHead = currentNode;
+        // Move currentNode forward before changing its next pointer.
+        currentNode = currentNode->next;
+        // Reverse the link to point towards the previous node.
+        newHead->next = previousNode;
+        // Update previousNode for the next iteration.
+        previousNode = newHead;
+    }
+    // Return the new head of the reversed linked list.
+    return newHead;
+}
+
+// Check whether the linked list is a palindrome.
+bool isPalindrome(ListNode* head){
+    // An empty or single-node linked list is always a palindrome.
+    if(head == nullptr || head->next == nullptr){
+        return true;
+    }
+    // Keep the head of the first half unchanged.
+    ListNode* head1 = head;
+    // Find the middle node and disconnect the two halves.
+    ListNode* head2 = isPalindromeFindMiddleNodeHelper(head);
+    // Reverse the second half of the linked list.
+    head2 = isPalindromeReverseLinkedListHelper(head2);
+    printLinkedList(head1);
+    printLinkedList(head2);
+    // Compare both halves node by node.
+    while(head1 != nullptr && head2 != nullptr){
+        // If corresponding node values differ, it is not a palindrome.
+        if(head1->value != head2->value){
+            return false;
+        }
+        // Move both pointers forward.
+        head1 = head1->next;
+        head2 = head2->next;
+    }
+    // All corresponding node values match.
+    return true;
+}
+
+//-------------------------------------------//
+// Find the middle node and disconnect the first half of the linked list.
+ListNode* isPalindromeFindMiddleNodeHelper01(ListNode* head){
+    // Handle an empty linked list.
+    if(head == nullptr){
+        return head;
+    }
+    // Initialize slow and fast pointers at the head.
+    ListNode* slowPointer = head;
+    ListNode* fastPointer = head;
+    // Move slowPointer one step and fastPointer two steps.
+    while(fastPointer != nullptr && fastPointer->next != nullptr){
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+    // Return the middle node, which is the starting node of the second half.
+    return slowPointer;
+}
+
+// Reverse the linked list and return its new head.
+ListNode* isPalindromeReverseLinkedListHelper01(ListNode* head){
+    ListNode* currentNode = head;
+    ListNode* previousNode = nullptr;
+    ListNode* newHead = nullptr;
+    // Reverse the links of the linked list.
+    while(currentNode != nullptr){
+        // Store the current node as the new head.
+        newHead = currentNode;
+        // Move currentNode forward before changing its next pointer.
+        currentNode = currentNode->next;
+        // Reverse the link to point towards the previous node.
+        newHead->next = previousNode;
+        // Update previousNode for the next iteration.
+        previousNode = newHead;
+    }
+    // Return the new head of the reversed linked list.
+    return newHead;
+}
+
+// Check whether the linked list is a palindrome.
+bool isPalindrome01(ListNode* head){
+    // An empty or single-node linked list is always a palindrome.
+    if(head == nullptr || head->next == nullptr){
+        return true;
+    }
+    // Keep the head of the first half unchanged.
+    ListNode* head1 = head;
+    // Find the middle node and disconnect the two halves.
+    ListNode* head2 = isPalindromeFindMiddleNodeHelper01(head);
+    // Reverse the second half of the linked list.
+    head2 = isPalindromeReverseLinkedListHelper01(head2);
+    printLinkedList(head1);
+    printLinkedList(head2);
+    // Compare both halves node by node.
+    while(head1 != nullptr && head2 != nullptr){
+        // If corresponding node values differ, it is not a palindrome.
+        if(head1->value != head2->value){
+            return false;
+        }
+        // Move both pointers forward.
+        head1 = head1->next;
+        head2 = head2->next;
+    }
+    // All corresponding node values match.
+    return true;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(2);
+//    ListNode* node5 = new ListNode(1);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+////    printLinkedList(head);
+//    cout << isPalindrome01(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
