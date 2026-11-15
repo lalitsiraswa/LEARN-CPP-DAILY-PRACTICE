@@ -380,3 +380,72 @@ bool hasCycle(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 19. Remove Nth Node From End of List
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+    // Tracks the number of nodes traversed in the linked list.
+    int listLength = 1;
+    // Both pointers initially point to the head.
+    // currentNode will eventually point to the node that needs to be deleted.
+    // traversalNode is used to traverse the linked list.
+    ListNode* currentNode = head;
+    ListNode* traversalNode = head;
+    // Keeps track of the node immediately before currentNode.
+    ListNode* previousNode = nullptr;
+    // Move traversalNode until it reaches the last node.
+    while (traversalNode->next != nullptr) {
+        // Move traversalNode one step forward.
+        traversalNode = traversalNode->next;
+        // Increment the total number of nodes traversed.
+        listLength += 1;
+        // Once the number of traversed nodes becomes greater than n,
+        // start moving currentNode and previousNode.
+        //
+        // This maintains a gap of n nodes between traversalNode
+        // and currentNode.
+        if (listLength > n) {
+            // Move previousNode to the current position of currentNode.
+            previousNode = currentNode;
+            // Move currentNode one step forward.
+            currentNode = currentNode->next;
+        }
+    }
+    // If listLength equals n, the first node needs to be deleted.
+    // This happens when we need to remove the Nth node from the end
+    // and that node is the head itself.
+    if (listLength == n) {
+        // Store the current head so that we can delete it.
+        ListNode* nodeToDelete = head;
+        // Update head to point to the second node.
+        head = head->next;
+        // Delete the original head node to free its memory.
+        delete nodeToDelete;
+        return head;
+    }
+    // Skip currentNode by connecting previousNode directly
+    // to the node after currentNode.
+    previousNode->next = currentNode->next;
+    // Delete the target node to free its memory.
+    delete currentNode;
+    return head;
+}
+
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    ListNode* node6 = new ListNode(6);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node6;
+//    printLinkedList(head);
+//    head = removeNthFromEnd(head, 5);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
