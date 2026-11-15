@@ -332,3 +332,51 @@ bool isPalindrome01(ListNode* head){
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 141. Linked List Cycle
+bool hasCycle(ListNode* head) {
+    // Initialize both pointers at the head of the linked list.
+    // slowNode moves one node at a time.
+    // fastNode moves two nodes at a time.
+    ListNode* slowNode = head;
+    ListNode* fastNode = head;
+    // Continue traversing as long as:
+    // 1. fastNode is not nullptr.
+    // 2. fastNode->next is not nullptr.
+    //
+    // We check both conditions because fastNode moves two steps
+    // at a time, so we must ensure that both steps are valid.
+    while (fastNode != nullptr && fastNode->next != nullptr) {
+        // Move slowNode one step forward.
+        slowNode = slowNode->next;
+        // Move fastNode two steps forward.
+        fastNode = fastNode->next->next;
+        // If both pointers point to the same node,
+        // a cycle exists in the linked list.
+        //
+        // In a cyclic linked list, the faster pointer will
+        // eventually catch up with the slower pointer.
+        if (slowNode == fastNode) {
+            return true;
+        }
+    }
+    // If fastNode reaches nullptr, there is no cycle.
+    return false;
+}
+
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node2;
+//    cout << hasCycle(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
