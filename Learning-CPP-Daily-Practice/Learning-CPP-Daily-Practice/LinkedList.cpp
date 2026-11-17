@@ -449,3 +449,61 @@ ListNode* removeNthFromEnd(ListNode* head, int n) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 142. Linked List Cycle II
+ListNode* detectCycle(ListNode* head) {
+    // Initialize both pointers at the head of the linked list.
+    // slowNode moves one step at a time.
+    // fastNode moves two steps at a time.
+    ListNode* slowNode = head;
+    ListNode* fastNode = head;
+    // PHASE 1: Detect whether a cycle exists.
+    //
+    // Continue traversing while fastNode and its next node
+    // are not nullptr.
+    while (fastNode != nullptr && fastNode->next != nullptr) {
+        // Move slowNode one step forward.
+        slowNode = slowNode->next;
+        // Move fastNode two steps forward.
+        fastNode = fastNode->next->next;
+        // If both pointers meet, a cycle exists.
+        if (slowNode == fastNode) {
+            break;
+        }
+    }
+    // If fastNode reaches nullptr or its next node is nullptr,
+    // the linked list does not contain a cycle.
+    if (fastNode == nullptr || fastNode->next == nullptr) {
+        return nullptr;
+    }
+    // PHASE 2: Find the starting node of the cycle.
+    //
+    // Move slowNode back to the head of the linked list.
+    // Keep fastNode at the meeting point.
+    slowNode = head;
+    // Move both pointers one step at a time.
+    // They will meet at the starting node of the cycle.
+    while (slowNode != fastNode) {
+        slowNode = slowNode->next;
+        fastNode = fastNode->next;
+    }
+    // Both pointers meet at the beginning of the cycle.
+    return slowNode;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node2;
+//    ListNode* startCycleNode = detectCycle(head);
+//    cout << startCycleNode->value << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
