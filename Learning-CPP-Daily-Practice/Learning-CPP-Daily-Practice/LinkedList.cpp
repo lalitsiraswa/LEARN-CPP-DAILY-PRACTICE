@@ -664,3 +664,130 @@ ListNode* reverseListRecursive(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 21. Merge Two Sorted Lists
+ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+    // If the first list is empty, return the second list.
+    if (list1 == nullptr) {
+        return list2;
+    }
+    // If the second list is empty, return the first list.
+    if (list2 == nullptr) {
+        return list1;
+    }
+    // Pointers used to traverse both linked lists.
+    ListNode* firstNode = list1;
+    ListNode* secondNode = list2;
+    // Points to the first node of the merged linked list.
+    ListNode* mergedHead = nullptr;
+    // Points to the last node of the merged linked list.
+    // Used to attach the next selected node.
+    ListNode* tailNode = nullptr;
+    // Compare the first nodes of both lists.
+    // Select the smaller node as the head of the merged list.
+    if (firstNode->value <= secondNode->value) {
+        // First list contains the smaller node.
+        mergedHead = firstNode;
+        tailNode = firstNode;
+        // Move firstNode to the next node.
+        firstNode = firstNode->next;
+    }
+    else {
+        // Second list contains the smaller node.
+        mergedHead = secondNode;
+        tailNode = secondNode;
+        // Move secondNode to the next node.
+        secondNode = secondNode->next;
+    }
+    // Continue merging while both lists have remaining nodes.
+    while (firstNode != nullptr && secondNode != nullptr) {
+        // Compare the current nodes of both lists.
+        if (firstNode->value <= secondNode->value) {
+            // Attach the smaller node from the first list
+            // to the end of the merged list.
+            tailNode->next = firstNode;
+            // Move firstNode to its next node.
+            firstNode = firstNode->next;
+        }
+        else {
+            // Attach the smaller node from the second list
+            // to the end of the merged list.
+            tailNode->next = secondNode;
+            // Move secondNode to its next node.
+            secondNode = secondNode->next;
+        }
+        // Move tailNode forward to the newly attached node.
+        tailNode = tailNode->next;
+    }
+    // If the first list still contains nodes,
+    // attach all remaining nodes to the merged list.
+    if (firstNode != nullptr) {
+        tailNode->next = firstNode;
+    }
+    // If the second list still contains nodes,
+    // attach all remaining nodes to the merged list.
+    if (secondNode != nullptr) {
+        tailNode->next = secondNode;
+    }
+    // Return the head of the merged sorted linked list.
+    return mergedHead;
+}
+
+//-------------------------------------------//
+// Recursive Approach
+ListNode* mergeTwoListsRecursion(ListNode* firstList, ListNode* secondList) {
+    // BASE CASE 1:
+    // If the first list is empty, return the second list.
+    // All remaining nodes from the second list are already sorted.
+    if (firstList == nullptr) {
+        return secondList;
+    }
+    // BASE CASE 2:
+    // If the second list is empty, return the first list.
+    // All remaining nodes from the first list are already sorted.
+    if (secondList == nullptr) {
+        return firstList;
+    }
+    // Stores the head of the merged linked list
+    // returned by the current recursive call.
+    ListNode* mergedHead = nullptr;
+    // Compare the values of the current nodes from both lists.
+    if (firstList->value <= secondList->value) {
+        // The first list contains the smaller node.
+        // Select it as the head of the merged list.
+        mergedHead = firstList;
+        // Recursively merge the remaining nodes of the first list
+        // with the entire second list.
+        //
+        // Attach the resulting merged list to the selected node.
+        mergedHead->next = mergeTwoListsRecursion(firstList->next, secondList);
+    }
+    else {
+        // The second list contains the smaller node.
+        // Select it as the head of the merged list.
+        mergedHead = secondList;
+        // Recursively merge the entire first list
+        // with the remaining nodes of the second list.
+        //
+        // Attach the resulting merged list to the selected node.
+        mergedHead->next = mergeTwoListsRecursion(firstList, secondList->next);
+    }
+    // Return the head of the merged linked list
+    // created by the current recursive call.
+    return mergedHead;
+}
+
+//int main(){
+//    ListNode* head1 = new ListNode(1);
+//    head1->next = new ListNode(2);
+//    head1->next->next = new ListNode(3);
+//    ListNode* head2 = new ListNode(1);
+//    head2->next = new ListNode(2);
+//    head2->next->next = new ListNode(3);
+//    printLinkedList(head1);
+//    printLinkedList(head2);
+//    ListNode* mergeSortedHead = mergeTwoListsRecursion(head1, head2);
+//    printLinkedList(mergeSortedHead);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
