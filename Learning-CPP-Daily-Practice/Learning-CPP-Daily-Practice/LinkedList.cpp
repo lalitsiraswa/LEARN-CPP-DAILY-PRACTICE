@@ -507,3 +507,67 @@ ListNode* detectCycle(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Cycle Length in Linked List - GFG
+int lengthOfLoop(ListNode* head) {
+    // Initialize both pointers at the head of the linked list.
+    // slowNode moves one step at a time.
+    // fastNode moves two steps at a time.
+    ListNode* slowNode = head;
+    ListNode* fastNode = head;
+    // Stores the total number of nodes present in the cycle.
+    int cycleLength = 0;
+    // PHASE 1: Detect whether a cycle exists.
+    //
+    // Continue traversing while fastNode and its next node
+    // are not nullptr.
+    while (fastNode != nullptr && fastNode->next != nullptr) {
+        // Move slowNode one step forward.
+        slowNode = slowNode->next;
+        // Move fastNode two steps forward.
+        fastNode = fastNode->next->next;
+        // If both pointers meet, a cycle exists.
+        if (slowNode == fastNode) {
+            break;
+        }
+    }
+    // If fastNode reaches nullptr or its next node is nullptr,
+    // the linked list does not contain a cycle.
+    if (fastNode == nullptr || fastNode->next == nullptr) {
+        return 0;
+    }
+    // PHASE 2: Calculate the length of the cycle.
+    //
+    // Both pointers are currently at the same meeting node.
+    // Keep fastNode stationary and move slowNode around the cycle
+    // until it reaches the meeting node again.
+    while (true) {
+        // Move slowNode one step forward inside the cycle.
+        slowNode = slowNode->next;
+        // Count each node visited inside the cycle.
+        cycleLength += 1;
+        // If slowNode reaches the meeting node again,
+        // one complete cycle has been traversed.
+        if (slowNode == fastNode) {
+            break;
+        }
+    }
+    // Return the total number of nodes in the cycle.
+    return cycleLength;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node2;
+//    cout << lengthOfLoop(head) << endl;
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
