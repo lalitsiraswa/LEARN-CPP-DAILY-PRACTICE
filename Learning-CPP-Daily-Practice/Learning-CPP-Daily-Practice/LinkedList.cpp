@@ -571,3 +571,96 @@ int lengthOfLoop(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 206. Reverse Linked List
+ListNode* reverseList(ListNode* head) {
+    // Points to the current node being processed.
+    ListNode* currentNode = head;
+    // Represents the head of the reversed linked list.
+    // Initially nullptr because the reversed list is empty.
+    ListNode* reversedHead = nullptr;
+    // Keeps track of the previous node.
+    // Initially nullptr because the original head
+    // will become the last node after reversal.
+    ListNode* previousNode = nullptr;
+    // Traverse the entire linked list.
+    while (currentNode != nullptr) {
+        // Update reversedHead to the current node.
+        // Eventually, it will point to the new head.
+        reversedHead = currentNode;
+        // Store the next node before changing the current
+        // node's next pointer.
+        currentNode = currentNode->next;
+        // Reverse the link of the current node.
+        // Instead of pointing to the next node,
+        // it now points to the previous node.
+        reversedHead->next = previousNode;
+        // Move previousNode forward to the current node.
+        // This node will become the previous node
+        // in the next iteration.
+        previousNode = reversedHead;
+    }
+    // Return the new head of the reversed linked list.
+    return reversedHead;
+}
+
+//-------------------------------------------//
+// Recursive Approach
+// Recursive helper function to reverse the linked list.
+ListNode* reverseListRecursiveHelper(ListNode*& currentNode, ListNode*& reversedHead, ListNode*& previousNode) {
+    // BASE CASE:
+    // If currentNode becomes nullptr, all nodes have been processed.
+    // reversedHead now points to the new head of the reversed list.
+    if (currentNode == nullptr) {
+        return reversedHead;
+    }
+    // Update reversedHead to point to the current node.
+    // Eventually, it will point to the original last node.
+    reversedHead = currentNode;
+    // Move currentNode to the next node.
+    // We do this before reversing the current node's link
+    // so that we don't lose the remaining linked list.
+    currentNode = currentNode->next;
+    // Reverse the link of the current node.
+    // Instead of pointing to the next node,
+    // it now points to the previous node.
+    reversedHead->next = previousNode;
+    // Move previousNode forward to the current node.
+    // This node will become the previous node
+    // in the next recursive call.
+    previousNode = reversedHead;
+    // Recursively process the remaining nodes.
+    // Continue until currentNode becomes nullptr.
+    return reverseListRecursiveHelper(currentNode, reversedHead, previousNode);
+}
+
+// Main function to reverse the linked list recursively.
+ListNode* reverseListRecursive(ListNode* head) {
+    // Points to the current node being processed.
+    ListNode* currentNode = head;
+    // Represents the head of the reversed linked list.
+    ListNode* reversedHead = nullptr;
+    // Keeps track of the previously processed node.
+    ListNode* previousNode = nullptr;
+    // Start the recursive reversal process.
+    return reverseListRecursiveHelper(currentNode, reversedHead, previousNode);
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    ListNode* node6 = new ListNode(6);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node6;
+//    printLinkedList(head);
+//    head = reverseListRecursive(head);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
