@@ -791,3 +791,179 @@ ListNode* mergeTwoListsRecursion(ListNode* firstList, ListNode* secondList) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Sort Linked List of 0s, 1s and 2s - GFG
+ListNode* segregate(ListNode* head) {
+    // Pointer used to traverse the original linked list.
+    ListNode* traversalNode = head;
+    // Head pointers for the three separate linked lists.
+    // Each head points to the first node containing 0, 1, or 2.
+    ListNode* zeroListHead = nullptr;
+    ListNode* oneListHead = nullptr;
+    ListNode* twoListHead = nullptr;
+    // Tail pointers for the three separate linked lists.
+    // Each tail points to the last node of its respective list.
+    // These pointers help us append new nodes efficiently.
+    ListNode* zeroListTail = nullptr;
+    ListNode* oneListTail = nullptr;
+    ListNode* twoListTail = nullptr;
+    // Traverse the original linked list.
+    while (traversalNode != nullptr) {
+        // If the current node contains 0, add it to the zero list.
+        if (traversalNode->value == 0) {
+            // If the zero list is empty, initialize its head and tail.
+            if (zeroListHead == nullptr) {
+                zeroListHead = traversalNode;
+                zeroListTail = traversalNode;
+            }
+            else {
+                // Append the current node to the end of the zero list.
+                zeroListTail->next = traversalNode;
+                // Update the tail to the newly added node.
+                zeroListTail = zeroListTail->next;
+            }
+        }
+        // If the current node contains 1, add it to the one list.
+        else if (traversalNode->value == 1) {
+            // If the one list is empty, initialize its head and tail.
+            if (oneListHead == nullptr) {
+                oneListHead = traversalNode;
+                oneListTail = traversalNode;
+            }
+            else {
+                // Append the current node to the end of the one list.
+                oneListTail->next = traversalNode;
+                // Update the tail to the newly added node.
+                oneListTail = oneListTail->next;
+            }
+        }
+        // If the current node contains 2, add it to the two list.
+        else if (traversalNode->value == 2) {
+            // If the two list is empty, initialize its head and tail.
+            if (twoListHead == nullptr) {
+                twoListHead = traversalNode;
+                twoListTail = traversalNode;
+            }
+            else {
+                // Append the current node to the end of the two list.
+                twoListTail->next = traversalNode;
+                // Update the tail to the newly added node.
+                twoListTail = twoListTail->next;
+            }
+        }
+        // Move to the next node in the original linked list.
+        traversalNode = traversalNode->next;
+    }
+    // Terminate each individual list by connecting its tail to nullptr.
+    // This prevents unwanted connections between the separated lists.
+    if (zeroListTail != nullptr) {
+        zeroListTail->next = nullptr;
+    }
+    if (oneListTail != nullptr) {
+        oneListTail->next = nullptr;
+    }
+    if (twoListTail != nullptr) {
+        twoListTail->next = nullptr;
+    }
+    // PHASE 2: Merge the three separate lists in sorted order.
+    // If the zero list exists, it will be the head of the final list.
+    if (zeroListHead != nullptr) {
+        // If both one and two lists exist, connect all three lists.
+        if (oneListHead != nullptr && twoListHead != nullptr) {
+            zeroListTail->next = oneListHead;
+            oneListTail->next = twoListHead;
+            return zeroListHead;
+        }
+        // If only the one list exists, connect zero list to one list.
+        else if (oneListHead != nullptr) {
+            zeroListTail->next = oneListHead;
+            return zeroListHead;
+        }
+        // If only the two list exists, connect zero list to two list.
+        else if (twoListHead != nullptr) {
+            zeroListTail->next = twoListHead;
+            return zeroListHead;
+        }
+        // If only the zero list exists, return it directly.
+        return zeroListHead;
+    }
+    // If the zero list does not exist, check whether the one list exists.
+    if (oneListHead != nullptr) {
+        // If the two list also exists, connect the one list to it.
+        if (twoListHead != nullptr) {
+            oneListTail->next = twoListHead;
+        }
+        // Return the one list as the head of the final list.
+        return oneListHead;
+    }
+    // If neither zero nor one list exists,
+    // return the two list as the final sorted list.
+    return twoListHead;
+}
+
+//-------------------------------------------//
+ListNode* segregateTUF(ListNode* head) {
+    // Pointer used to traverse the original linked list.
+    ListNode* currentNode = head;
+    // Create three dummy nodes to maintain separate linked lists
+    // for nodes containing 0, 1, and 2.
+    ListNode* zeroListDummyHead = new ListNode(-1);
+    ListNode* oneListDummyHead = new ListNode(-1);
+    ListNode* twoListDummyHead = new ListNode(-1);
+    // Tail pointers initially point to their respective dummy nodes.
+    // They help us append nodes to the corresponding linked lists.
+    ListNode* zeroListTail = zeroListDummyHead;
+    ListNode* oneListTail = oneListDummyHead;
+    ListNode* twoListTail = twoListDummyHead;
+    // Traverse the original linked list and distribute each node
+    // into the corresponding list based on its value.
+    while (currentNode != nullptr) {
+        // If the current node contains 0, append it to the zero list.
+        if (currentNode->value == 0) {
+            zeroListTail->next = currentNode;
+            zeroListTail = zeroListTail->next;
+        }
+        // If the current node contains 1, append it to the one list.
+        else if (currentNode->value == 1) {
+            oneListTail->next = currentNode;
+            oneListTail = oneListTail->next;
+        }
+        // If the current node contains 2, append it to the two list.
+        else if (currentNode->value == 2) {
+            twoListTail->next = currentNode;
+            twoListTail = twoListTail->next;
+        }
+        // Move to the next node in the original linked list.
+        currentNode = currentNode->next;
+    }
+    // Connect the zero list to the one list if it exists.
+    // Otherwise, connect the zero list directly to the two list.
+    zeroListTail->next = (oneListDummyHead->next != nullptr) ? oneListDummyHead->next : twoListDummyHead->next;
+    // Connect the one list to the beginning of the two list.
+    oneListTail->next = twoListDummyHead->next;
+    // Mark the end of the final linked list.
+    // This prevents any unwanted connections or cycles.
+    twoListTail->next = nullptr;
+    // Return the head of the sorted linked list,
+    // skipping the dummy node.
+    return zeroListDummyHead->next;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(0);
+//    ListNode* node4 = new ListNode(1);
+//    ListNode* node5 = new ListNode(2);
+//    ListNode* node6 = new ListNode(0);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    node5->next = node6;
+//    printLinkedList(head);
+//    head = segregateTUF(head);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
