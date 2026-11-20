@@ -967,3 +967,174 @@ ListNode* segregateTUF(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 2. Add Two Numbers
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+    // Pointers used to traverse both input linked lists.
+    ListNode* firstListCurrent = l1;
+    ListNode* secondListCurrent = l2;
+    // Pointer to store the head of the newly created result linked list.
+    ListNode* resultHead = nullptr;
+    // Pointer used to append new nodes to the result linked list.
+    ListNode* resultTail = resultHead;
+    // Stores the carry generated during addition.
+    int carry = 0;
+    // PHASE 1: Add corresponding nodes while both lists have elements.
+    while (firstListCurrent != nullptr && secondListCurrent != nullptr) {
+        // Add the values of both nodes along with the previous carry.
+        int sum = firstListCurrent->value + secondListCurrent->value + carry;
+        // Extract the digit to be stored in the current result node.
+        int digit = sum % 10;
+        // Calculate the carry to be added during the next iteration.
+        carry = sum / 10;
+        // If the result list is empty, create its first node.
+        if (resultHead == nullptr) {
+            resultHead = new ListNode(digit);
+            resultTail = resultHead;
+        }
+        // Otherwise, append the new node at the end of the result list.
+        else {
+            resultTail->next = new ListNode(digit);
+            resultTail = resultTail->next;
+        }
+        // Move both input pointers to their next nodes.
+        firstListCurrent = firstListCurrent->next;
+        secondListCurrent = secondListCurrent->next;
+    }
+    // PHASE 2: Process the remaining nodes of the first list, if any.
+    while (firstListCurrent != nullptr) {
+        // Add the current node's value along with the previous carry.
+        int sum = firstListCurrent->value + carry;
+        // Extract the digit to be stored in the result list.
+        int digit = sum % 10;
+        // Calculate the carry for the next iteration.
+        carry = sum / 10;
+        // Append the newly calculated digit to the result list.
+        resultTail->next = new ListNode(digit);
+        resultTail = resultTail->next;
+        // Move to the next node in the first list.
+        firstListCurrent = firstListCurrent->next;
+    }
+    // PHASE 3: Process the remaining nodes of the second list, if any.
+    while (secondListCurrent != nullptr) {
+        // Add the current node's value along with the previous carry.
+        int sum = secondListCurrent->value + carry;
+        // Extract the digit to be stored in the result list.
+        int digit = sum % 10;
+        // Calculate the carry for the next iteration.
+        carry = sum / 10;
+        // Append the newly calculated digit to the result list.
+        resultTail->next = new ListNode(digit);
+        resultTail = resultTail->next;
+        // Move to the next node in the second list.
+        secondListCurrent = secondListCurrent->next;
+    }
+    // PHASE 4: If a carry is still remaining, append it as the final node.
+    if (carry != 0) {
+        resultTail->next = new ListNode(carry);
+    }
+    // Return the head of the newly created result linked list.
+    return resultHead;
+}
+
+//-------------------------------------------//
+// Helper function to calculate the length of a linked list.
+int findLinkedListLength(ListNode* head) {
+    // Pointer used to traverse the linked list.
+    ListNode* currentNode = head;
+    // Stores the total number of nodes in the linked list.
+    int length = 0;
+    // Traverse the linked list until the end is reached.
+    while (currentNode != nullptr) {
+        length++;
+        // Move to the next node.
+        currentNode = currentNode->next;
+    }
+    // Return the total number of nodes.
+    return length;
+}
+
+// Helper function to add two numbers by reusing the nodes
+// of the longer linked list instead of creating a new result list.
+ListNode* addTwoNumbersWithoutCreatingNewNodeHelper(ListNode* longerList, ListNode* shorterList) {
+    // The longer list will store the final addition result.
+    ListNode* resultHead = longerList;
+    // Pointer used to keep track of the previously processed node.
+    // This is required to append a new node if a carry remains.
+    ListNode* previousNode = longerList;
+    // Stores the carry generated during addition.
+    int carry = 0;
+    // PHASE 1: Add corresponding nodes while the shorter list
+    // still contains elements.
+    while (shorterList != nullptr) {
+        // Add the values of both nodes along with the previous carry.
+        int sum = longerList->value + shorterList->value + carry;
+        // Extract the digit to be stored in the current node.
+        int digit = sum % 10;
+        // Calculate the carry for the next iteration.
+        carry = sum / 10;
+        // Update the existing node of the longer list
+        // with the calculated digit.
+        longerList->value = digit;
+        // Keep track of the previously processed node.
+        previousNode = longerList;
+        // Move both pointers to their next nodes.
+        longerList = longerList->next;
+        shorterList = shorterList->next;
+    }
+
+    // PHASE 2: Process the remaining nodes of the longer list.
+    // Only the carry needs to be added because the shorter list
+    // has already been completely traversed.
+    while (longerList != nullptr) {
+        // Add the current node's value along with the previous carry.
+        int sum = longerList->value + carry;
+        // Extract the digit to be stored in the current node.
+        int digit = sum % 10;
+        // Calculate the carry for the next iteration.
+        carry = sum / 10;
+        // Update the existing node with the calculated digit.
+        longerList->value = digit;
+        // Keep track of the previously processed node.
+        previousNode = longerList;
+        // Move to the next node in the longer list.
+        longerList = longerList->next;
+    }
+
+    // PHASE 3: If a carry is still remaining after processing
+    // both lists, create one additional node at the end.
+    if (carry != 0) {
+        previousNode->next = new ListNode(carry);
+    }
+    // Return the head of the modified longer linked list.
+    return resultHead;
+}
+
+// Function to add two numbers without creating a completely
+// new result linked list.
+ListNode* addTwoNumbersWithoutCreatingNewNode(ListNode* l1, ListNode* l2) {
+    // Calculate the lengths of both input linked lists.
+    int firstListLength = findLinkedListLength(l1);
+    int secondListLength = findLinkedListLength(l2);
+    // If the first list is longer or both lists have equal lengths,
+    // use the first list to store the addition result.
+    if (firstListLength >= secondListLength) {
+        return addTwoNumbersWithoutCreatingNewNodeHelper(l1, l2);
+    }
+    // Otherwise, use the second list because it has more nodes.
+    return addTwoNumbersWithoutCreatingNewNodeHelper(l2, l1);
+}
+
+//int main(){
+//    ListNode* head1 = new ListNode(9);
+//    head1->next = new ListNode(9);
+//    head1->next->next = new ListNode(9);
+//    ListNode* head2 = new ListNode(9);
+//    head2->next = new ListNode(9);
+//    printLinkedList(head1);
+//    printLinkedList(head2);
+//    ListNode* head = addTwoNumbersWithoutCreatingNewNode(head1, head2);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
