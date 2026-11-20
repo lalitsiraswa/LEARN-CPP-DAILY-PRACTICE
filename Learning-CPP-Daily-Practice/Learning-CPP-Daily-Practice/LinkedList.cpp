@@ -1138,3 +1138,144 @@ ListNode* addTwoNumbersWithoutCreatingNewNode(ListNode* l1, ListNode* l2) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 61. Rotate List
+// Helper function to calculate the length of the linked list.
+int rotateRightFindLengthHelper(ListNode* head) {
+    // Pointer used to traverse the linked list.
+    ListNode* currentNode = head;
+    // Stores the total number of nodes in the linked list.
+    int length = 0;
+    // Traverse the linked list until the end is reached.
+    while (currentNode != nullptr) {
+        length++;
+        // Move to the next node.
+        currentNode = currentNode->next;
+    }
+    // Return the total number of nodes.
+    return length;
+}
+
+ListNode* rotateRight(ListNode* head, int k) {
+    // If the list is empty or no rotation is required,
+    // return the original linked list.
+    if (head == nullptr || k == 0) {
+        return head;
+    }
+    // Calculate the total number of nodes in the linked list.
+    int length = rotateRightFindLengthHelper(head);
+    // Rotating the list by its length produces the original list.
+    // Reduce k to avoid performing unnecessary rotations.
+    k = k % length;
+    // If the effective rotation count is 0, no rotation is required.
+    if (k == 0) {
+        return head;
+    }
+    // Tracks how many right rotations have been performed.
+    int rotationCount = 0;
+    // Perform one right rotation at a time until k rotations are completed.
+    while (rotationCount < k) {
+        // Pointer used to traverse the linked list.
+        ListNode* currentNode = head;
+        // Pointer used to keep track of the node before the last node.
+        ListNode* previousNode = nullptr;
+        // Traverse the linked list to find the last node.
+        // previousNode will point to the second-last node.
+        while (currentNode->next != nullptr) {
+            previousNode = currentNode;
+            currentNode = currentNode->next;
+        }
+        // Connect the last node to the original head.
+        // This makes the last node the new starting point.
+        currentNode->next = head;
+        // Update the head to the previous last node.
+        head = currentNode;
+        // Disconnect the second-last node from the new head.
+        // This makes the second-last node the new tail.
+        previousNode->next = nullptr;
+        // Increment the rotation count after completing one rotation.
+        rotationCount++;
+    }
+    // Return the head of the rotated linked list.
+    return head;
+}
+
+//-------------------------------------------//
+// Helper function to calculate the length of the linked list.
+int rotateRightFindLengthHelper01(ListNode* head) {
+    // Pointer used to traverse the linked list.
+    ListNode* currentNode = head;
+    // Stores the total number of nodes in the linked list.
+    int length = 0;
+    // Traverse the linked list until the end is reached.
+    while (currentNode != nullptr) {
+        length++;
+        // Move to the next node.
+        currentNode = currentNode->next;
+    }
+    // Return the total number of nodes.
+    return length;
+}
+
+ListNode* rotateRight01(ListNode* head, int k) {
+    // If the list is empty or no rotation is required,
+    // return the original list.
+    if (head == nullptr || k == 0) {
+        return head;
+    }
+    // Calculate the total number of nodes in the linked list.
+    int length = rotateRightFindLengthHelper(head);
+    // Rotating the list by its length produces the original list.
+    // Therefore, reduce k to avoid unnecessary rotations.
+    k = k % length;
+    // If k becomes 0, no rotation is required.
+    if (k == 0) {
+        return head;
+    }
+    // Pointer used to traverse the linked list.
+    ListNode* currentNode = head;
+    // Pointer used to identify the new tail of the rotated list.
+    ListNode* previousNode = head;
+    // Tracks the number of nodes traversed by currentNode.
+    int currentListLength = 0;
+    // Traverse the linked list to find the new tail.
+    // The new tail will be at position (length - k - 1).
+    while (currentNode->next != nullptr) {
+        // Move the traversal pointer to the next node.
+        currentNode = currentNode->next;
+        // Update the number of nodes traversed.
+        currentListLength++;
+        // Once currentNode has moved more than k positions,
+        // move previousNode forward as well.
+        // This ensures previousNode stops at the new tail.
+        if (currentListLength > k) {
+            previousNode = previousNode->next;
+        }
+    }
+    // Connect the original tail to the original head
+    // to temporarily form a circular linked list.
+    currentNode->next = head;
+    // The node after the new tail becomes the new head.
+    head = previousNode->next;
+    // Break the circular linked list at the new tail.
+    previousNode->next = nullptr;
+    // Return the head of the rotated linked list.
+    return head;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    ListNode* node2 = new ListNode(2);
+//    ListNode* node3 = new ListNode(3);
+//    ListNode* node4 = new ListNode(4);
+//    ListNode* node5 = new ListNode(5);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    node4->next = node5;
+//    printLinkedList(head);
+//    head = rotateRight(head, 3);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
