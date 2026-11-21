@@ -1465,3 +1465,158 @@ ListNode* sortListTuf(ListNode* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 138. Copy List with Random Pointer
+struct Node{
+    int value;
+    Node *next;
+    Node *random;
+    Node(): value(0), next(nullptr){}
+    Node(int value): value(value), next(nullptr), random(nullptr){}
+    Node(int value, Node* next): value(value), next(next), random(nullptr){}
+    Node(int value, Node* next, Node* random): value(value), next(next), random(random){}
+};
+
+void printLinkedList(Node* node){
+    while(node != nullptr){
+        cout << "Value : " << node->value;
+        if(node->random != nullptr){
+            cout << " Random Value : " << node->random->value;
+        }
+        node = node->next;
+        cout << endl;
+    }
+    cout << "nullptr" << endl;
+}
+
+Node* copyRandomList(Node* head) {
+    // STEP 1: Create a new linked list containing copies of all nodes.
+    // The next pointers will be connected in the same order as the original list.
+    // Dummy node helps us build the copied list without handling
+    // the first node separately.
+    Node* dummyNode = new Node(-1);
+    // Maintains the last node of the copied linked list.
+    Node* copiedListTail = dummyNode;
+    // Traverses the original linked list.
+    Node* originalListCurrent = head;
+    while (originalListCurrent != nullptr) {
+        // Create a new node with the same value as the original node.
+        copiedListTail->next = new Node(originalListCurrent->value);
+        // Move the tail pointer to the newly created node.
+        copiedListTail = copiedListTail->next;
+        // Move to the next node in the original linked list.
+        originalListCurrent = originalListCurrent->next;
+    }
+    // STEP 2: Assign random pointers to the copied nodes.
+    // Pointer to traverse the original linked list.
+    Node* originalListCurrentNode = head;
+    // Pointer to traverse the copied linked list.
+    Node* copiedListCurrentNode = dummyNode->next;
+    while (originalListCurrentNode != nullptr && copiedListCurrentNode != nullptr) {
+        // Get the node pointed to by the current original node's random pointer.
+        Node* originalRandomNode = originalListCurrentNode->random;
+        // CASE 1: If the original node's random pointer is nullptr,
+        // the corresponding copied node's random pointer should also be nullptr.
+        if (originalRandomNode == nullptr) {
+            copiedListCurrentNode->random = nullptr;
+        }
+        else {
+            // CASE 2: Find the position of the original random node
+            // in the original linked list.
+            // Start traversing the original list from its head.
+            Node* originalListTraversal = head;
+            // Stores the number of nodes between the head and random node.
+            int randomNodePosition = 0;
+            while (originalListTraversal != originalRandomNode) {
+                randomNodePosition++;
+                originalListTraversal = originalListTraversal->next;
+            }
+            // STEP 3: Find the corresponding copied node
+            // at the same position in the copied linked list.
+            // Start traversing the copied list from its head.
+            Node* copiedListTraversal = dummyNode->next;
+            // Move to the same position as the original random node.
+            while (randomNodePosition != 0) {
+                copiedListTraversal = copiedListTraversal->next;
+                randomNodePosition--;
+            }
+            // Connect the copied node's random pointer to
+            // the corresponding copied random node.
+            copiedListCurrentNode->random = copiedListTraversal;
+        }
+        // Move both pointers to their respective next nodes.
+        originalListCurrentNode = originalListCurrentNode->next;
+        copiedListCurrentNode = copiedListCurrentNode->next;
+    }
+    // STEP 4: Return the head of the copied linked list.
+    // dummyNode itself is not part of the copied list.
+    return dummyNode->next;
+}
+
+//-------------------------------------------//
+Node* copyRandomListUsingUnorderedMap(Node* head) {
+    // STEP 1: Create a new linked list containing copies of all original nodes.
+    // Dummy node helps us build the copied linked list easily.
+    Node* dummyNode = new Node(-1);
+    // Maintains the last node of the copied linked list.
+    Node* copiedListTail = dummyNode;
+    // Traverses the original linked list.
+    Node* originalListCurrent = head;
+    // Stores the mapping between original nodes and their corresponding copied nodes.
+    // Key   = Address of the original node.
+    // Value = Address of the copied node.
+    unordered_map<Node*, Node*> originalToCopiedNodeMap;
+    while (originalListCurrent != nullptr) {
+        // Create a new node with the same value as the original node.
+        Node* copiedNode = new Node(originalListCurrent->value);
+        // Store the mapping between the original node and its copied node.
+        originalToCopiedNodeMap.insert(pair<Node*, Node*>{originalListCurrent, copiedNode});
+        // Connect the newly created node to the copied linked list.
+        copiedListTail->next = copiedNode;
+        // Move the tail pointer to the newly created node.
+        copiedListTail = copiedListTail->next;
+        // Move to the next node in the original linked list.
+        originalListCurrent = originalListCurrent->next;
+    }
+    // STEP 2: Assign random pointers to the copied nodes.
+    // Pointer to traverse the original linked list.
+    Node* originalListCurrentNode = head;
+    // Pointer to traverse the copied linked list.
+    Node* copiedListCurrentNode = dummyNode->next;
+    while (originalListCurrentNode != nullptr && copiedListCurrentNode != nullptr) {
+        // Get the node pointed to by the current original node's random pointer.
+        Node* originalRandomNode = originalListCurrentNode->random;
+        // Find the corresponding copied node using the unordered_map.
+        // If originalRandomNode is nullptr, operator[] returns a nullptr
+        // because the nullptr key is not present in the map.
+        copiedListCurrentNode->random = originalToCopiedNodeMap[originalRandomNode];
+        // Move both pointers to their respective next nodes.
+        originalListCurrentNode = originalListCurrentNode->next;
+        copiedListCurrentNode = copiedListCurrentNode->next;
+    }
+    // STEP 3: Return the head of the copied linked list.
+    // Skip the dummy node because it is not part of the actual copied list.
+    return dummyNode->next;
+}
+
+//int main(){
+//    Node* head = new Node(7);
+//    Node* node2 = new Node(13);
+//    Node* node3 = new Node(11);
+//    Node* node4 = new Node(10);
+//    Node* node5 = new Node(1);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next= node4;
+//    node4->next = node5;
+//    head->random = nullptr;
+//    node2->random = head;
+//    node3->random = node5;
+//    node4->random = node3;
+//    node5->random = head;
+//    printLinkedList(head);
+//    Node* newHead = copyRandomListUsingUnorderedMap(head);
+//    printLinkedList(newHead);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
