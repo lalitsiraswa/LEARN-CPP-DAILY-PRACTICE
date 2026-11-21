@@ -1279,3 +1279,189 @@ ListNode* rotateRight01(ListNode* head, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 148. Sort List
+// Approach: Insertion Sort
+// Time Complexity: O(N^2)
+// Auxiliary Space: O(1)
+ListNode* sortList(ListNode* head) {
+    // Head and tail pointers of the sorted linked list.
+    ListNode* sortedHead = nullptr;
+    ListNode* sortedTail = nullptr;
+    // Pointer used to traverse the original linked list.
+    ListNode* currentNode = head;
+    // Stores the next node before modifying the current node's links.
+    // This ensures that we do not lose the remaining original list.
+    ListNode* nextNode = nullptr;
+    // Traverse the original linked list and insert each node
+    // into its correct position in the sorted linked list.
+    while (currentNode != nullptr) {
+        // Save the next node before modifying currentNode->next.
+        nextNode = currentNode->next;
+        // CASE 1: The sorted linked list is currently empty.
+        // Insert the first node and initialize both head and tail.
+        if (sortedHead == nullptr) {
+            sortedHead = currentNode;
+            sortedTail = currentNode;
+        }
+        // CASE 2: The current node's value is smaller than or equal
+        // to the first node's value in the sorted linked list.
+        // Insert the current node at the beginning.
+        else if (currentNode->value <= sortedHead->value) {
+            // Connect the current node to the existing sorted list.
+            currentNode->next = sortedHead;
+            // Update the head of the sorted linked list.
+            sortedHead = currentNode;
+            // Restore the connection to the remaining original list.
+            // This ensures that unprocessed nodes are not lost.
+            sortedTail->next = nextNode;
+        }
+        // CASE 3: The current node's value is greater than
+        // the last node's value in the sorted linked list.
+        // Append the current node at the end.
+        else if (currentNode->value > sortedTail->value) {
+            sortedTail = currentNode;
+        }
+        // CASE 4: The current node belongs somewhere between
+        // the head and tail of the sorted linked list.
+        // Find its correct insertion position.
+        else {
+            // Pointer used to find the correct insertion position.
+            ListNode* traversalNode = sortedHead;
+            // Tracks the node immediately before traversalNode.
+            ListNode* previousNode = nullptr;
+            // Find the first node whose value is greater than
+            // or equal to the current node's value.
+            while (traversalNode != currentNode) {
+                if (traversalNode->value >= currentNode->value) {
+                    break;
+                }
+                // Move the previous pointer forward.
+                previousNode = traversalNode;
+                // Move to the next node in the sorted list.
+                traversalNode = traversalNode->next;
+            }
+            // Insert the current node before traversalNode.
+            currentNode->next = traversalNode;
+            previousNode->next = currentNode;
+            // Restore the connection to the remaining original list.
+            sortedTail->next = nextNode;
+        }
+        // Move to the next unprocessed node in the original list.
+        currentNode = nextNode;
+    }
+    // Return the head of the sorted linked list.
+    return sortedHead;
+}
+
+//-------------------------------------------//
+// Approach: Merge Sort
+// Helper function to find the middle node of the linked list.
+ListNode* sortListFindMiddleNodeHelper(ListNode* head) {
+    // If the linked list is empty or contains only one node,
+    // return the head itself.
+    if (head == nullptr || head->next == nullptr) {
+        return head;
+    }
+    // Slow pointer moves one node at a time.
+    ListNode* slowPointer = head;
+    // Fast pointer moves two nodes at a time.
+    // Starting from head->next helps find the first middle node
+    // when the linked list contains an even number of nodes.
+    ListNode* fastPointer = head->next;
+    // Move slowPointer one step and fastPointer two steps
+    // until fastPointer reaches the end of the linked list.
+    while (fastPointer != nullptr && fastPointer->next != nullptr) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+    }
+    // Return the middle node, which will be the last node
+    // of the left half after splitting the linked list.
+    return slowPointer;
+}
+
+// Helper function to merge two sorted linked lists into one sorted list.
+ListNode* mergeTwoSortedLinkedLists(ListNode* firstList, ListNode* secondList) {
+    // Create a dummy node to simplify the merging process.
+    // The actual merged linked list will start from dummyNode->next.
+    ListNode* dummyNode = new ListNode(-1);
+    // Pointer used to append nodes to the merged linked list.
+    ListNode* mergedListTail = dummyNode;
+    // Compare the current nodes of both lists and append
+    // the smaller node to the merged linked list.
+    while (firstList != nullptr && secondList != nullptr) {
+        // If the first list's current value is smaller than
+        // or equal to the second list's current value,
+        // append the first list's node.
+        if (firstList->value <= secondList->value) {
+            mergedListTail->next = firstList;
+            // Move the first list pointer forward.
+            firstList = firstList->next;
+        }
+        else {
+            // Otherwise, append the second list's current node.
+            mergedListTail->next = secondList;
+            // Move the second list pointer forward.
+            secondList = secondList->next;
+        }
+        // Move the merged-list tail to the newly appended node.
+        mergedListTail = mergedListTail->next;
+    }
+    // If the first list still contains nodes,
+    // append all its remaining nodes to the merged list.
+    if (firstList != nullptr) {
+        mergedListTail->next = firstList;
+    }
+    // If the second list still contains nodes,
+    // append all its remaining nodes to the merged list.
+    if (secondList != nullptr) {
+        mergedListTail->next = secondList;
+    }
+    // Store the actual head of the merged linked list.
+    ListNode* mergedHead = dummyNode->next;
+    // Delete the dummy node to avoid a memory leak.
+    delete dummyNode;
+    // Return the merged sorted linked list.
+    return mergedHead;
+}
+
+// Main function to sort the linked list using Merge Sort.
+ListNode* sortListTuf(ListNode* head) {
+    // BASE CASE:
+    // An empty linked list or a list containing only one node
+    // is already sorted.
+    if (head == nullptr || head->next == nullptr) {
+        return head;
+    }
+    // PHASE 1: Find the middle node to divide the linked list
+    // into two smaller halves.
+    ListNode* middleNode = sortListFindMiddleNodeHelper(head);
+    // The right half starts from the node after the middle.
+    ListNode* rightHalfHead = middleNode->next;
+    // Break the connection between the two halves.
+    // This creates two independent linked lists.
+    middleNode->next = nullptr;
+    // The left half starts from the original head.
+    ListNode* leftHalfHead = head;
+    // PHASE 2: Recursively sort both halves.
+    // Continue dividing each half until individual nodes remain.
+    leftHalfHead = sortListTuf(leftHalfHead);
+    rightHalfHead = sortListTuf(rightHalfHead);
+    // PHASE 3: Merge the two sorted halves into one sorted list.
+    return mergeTwoSortedLinkedLists(leftHalfHead, rightHalfHead);
+}
+
+//int main(){
+//    ListNode* head = new ListNode(4);
+//    ListNode* node2 = new ListNode(10);
+//    ListNode* node3 = new ListNode(6);
+//    ListNode* node4 = new ListNode(1);
+//    head->next = node2;
+//    node2->next = node3;
+//    node3->next = node4;
+//    printLinkedList(head);
+//    head = sortListTuf(head);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
