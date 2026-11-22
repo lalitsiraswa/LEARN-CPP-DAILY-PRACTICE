@@ -1699,3 +1699,102 @@ Node* copyRandomListTuf(Node* head) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// 25. Reverse Nodes in k-Group
+// Helper function to reverse a linked list iteratively.
+void reverseKGroupLinkListReverseHelper(ListNode* head) {
+    // Pointer to traverse the linked list.
+    ListNode* currentNode = head;
+    // Initially, there is no previous node.
+    ListNode* previousNode = nullptr;
+    while (currentNode != nullptr) {
+        // Store the next node before changing the current node's next pointer.
+        ListNode* nextNode = currentNode->next;
+        // Reverse the current node's next pointer.
+        currentNode->next = previousNode;
+        // Move previousNode one step forward.
+        previousNode = currentNode;
+        // Move currentNode to the next node.
+        currentNode = nextNode;
+    }
+    // After reversal, previousNode points to the new head.
+    // The original head pointer now points to the last node.
+}
+
+// Function to reverse the linked list in groups of k nodes.
+ListNode* reverseKGroup(ListNode* head, int k) {
+    // Pointer to traverse the original linked list.
+    ListNode* currentNode = head;
+    // Stores the head of the final reversed linked list.
+    ListNode* newHead = nullptr;
+    // Maintains the tail of the previously reversed group.
+    ListNode* previousGroupTail = nullptr;
+    while (currentNode != nullptr) {
+        // STEP 1: Identify the starting and ending nodes of the current group.
+        // Marks the first node of the current group.
+        ListNode* groupStartNode = currentNode;
+        // Initially, the first node is also the ending node.
+        ListNode* groupEndNode = currentNode;
+        // Counts the number of nodes in the current group.
+        int groupNodeCount = 1;
+        // Traverse the linked list to find exactly k nodes.
+        while (groupNodeCount != k && groupEndNode->next != nullptr) {
+            groupEndNode = groupEndNode->next;
+            groupNodeCount++;
+        }
+        // STEP 2: Check whether the current group contains exactly k nodes.
+        // If fewer than k nodes remain, leave them unchanged.
+        // If no group has been reversed, return the original head.
+        // Otherwise, return the head of the already reversed groups.
+        if (groupNodeCount != k) {
+            return (newHead == nullptr) ? head : newHead;
+        }
+        // STEP 3: Store the first node of the next group.
+        // We need this pointer to reconnect the remaining linked list
+        // after reversing the current group.
+        ListNode* nextGroupStartNode = groupEndNode->next;
+        // Disconnect the current group from the remaining linked list.
+        groupEndNode->next = nullptr;
+        // STEP 4: Reverse the current group.
+        //
+        // Before reversal:
+        // groupStartNode -> ... -> groupEndNode -> nullptr
+        //
+        // After reversal:
+        // groupEndNode -> ... -> groupStartNode -> nullptr
+        //
+        // groupEndNode becomes the new head of the reversed group.
+        // groupStartNode becomes the new tail of the reversed group.
+        reverseKGroupLinkListReverseHelper(groupStartNode);
+        // STEP 5: Connect the reversed group to the final linked list.
+        // If this is the first reversed group, update the final head.
+        if (newHead == nullptr) {
+            newHead = groupEndNode;
+        }
+        else {
+            // Connect the previous group's tail to the current group's head.
+            previousGroupTail->next = groupEndNode;
+        }
+        // The original starting node becomes the tail after reversal.
+        previousGroupTail = groupStartNode;
+        // STEP 6: Connect the current reversed group to the next group.
+        previousGroupTail->next = nextGroupStartNode;
+        // Move to the beginning of the next group.
+        currentNode = nextGroupStartNode;
+    }
+    // Return the head of the completely reversed linked list.
+    return newHead;
+}
+
+//int main(){
+//    ListNode* head = new ListNode(1);
+//    head->next = new ListNode(2);
+//    head->next->next = new ListNode(3);
+//    head->next->next->next = new ListNode(4);
+//    head->next->next->next->next = new ListNode(5);
+//    printLinkedList(head);
+//    head = reverseKGroup(head, 3);
+//    printLinkedList(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
