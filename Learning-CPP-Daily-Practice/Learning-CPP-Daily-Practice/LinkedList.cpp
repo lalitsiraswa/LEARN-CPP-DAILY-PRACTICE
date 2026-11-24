@@ -1798,3 +1798,268 @@ ListNode* reverseKGroup(ListNode* head, int k) {
 //}
 
 //-------------------------------------------//-------------------------------------------//
+// Flatten Linked List - GFG
+// Structure of a linked list node.
+// Time Limit Exceeded (TLE)
+class DataNode {
+public:
+    int data;
+    DataNode* next;
+    DataNode* bottom;
+    DataNode(int data) : data(data), next(nullptr), bottom(nullptr) {};
+};
+
+// Helper function to print the original linked list
+// along with its bottom pointers.
+void printLinkedListWithBottom(DataNode* head) {
+    // Pointer to traverse the main linked list.
+    DataNode* currentNode = head;
+    while (currentNode != nullptr) {
+        cout << currentNode->data << " : ";
+        // Traverse the bottom linked list of the current node.
+        DataNode* bottomNode = currentNode->bottom;
+        while (bottomNode != nullptr) {
+            cout << bottomNode->data << " -> ";
+            bottomNode = bottomNode->bottom;
+        }
+        // Move to the next node in the main linked list.
+        currentNode = currentNode->next;
+        cout << endl;
+    }
+    cout << endl;
+}
+
+// Helper function to print the flattened linked list
+// using bottom pointers.
+void printFlattenLinkedListWithBottom(DataNode* head) {
+    DataNode* currentNode = head;
+    while (currentNode != nullptr) {
+        cout << currentNode->data << " -> ";
+        // Move to the next node using the bottom pointer.
+        currentNode = currentNode->bottom;
+    }
+    cout << endl;
+}
+
+// Helper function to print the linked list using next pointers.
+void printFlattenLinkedListWithNext(DataNode* head) {
+    DataNode* currentNode = head;
+    while (currentNode != nullptr) {
+        cout << currentNode->data << " -> ";
+        // Move to the next node using the next pointer.
+        currentNode = currentNode->next;
+    }
+    cout << endl;
+}
+
+// Helper function to merge two sorted linked lists using bottom pointers.
+DataNode* mergeTwoSortedList(DataNode* firstList, DataNode* secondList) {
+    // Dummy node helps construct the merged list without
+    // handling the first node separately.
+    DataNode* dummyNode = new DataNode(-1);
+    // Maintains the tail of the merged linked list.
+    DataNode* mergedListTail = dummyNode;
+    // Traverse both sorted linked lists simultaneously.
+    while (firstList != nullptr && secondList != nullptr) {
+        // If the first list has the smaller or equal value,
+        // attach its current node to the merged list.
+        if (firstList->data <= secondList->data) {
+            mergedListTail->bottom = firstList;
+            // Move to the next node in the first list.
+            firstList = firstList->bottom;
+        }
+        else {
+            // Otherwise, attach the current node from the second list.
+            mergedListTail->bottom = secondList;
+            // Move to the next node in the second list.
+            secondList = secondList->bottom;
+        }
+        // Move the merged list's tail to the newly attached node.
+        mergedListTail = mergedListTail->bottom;
+    }
+    // If nodes remain in the first list, attach them directly.
+    if (firstList != nullptr) {
+        mergedListTail->bottom = firstList;
+    }
+    // If nodes remain in the second list, attach them directly.
+    if (secondList != nullptr) {
+        mergedListTail->bottom = secondList;
+    }
+    // Return the head of the merged linked list.
+    return dummyNode->bottom;
+}
+
+// Function to flatten the linked list into a single sorted linked list.
+DataNode* flatten(DataNode* head) {
+    // If the list is empty or contains only one main node,
+    // it is already flattened.
+    if (head == nullptr || head->next == nullptr) {
+        return head;
+    }
+    // Initially, the first vertical list is considered the flattened list.
+    DataNode* flattenedListHead = head;
+    // Start processing from the second main node.
+    DataNode* currentNode = head->next;
+    // STEP 1: Merge each vertical sorted list into the flattened list.
+    while (currentNode != nullptr) {
+        // Store the next main list node before merging.
+        // This is necessary because merging modifies bottom pointers.
+        DataNode* nextMainNode = currentNode->next;
+        // Merge the current flattened list with the next vertical list.
+        flattenedListHead = mergeTwoSortedList(flattenedListHead, currentNode);
+        // Move to the next main list node.
+        currentNode = nextMainNode;
+    }
+    // Return the head of the flattened linked list.
+    return flattenedListHead;
+}
+
+//-------------------------------------------
+// Helper function to merge two sorted bottom-linked lists.
+DataNode* flattenMergeTwoSortedListHelper(DataNode* firstListHead, DataNode* secondListHead) {
+    // Create a temporary dummy node to simplify the merging process.
+    // The actual merged list will start from dummyNode->bottom.
+    DataNode* dummyNode = new DataNode(-1);
+    // Maintain a pointer to the last node of the merged list.
+    DataNode* mergedListTail = dummyNode;
+    // Traverse both sorted lists until one of them becomes empty.
+    while (firstListHead != nullptr && secondListHead != nullptr) {
+        // Compare the current nodes of both lists.
+        // Attach the node containing the smaller value to the merged list.
+        if (firstListHead->data <= secondListHead->data) {
+            // Attach the current node from the first list.
+            mergedListTail->bottom = firstListHead;
+            // Move the first list pointer to its next bottom node.
+            firstListHead = firstListHead->bottom;
+        }
+        else {
+            // Attach the current node from the second list.
+            mergedListTail->bottom = secondListHead;
+            // Move the second list pointer to its next bottom node.
+            secondListHead = secondListHead->bottom;
+        }
+        // Move the merged list tail to the newly attached node.
+        mergedListTail = mergedListTail->bottom;
+    }
+    // If nodes remain in the first list, attach all remaining nodes.
+    // No additional comparisons are required because the list is already sorted.
+    if (firstListHead != nullptr) {
+        mergedListTail->bottom = firstListHead;
+    }
+    // If nodes remain in the second list, attach all remaining nodes.
+    if (secondListHead != nullptr) {
+        mergedListTail->bottom = secondListHead;
+    }
+    // Store the actual head of the merged sorted list.
+    DataNode* mergedListHead = dummyNode->bottom;
+    // Delete the temporary dummy node to avoid a memory leak.
+    delete dummyNode;
+    // Return the merged sorted bottom-linked list.
+    return mergedListHead;
+}
+
+// Helper function to find the middle node of a bottom-linked list.
+// Uses the slow and fast pointer technique.
+DataNode* flattenMergeSortFindMiddleNodeHelper(DataNode* head) {
+    // If the list is empty or contains only one node,
+    // that node itself is considered the middle node.
+    if (head == nullptr || head->bottom == nullptr) {
+        return head;
+    }
+    // Slow pointer moves one bottom node at a time.
+    DataNode* slowPointer = head;
+    // Fast pointer moves two bottom nodes at a time.
+    // Starting from head->bottom helps find the node before
+    // the middle when the list contains an even number of nodes.
+    DataNode* fastPointer = head->bottom;
+    // Continue until the fast pointer reaches the end of the list.
+    while (fastPointer != nullptr && fastPointer->bottom != nullptr) {
+        // Move slow pointer one step forward.
+        slowPointer = slowPointer->bottom;
+        // Move fast pointer two steps forward.
+        fastPointer = fastPointer->bottom->bottom;
+    }
+    // Return the middle node (or the node before the middle).
+    return slowPointer;
+}
+
+// Helper function to sort a bottom-linked list using Merge Sort.
+DataNode* flattenMergeSortHelper(DataNode* head) {
+    // BASE CASE:
+    // An empty list or a list containing only one node
+    // is already sorted.
+    if (head == nullptr || head->bottom == nullptr) {
+        return head;
+    }
+    // PHASE 1: Find the middle node to divide the list into two halves.
+    DataNode* middleNode = flattenMergeSortFindMiddleNodeHelper(head);
+    // Store the head of the right half.
+    DataNode* rightHalfHead = middleNode->bottom;
+    // Disconnect the two halves by terminating the left half.
+    middleNode->bottom = nullptr;
+    // The left half starts from the original head.
+    DataNode* leftHalfHead = head;
+    // PHASE 2: Recursively sort the left half.
+    leftHalfHead = flattenMergeSortHelper(leftHalfHead);
+    // Recursively sort the right half.
+    rightHalfHead = flattenMergeSortHelper(rightHalfHead);
+    // PHASE 3: Merge both sorted halves into one sorted bottom-linked list.
+    return flattenMergeTwoSortedListHelper(leftHalfHead, rightHalfHead);
+}
+
+// Main function to flatten the linked list into one sorted bottom-linked list.
+DataNode* flatten01(DataNode* head) {
+    // Handle an empty linked list.
+    if (head == nullptr) {
+        return nullptr;
+    }
+    // Store the head of the final flattened list.
+    DataNode* flattenedListHead = head;
+    // Pointer to traverse the horizontal linked list using next pointers.
+    DataNode* currentHorizontalNode = head;
+    // ---------------------------------------------------------
+    // PHASE 1: Connect all vertical bottom lists into one list.
+    // ---------------------------------------------------------
+    // Traverse the horizontal linked list until the last horizontal node.
+    while (currentHorizontalNode->next != nullptr) {
+        // Start from the current horizontal node.
+        DataNode* currentBottomNode = currentHorizontalNode;
+        // Store the next horizontal node before modifying connections.
+        DataNode* nextHorizontalNode = currentHorizontalNode->next;
+        // Find the last node of the current vertical bottom list.
+        while (currentBottomNode->bottom != nullptr) {
+            currentBottomNode = currentBottomNode->bottom;
+        }
+        // Append the next horizontal list at the end of the current bottom list.
+        currentBottomNode->bottom = nextHorizontalNode;
+        // Move to the next horizontal list.
+        currentHorizontalNode = nextHorizontalNode;
+    }
+    // ---------------------------------------------------------
+    // PHASE 2: Sort the combined bottom-linked list using Merge Sort.
+    // ---------------------------------------------------------
+    // All vertical lists are now connected through bottom pointers.
+    // Apply Merge Sort directly using bottom pointers.
+    flattenedListHead = flattenMergeSortHelper(flattenedListHead);
+    // Return the head of the final sorted flattened linked list.
+    return flattenedListHead;
+}
+
+//int main(){
+//    DataNode* head = new DataNode(5);
+//    head->bottom = new DataNode(7);
+//    head->bottom->bottom = new DataNode(8);
+//    head->next = new DataNode(10);
+//    head->next->bottom = new DataNode(20);
+//    head->next->next = new DataNode(19);
+//    head->next->next->bottom = new DataNode(22);
+//    head->next->next->next = new DataNode(28);
+//    head->next->next->next->bottom = new DataNode(40);
+//    head->next->next->next->bottom->bottom = new DataNode(45);
+//    printLinkedListWithBottom(head);
+//    head = flatten(head);
+//    printFlattenLinkedListWithBottom(head);
+//    return 0;
+//}
+
+//-------------------------------------------//-------------------------------------------//
