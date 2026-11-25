@@ -149,3 +149,145 @@ vector<int> nextGreaterElement01(vector<int>& nums1, vector<int>& nums2) {
 //}
 
 //----------------------------------------------//----------------------------------------------//
+// 503. Next Greater Element II
+vector<int> nextGreaterElements(vector<int>& nums) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize the result array with -1.
+    // -1 indicates that no next greater element has been found.
+    vector<int> result(arraySize, -1);
+    // PHASE 1: Find the next greater element for each array element.
+    // Traverse every element of the array.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Start searching from the next element.
+        // Continue for at most arraySize - 1 elements.
+        // This allows us to circularly traverse the array.
+        for (int nextIndex = currentIndex + 1; nextIndex < currentIndex + arraySize; nextIndex++) {
+            // Use modulo (%) to wrap around to the beginning
+            // when nextIndex reaches the end of the array.
+            //
+            // Example:
+            // nums = {1, 2, 3}
+            // If nextIndex = 3, then 3 % 3 = 0.
+            // So, we access nums[0].
+            int circularIndex = nextIndex % arraySize;
+            // Check whether the current element is smaller
+            // than the element found during circular traversal.
+            if (nums[circularIndex] > nums[currentIndex]) {
+                // Store the first greater element found.
+                // Since we are traversing from left to right,
+                // this is the next greater element.
+                result[currentIndex] = nums[circularIndex];
+                // Stop searching because we have found
+                // the next greater element for this position.
+                break;
+            }
+        }
+    }
+    // Return the next greater element for every array position.
+    return result;
+}
+
+//----------------------------------------------//
+vector<int> nextGreaterElements01(vector<int>& nums) {
+    // Maintains elements in decreasing order (from bottom to top).
+    // Helps us efficiently find the next greater element.
+    stack<int> decreasingStack;
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize the result array with -1.
+    // -1 indicates that no next greater element has been found.
+    vector<int> result(arraySize, -1);
+    // PHASE 1: Push all array elements into the stack.
+    // Traverse the array from right to left.
+    //
+    // This initial traversal simulates the circular nature
+    // of the array by making elements from the end available
+    // while searching for greater elements.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        decreasingStack.push(nums[currentIndex]);
+    }
+    // PHASE 2: Find the next greater element for every position.
+    // Traverse the array again from right to left.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove all elements that are smaller than or equal to
+        // the current element because they cannot be its next
+        // greater element.
+        while (!decreasingStack.empty() && decreasingStack.top() <= nums[currentIndex]) {
+            decreasingStack.pop();
+        }
+        // If the stack is not empty, its top element is the
+        // next greater element for the current position.
+        if (!decreasingStack.empty()) {
+            result[currentIndex] = decreasingStack.top();
+        }
+        // Push the current element into the stack so that it
+        // can be considered as a potential next greater element
+        // for the elements appearing before it.
+        decreasingStack.push(nums[currentIndex]);
+    }
+    // Return the next greater element for every array position.
+    return result;
+}
+
+//----------------------------------------------//
+vector<int> nextGreaterElements02(vector<int>& nums) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize the result array with -1.
+    // -1 indicates that no next greater element has been found.
+    vector<int> result(arraySize, -1);
+    // Maintains potential next greater elements in a decreasing stack.
+    stack<int> decreasingStack;
+    // PHASE 1: Traverse the array twice from right to left.
+    //
+    // We traverse 2 * arraySize elements to simulate circular traversal.
+    // The second traversal allows elements at the beginning of the array
+    // to act as potential next greater elements for elements near the end.
+    for (int currentIndex = (arraySize * 2) - 1; currentIndex >= 0; currentIndex--) {
+        // Use modulo (%) to get the actual array index.
+        // This ensures that indices wrap around to the beginning
+        // when currentIndex exceeds the last valid array index.
+        //
+        // Example:
+        // nums = {1, 2, 3}
+        // currentIndex = 4
+        // circularIndex = 4 % 3 = 1
+        // Therefore, we access nums[1].
+        int circularIndex = currentIndex % arraySize;
+        // Remove all elements that are smaller than or equal to
+        // the current element.
+        //
+        // These elements cannot be the next greater element because:
+        // 1. They are smaller than or equal to the current element.
+        // 2. The current element is closer to the elements being processed.
+        while (!decreasingStack.empty() && decreasingStack.top() <= nums[circularIndex]) {
+            decreasingStack.pop();
+        }
+        // Only update the result during the second traversal
+        // of the array (currentIndex < arraySize).
+        //
+        // During the first traversal, we only prepare the stack
+        // with potential next greater elements.
+        if (currentIndex < arraySize && !decreasingStack.empty()) {
+            result[circularIndex] = decreasingStack.top();
+        }
+        // Push the current element into the stack so that it can
+        // act as a potential next greater element for elements
+        // appearing before it in the circular traversal.
+        decreasingStack.push(nums[circularIndex]);
+    }
+    // Return the next greater element for every array position.
+    return result;
+}
+
+//int main(){
+//    vector<int> nums = {2, 6, 9, 8, 7, 5, 3, 1, 4};
+//    vector<int> result = nextGreaterElements02(nums);
+//    for(auto element : result){
+//        cout << element << ", ";
+//    }
+//    return 0;
+//}
+
+//----------------------------------------------//----------------------------------------------//
