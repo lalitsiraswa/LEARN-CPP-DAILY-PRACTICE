@@ -291,3 +291,69 @@ vector<int> nextGreaterElements02(vector<int>& nums) {
 //}
 
 //----------------------------------------------//----------------------------------------------//
+// 901. Online Stock Span
+// previousDaysFrequency.insert(pair<int, int>{price, daysCount}); vs previousDaysFrequency[price] = daysCount;
+
+// previousDaysFrequency.insert(pair<int, int>{price, daysCount});
+// Inserts a new key-value pair if the key does not exist.
+// If the key already exists, it does not update or overwrite the existing value.
+// The existing value remains unchanged.
+
+// previousDaysFrequency[price] = daysCount;
+// Inserts a new key-value pair if the key does not exist.
+// If the key already exists, it updates/overwrites the existing value.
+
+// 901. Online Stock Span
+class StockSpanner {
+public:
+    // Stores stock prices in decreasing order.
+    // Each element represents a previous stock price.
+    stack<int> decreasingStack;
+    // Stores the stock span associated with each stock price.
+    // Key   = Stock price
+    // Value = Number of consecutive days for which this price
+    //         is greater than or equal to previous prices.
+    unordered_map<int, int> priceSpanMap;
+    // Constructor
+    StockSpanner() {}
+    int next(int price) {
+        // Every stock price has a minimum span of 1,
+        // because the current day itself is always included.
+        int currentSpan = 1;
+        // Remove all previous stock prices that are smaller than
+        // or equal to the current price.
+        //
+        // Their spans can be combined with the current span because
+        // the current price is greater than or equal to them.
+        while (!decreasingStack.empty() && decreasingStack.top() <= price) {
+            // Add the span of the previous stock price.
+            // This allows us to skip multiple previous days at once.
+            currentSpan += priceSpanMap[decreasingStack.top()];
+            // Reset the previous price's span because its contribution
+            // has already been included in the current span.
+            priceSpanMap[decreasingStack.top()] = 0;
+            // Remove the previous stock price from the stack.
+            decreasingStack.pop();
+        }
+        // Push the current stock price into the stack.
+        // It becomes a potential previous greater price
+        // for future stock prices.
+        decreasingStack.push(price);
+        // Store the calculated span for the current stock price.
+        priceSpanMap[price] = currentSpan;
+        // Return the number of consecutive days for which
+        // the stock price was less than or equal to today's price.
+        return currentSpan;
+    }
+};
+
+//int main(){
+//    StockSpanner stockSpanner = StockSpanner();
+//    vector<int> prices = {51, 35, 75, 20, 71, 38, 17, 38, 21, 47};
+//    for(auto price : prices){
+//        cout << stockSpanner.next(price) << " ";
+//    }
+//    return 0;
+//}
+
+//----------------------------------------------//----------------------------------------------//
