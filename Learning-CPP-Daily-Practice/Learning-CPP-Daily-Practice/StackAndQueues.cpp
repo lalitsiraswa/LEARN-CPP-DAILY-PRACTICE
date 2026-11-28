@@ -810,7 +810,7 @@ long long subArrayRanges01(vector<int>& nums) {
 }
 
 //int main(){
-//    vector<int> nums = {1, 2, 3};
+//    vector<int> nums = {1, 4, 6, 7, 3, 7, 8, 1};
 //    cout << subArrayRanges(nums) << endl;
 //    return 0;
 //}
