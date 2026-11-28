@@ -755,12 +755,29 @@ vector<int> findNextGreaterElement(vector<int>& nums) {
 long long subArrayRanges01(vector<int>& nums) {
     // Find the Next Smaller Element for every array element.
     vector<int> nextSmallerIndices = findNextSmallerElement(nums);
+    cout << endl << "*** NSE ***" << endl;
+    for(auto item : nextSmallerIndices){
+        cout << item << " ";
+    }
     // Find the Previous Smaller Element for every array element.
     vector<int> previousSmallerIndices = findPreviousSmallerElement(nums);
+    cout << endl << "*** PSE ***" << endl;
+    for(auto item : previousSmallerIndices){
+        cout << item << " ";
+    }
     // Find the Next Greater Element for every array element.
     vector<int> nextGreaterIndices = findNextGreaterElement(nums);
+    cout << endl << "*** NGE ***" << endl;
+    for(auto item : nextGreaterIndices){
+        cout << item << " ";
+    }
     // Find the Previous Greater Element for every array element.
     vector<int> previousGreaterIndices = findPreviousGreaterElement(nums);
+    cout << endl << "*** PGE ***" << endl;
+    for(auto item : previousGreaterIndices){
+        cout << item << " ";
+    }
+    cout << endl;
     int arraySize = nums.size();
     // PHASE 1: Calculate the sum of minimum elements
     // of all possible subarrays.
@@ -811,7 +828,7 @@ long long subArrayRanges01(vector<int>& nums) {
 
 //int main(){
 //    vector<int> nums = {1, 4, 6, 7, 3, 7, 8, 1};
-//    cout << subArrayRanges(nums) << endl;
+//    cout << subArrayRanges01(nums) << endl;
 //    return 0;
 //}
 
