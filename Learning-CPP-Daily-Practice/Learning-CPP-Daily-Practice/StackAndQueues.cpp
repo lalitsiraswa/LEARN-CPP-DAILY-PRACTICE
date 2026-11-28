@@ -618,3 +618,201 @@ int sumSubarrayMins01(vector<int>& nums) {
 //}
 
 //----------------------------------------------//----------------------------------------------//
+// 2104. Sum of Subarray Ranges
+long long subArrayRanges(vector<int>& nums) {
+    int arraySize = nums.size();
+    // Stores the sum of ranges of all possible subarrays.
+    long long totalSubarrayRanges = 0;
+    // Generate all possible subarrays by fixing the starting index.
+    for (int startIndex = 0; startIndex < arraySize; startIndex++) {
+        // Initially, the current element is both the minimum and maximum.
+        int minimumElement = nums[startIndex];
+        int maximumElement = nums[startIndex];
+        // For a subarray containing only one element,
+        // maximum - minimum = 0.
+        totalSubarrayRanges += (maximumElement - minimumElement);
+        // Expand the subarray by moving the ending index.
+        for (int endIndex = startIndex + 1; endIndex < arraySize; endIndex++) {
+            // Update the minimum element in the current subarray.
+            minimumElement = min(minimumElement, nums[endIndex]);
+            // Update the maximum element in the current subarray.
+            maximumElement = max(maximumElement, nums[endIndex]);
+            // Range of the current subarray = Maximum - Minimum.
+            totalSubarrayRanges += (maximumElement - minimumElement);
+        }
+    }
+    return totalSubarrayRanges;
+}
+
+//----------------------------------------------//
+// Helper function to find the Previous Smaller Element (PSE).
+// Returns the index of the nearest smaller element on the left.
+// If no smaller element exists, stores -1.
+vector<int> findPreviousSmallerElement(vector<int>& nums) {
+    int arraySize = nums.size();
+    // Stores the index of the previous smaller element for every index.
+    vector<int> previousSmallerIndices(arraySize, -1);
+    // Monotonic increasing stack storing array indices.
+    stack<int> increasingStack;
+    // Traverse from left to right.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Remove elements greater than or equal to the current element.
+        // They cannot be the previous strictly smaller element.
+        while (!increasingStack.empty() && nums[increasingStack.top()] >= nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // The stack top contains the index of the previous smaller element.
+        if (!increasingStack.empty()) {
+            previousSmallerIndices[currentIndex] = increasingStack.top();
+        }
+        // Push the current index for future elements.
+        increasingStack.push(currentIndex);
+    }
+    return previousSmallerIndices;
+}
+
+// Helper function to find the Next Smaller Element (NSE).
+// Returns the index of the nearest smaller element on the right.
+// If no smaller element exists, stores arraySize.
+vector<int> findNextSmallerElement(vector<int>& nums) {
+    // Monotonic increasing stack storing array indices.
+    stack<int> increasingStack;
+    int arraySize = nums.size();
+    // Stores the index of the next smaller element for every index.
+    vector<int> nextSmallerIndices(arraySize, arraySize);
+    // Traverse from right to left.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove elements strictly greater than the current element.
+        // They cannot be the next smaller or equal element.
+        while (!increasingStack.empty() && nums[increasingStack.top()] > nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // The stack top contains the index of the next smaller or equal element.
+        if (!increasingStack.empty()) {
+            nextSmallerIndices[currentIndex] = increasingStack.top();
+        }
+        // Push the current index for future elements.
+        increasingStack.push(currentIndex);
+    }
+    return nextSmallerIndices;
+}
+
+// Helper function to find the Previous Greater Element (PGE).
+// Returns the index of the nearest greater element on the left.
+// If no greater element exists, stores -1.
+vector<int> findPreviousGreaterElement(vector<int>& nums) {
+    int arraySize = nums.size();
+    // Stores the index of the previous greater element for every index.
+    vector<int> previousGreaterIndices(arraySize, -1);
+    // Monotonic decreasing stack storing array indices.
+    stack<int> decreasingStack;
+    // Traverse from left to right.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Remove elements smaller than or equal to the current element.
+        // They cannot be the previous strictly greater element.
+        while (!decreasingStack.empty() && nums[decreasingStack.top()] <= nums[currentIndex]) {
+            decreasingStack.pop();
+        }
+        // The stack top contains the index of the previous greater element.
+        if (!decreasingStack.empty()) {
+            previousGreaterIndices[currentIndex] = decreasingStack.top();
+        }
+        // Push the current index for future elements.
+        decreasingStack.push(currentIndex);
+    }
+    return previousGreaterIndices;
+}
+
+// Helper function to find the Next Greater Element (NGE).
+// Returns the index of the nearest greater element on the right.
+// If no greater element exists, stores arraySize.
+vector<int> findNextGreaterElement(vector<int>& nums) {
+    // Monotonic decreasing stack storing array indices.
+    stack<int> decreasingStack;
+    int arraySize = nums.size();
+    // Stores the index of the next greater element for every index.
+    vector<int> nextGreaterIndices(arraySize, arraySize);
+    // Traverse from right to left.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove elements strictly smaller than the current element.
+        // They cannot be the next greater or equal element.
+        while (!decreasingStack.empty() && nums[decreasingStack.top()] < nums[currentIndex]) {
+            decreasingStack.pop();
+        }
+        // The stack top contains the index of the next greater or equal element.
+        if (!decreasingStack.empty()) {
+            nextGreaterIndices[currentIndex] = decreasingStack.top();
+        }
+        // Push the current index for future elements.
+        decreasingStack.push(currentIndex);
+    }
+    return nextGreaterIndices;
+}
+
+// 2104. Sum of Subarray Ranges
+//
+// Sum of Subarray Ranges = Sum of Subarray Maximums - Sum of Subarray Minimums
+long long subArrayRanges01(vector<int>& nums) {
+    // Find the Next Smaller Element for every array element.
+    vector<int> nextSmallerIndices = findNextSmallerElement(nums);
+    // Find the Previous Smaller Element for every array element.
+    vector<int> previousSmallerIndices = findPreviousSmallerElement(nums);
+    // Find the Next Greater Element for every array element.
+    vector<int> nextGreaterIndices = findNextGreaterElement(nums);
+    // Find the Previous Greater Element for every array element.
+    vector<int> previousGreaterIndices = findPreviousGreaterElement(nums);
+    int arraySize = nums.size();
+    // PHASE 1: Calculate the sum of minimum elements
+    // of all possible subarrays.
+    long long sumOfSubarrayMinimums = 0;
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Number of possible starting positions for subarrays
+        // where the current element is the minimum.
+        long long leftSubarrayCount = currentIndex - previousSmallerIndices[currentIndex];
+        // Number of possible ending positions for subarrays
+        // where the current element is the minimum.
+        long long rightSubarrayCount = nextSmallerIndices[currentIndex] - currentIndex;
+        // Total number of subarrays where nums[currentIndex]
+        // contributes as the minimum element.
+        long long subarrayFrequency = leftSubarrayCount * rightSubarrayCount;
+        // Calculate the total contribution of the current element.
+        // Contribution = Frequency * Element Value.
+        long long currentContribution = subarrayFrequency * nums[currentIndex];
+        // Add the current element's contribution to the minimum sum.
+        sumOfSubarrayMinimums += currentContribution;
+    }
+    // PHASE 2: Calculate the sum of maximum elements
+    // of all possible subarrays.
+    long long sumOfSubarrayMaximums = 0;
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Number of possible starting positions for subarrays
+        // where the current element is the maximum.
+        long long leftSubarrayCount = currentIndex - previousGreaterIndices[currentIndex];
+        // Number of possible ending positions for subarrays
+        // where the current element is the maximum.
+        long long rightSubarrayCount = nextGreaterIndices[currentIndex] - currentIndex;
+        // Total number of subarrays where nums[currentIndex]
+        // contributes as the maximum element.
+        long long subarrayFrequency = leftSubarrayCount * rightSubarrayCount;
+        // Calculate the total contribution of the current element.
+        // Contribution = Frequency * Element Value.
+        long long currentContribution = subarrayFrequency * nums[currentIndex];
+        // Add the current element's contribution to the maximum sum.
+        sumOfSubarrayMaximums += currentContribution;
+    }
+    // PHASE 3: Calculate the sum of all subarray ranges.
+    //
+    // Range of a subarray = Maximum - Minimum.
+    //
+    // Therefore:
+    // Sum of Subarray Ranges = Sum of Maximums - Sum of Minimums.
+    return sumOfSubarrayMaximums - sumOfSubarrayMinimums;
+}
+
+//int main(){
+//    vector<int> nums = {1, 2, 3};
+//    cout << subArrayRanges(nums) << endl;
+//    return 0;
+//}
+
+//----------------------------------------------//----------------------------------------------//
