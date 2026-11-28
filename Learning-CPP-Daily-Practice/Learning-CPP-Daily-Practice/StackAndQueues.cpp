@@ -2,6 +2,117 @@
 using namespace std;
 
 //----------------------------------------------//----------------------------------------------//
+// 1. Next Greater Element (NGE)
+vector<int> nextGreaterElement(vector<int>& nums) {
+    // Maintains elements in decreasing order.
+    stack<int> decreasingStack;
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize all positions with -1.
+    // -1 means no next greater element exists.
+    vector<int> nextGreaterElements(arraySize, -1);
+    // Traverse from right to left to find greater elements
+    // on the right side of each current element.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove all elements smaller than or equal to
+        // the current element.
+        while (!decreasingStack.empty() && decreasingStack.top() <= nums[currentIndex]) {
+            decreasingStack.pop();
+        }
+        // The stack top is the nearest greater element
+        // on the right side, if the stack is not empty.
+        if (!decreasingStack.empty()) {
+            nextGreaterElements[currentIndex] = decreasingStack.top();
+        }
+        // Push the current element for future comparisons.
+        decreasingStack.push(nums[currentIndex]);
+    }
+    return nextGreaterElements;
+}
+
+//----------------------------------------------//
+// 2. Next Smaller Element (NSE)
+vector<int> nextSmallerElement(vector<int>& nums) {
+    // Maintains elements in increasing order.
+    stack<int> increasingStack;
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize all positions with -1.
+    vector<int> nextSmallerElements(arraySize, -1);
+    // Traverse from right to left to find smaller elements
+    // on the right side of each current element.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove all elements greater than or equal to
+        // the current element.
+        while (!increasingStack.empty() && increasingStack.top() >= nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // The stack top is the nearest smaller element
+        // on the right side, if the stack is not empty.
+        if (!increasingStack.empty()) {
+            nextSmallerElements[currentIndex] = increasingStack.top();
+        }
+        // Push the current element for future comparisons.
+        increasingStack.push(nums[currentIndex]);
+    }
+    return nextSmallerElements;
+}
+//----------------------------------------------//
+// 3. Previous Smaller Element (PSE)
+vector<int> previousSmallerElement(vector<int>& nums) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize all positions with -1.
+    vector<int> previousSmallerElements(arraySize, -1);
+    // Maintains elements in increasing order.
+    stack<int> increasingStack;
+    // Traverse from left to right to find smaller elements
+    // on the left side of each current element.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Remove all elements greater than or equal to
+        // the current element.
+        while (!increasingStack.empty() && increasingStack.top() >= nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // The stack top is the nearest smaller element
+        // on the left side, if the stack is not empty.
+        if (!increasingStack.empty()) {
+            previousSmallerElements[currentIndex] = increasingStack.top();
+        }
+        // Push the current element for future comparisons.
+        increasingStack.push(nums[currentIndex]);
+    }
+    return previousSmallerElements;
+}
+//----------------------------------------------//
+// 4. Previous Greater Element (PGE)
+vector<int> previousGreaterElement(vector<int>& nums) {
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Initialize all positions with -1.
+    vector<int> previousGreaterElements(arraySize, -1);
+    // Maintains elements in decreasing order.
+    stack<int> decreasingStack;
+    // Traverse from left to right to find greater elements
+    // on the left side of each current element.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Remove all elements smaller than or equal to
+        // the current element.
+        while (!decreasingStack.empty() && decreasingStack.top() <= nums[currentIndex]) {
+            decreasingStack.pop();
+        }
+        // The stack top is the nearest greater element
+        // on the left side, if the stack is not empty.
+        if (!decreasingStack.empty()) {
+            previousGreaterElements[currentIndex] = decreasingStack.top();
+        }
+        // Push the current element for future comparisons.
+        decreasingStack.push(nums[currentIndex]);
+    }
+    return previousGreaterElements;
+}
+
+//----------------------------------------------//----------------------------------------------//
 // Monotonic-Stack: Storing elements in specific order
 // Next Greater Element
 // Function to find the Next Greater Element for every array element.
@@ -353,6 +464,156 @@ public:
 //    for(auto price : prices){
 //        cout << stockSpanner.next(price) << " ";
 //    }
+//    return 0;
+//}
+
+//----------------------------------------------//----------------------------------------------//
+// 907. Sum of Subarray Minimums
+// Time Limit Exceeded
+// const int MOD = 1e9 + 7;
+// const int MOD = 1000000007;
+// Brute Force Approach - Time Limit Exceeded
+int sumSubarrayMins(vector<int>& nums) {
+    // Define modulo to prevent the result from exceeding integer limits.
+    const int MOD = 1000000007;
+    // Store the size of the input array.
+    int arraySize = nums.size();
+    // Stores the sum of minimum elements of all possible subarrays.
+    long long subarraysMinimumSum = 0;
+    // PHASE 1: Consider every element as the starting point
+    // of a subarray.
+    for (int startIndex = 0; startIndex < arraySize; startIndex++) {
+        // Initially, the current element itself is the minimum.
+        // This represents a subarray containing only one element.
+        int currentSubarrayMinimum = nums[startIndex];
+        // Add the minimum of the single-element subarray.
+        subarraysMinimumSum += currentSubarrayMinimum;
+        // PHASE 2: Extend the subarray by moving the ending index.
+        for (int endIndex = startIndex + 1; endIndex < arraySize; endIndex++) {
+            // Update the minimum element of the current subarray.
+            // Compare the previous minimum with the newly added element.
+            currentSubarrayMinimum = min(currentSubarrayMinimum, nums[endIndex]);
+            // Add the minimum of the current subarray to the total sum.
+            subarraysMinimumSum += currentSubarrayMinimum;
+        }
+    }
+    // Return the final sum modulo 10^9 + 7.
+    return subarraysMinimumSum % MOD;
+}
+
+//----------------------------------------------//
+// Helper function to find the index of the Next Smaller Element (NSE)
+// for every element in the array.
+//
+// NSE[i] stores the index of the first element to the right of i
+// that is smaller than nums[i].
+//
+// If no smaller element exists, NSE[i] stores n.
+vector<int> nextSmallerElementHelper(vector<int>& nums) {
+    // Monotonic increasing stack storing array indices.
+    stack<int> increasingStack;
+    int arraySize = nums.size();
+    // Initially, assume no smaller element exists on the right.
+    vector<int> nextSmallerIndices(arraySize, arraySize);
+    // Traverse from right to left to find the next smaller element.
+    for (int currentIndex = arraySize - 1; currentIndex >= 0; currentIndex--) {
+        // Remove all elements that are greater than the current element.
+        // They cannot be the next smaller element for the current index.
+        while (!increasingStack.empty() && nums[increasingStack.top()] > nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // If the stack is not empty, its top contains the index
+        // of the next smaller element.
+        if (!increasingStack.empty()) {
+            nextSmallerIndices[currentIndex] = increasingStack.top();
+        }
+        // Push the current index for processing future elements.
+        increasingStack.push(currentIndex);
+    }
+    return nextSmallerIndices;
+}
+
+// Helper function to find the index of the Previous Smaller Element (PSE)
+// for every element in the array.
+//
+// PSE[i] stores the index of the first element to the left of i
+// that is smaller than nums[i].
+//
+// If no smaller element exists, PSE[i] stores -1.
+vector<int> previousSmallerElementHelper(vector<int>& nums) {
+    int arraySize = nums.size();
+    // Initially, assume no smaller element exists on the left.
+    vector<int> previousSmallerIndices(arraySize, -1);
+    // Monotonic increasing stack storing array indices.
+    stack<int> increasingStack;
+    // Traverse from left to right to find the previous smaller element.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Remove elements that are greater than or equal to the current element.
+        // They cannot be the previous smaller element for the current index.
+        while (!increasingStack.empty() && nums[increasingStack.top()] >= nums[currentIndex]) {
+            increasingStack.pop();
+        }
+        // If the stack is not empty, its top contains the index
+        // of the previous smaller element.
+        if (!increasingStack.empty()) {
+            previousSmallerIndices[currentIndex] = increasingStack.top();
+        }
+        // Push the current index for processing future elements.
+        increasingStack.push(currentIndex);
+    }
+    return previousSmallerIndices;
+}
+
+// Function to calculate the sum of minimum elements
+// of all possible subarrays.
+// left * right tells us HOW MANY subarrays have the current element as their minimum.
+// nums[i] tells us WHAT VALUE that minimum contributes.
+// Multiplying both gives us the TOTAL CONTRIBUTION of that element.
+// Contribution = left * right * nums[i]
+int sumSubarrayMins01(vector<int>& nums) {
+    // Find the index of the Next Smaller Element for every element.
+    vector<int> nextSmallerIndices = nextSmallerElementHelper(nums);
+    for(auto item : nextSmallerIndices){
+        cout << item << " ";
+    }
+    cout << endl;
+    // Find the index of the Previous Smaller Element for every element.
+    vector<int> previousSmallerIndices = previousSmallerElementHelper(nums);
+    for(auto item : previousSmallerIndices){
+        cout << item << " ";
+    }
+    cout << endl;
+    int arraySize = nums.size();
+    // Modulo value to prevent integer overflow in the final result.
+    int mod = 1e9 + 7;
+    int sumOfSubarrayMinimums = 0;
+    // Calculate the contribution of every element to the final answer.
+    for (int currentIndex = 0; currentIndex < arraySize; currentIndex++) {
+        // Number of possible starting positions for subarrays
+        // in which the current element can be the minimum.
+        int leftSubarrayCount = currentIndex - previousSmallerIndices[currentIndex];
+        // Number of possible ending positions for subarrays
+        // in which the current element can be the minimum.
+        int rightSubarrayCount = nextSmallerIndices[currentIndex] - currentIndex;
+        // Total number of subarrays in which the current element
+        // contributes as the minimum element.
+        long long subarrayFrequency = leftSubarrayCount * rightSubarrayCount * 1LL;
+        // Contribution of the current element to the final answer.
+        int currentContribution = (subarrayFrequency * nums[currentIndex] * 1LL) % mod;
+        // Add the current contribution to the final sum.
+        sumOfSubarrayMinimums = (sumOfSubarrayMinimums + currentContribution) % mod;
+    }
+    return sumOfSubarrayMinimums;
+}
+
+//int main(){
+//    vector<int> nums = {1, 4, 6, 7, 3, 7, 8, 1};
+//    for(auto item : nums){
+//        cout << item << " ";
+//    }
+//    cout << endl;
+//    cout << sumSubarrayMins01(nums);
+//    
 //    return 0;
 //}
 
